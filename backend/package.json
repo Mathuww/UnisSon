@@ -1,0 +1,26 @@
+{
+  "name": "gustave",
+  "version": "4.0.1",
+  "description": "GUSTAVE ! REVIENS ! LA TOURE IFFEL EST EN DECLIN",
+  "license": "ISC",
+  "author": "Gaia",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "npx tsx watch src/index.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/express": "^5.0.6",
+    "eslint": "^9.0.0",
+    "globals": "^17.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.36.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mariadb": "^3.5.1"
+  }
+}
