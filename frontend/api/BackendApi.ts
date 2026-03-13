@@ -7,8 +7,8 @@ export const api = axios.create({
     timeout: 3000
 });
 
-
-export const testApi = {
+export const ApiCall = {
     postText: (text: string) => api.post('/text', {message: text}),
-    getText: () => api.get('/text')
+    getText: () => api.get('/text'),
+    signIn : (nickname : string) => api.post("/auth/login", {nickname : nickname})
 };
