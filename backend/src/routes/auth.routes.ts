@@ -8,7 +8,7 @@ router.post('/login', async (req: Request, res: Response) => {
     const nickname = req.body.nickname;
 
     if (!nickname)
-        return res.status(401).send("Nickname missing from login request");
+        return res.status(400).send("Nickname missing from login request");
 
     let conn;
     try {
@@ -19,7 +19,11 @@ router.post('/login', async (req: Request, res: Response) => {
             [nickname]
         );
 
-        res.send(`User created with ID ${result.insertId}`);
+        if (rows.length > 0) {
+            res.json({id: rows[0].id});
+        } else {
+            res.status(404).send("User not found");
+        }
     } catch (error) {
         console.error("SQL error : ", error);
         res.status(500).send("Error while fetching data from DB");
@@ -34,18 +38,18 @@ router.post('/signup', async (req, res) => {
     const nickname = req.body.nickname;
 
     if (!nickname)
-        return res.status(401).send("Nickname missing from signup request");
+        return res.status(400).send("Nickname missing from signup request");
 
     let conn;
     try {
         conn = await pool.getConnection();
 
-        const [result] = await conn.query(
+        const result = await conn.query(
             "INSERT INTO Users (nickname) VALUES (?)",
             [nickname]
         );
 
-        res.send(`User created with ID ${result.insertId}`);
+        res.json({id: result.insertId});
     } catch (error) {
         console.error("SQL error : ", error);
         res.status(500).send("Error while fetching data from DB");

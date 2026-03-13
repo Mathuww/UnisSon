@@ -11,7 +11,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from "react";
 import { ImageSourcePropType, StyleSheet, Text, TextInput, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { testApi } from "@/api/BackendApi";
+import { api, testApi } from "@/api/BackendApi";
 
 const PlaceHolderImage = require('@/assets/images/palm-beach.jpg');
 
