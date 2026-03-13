@@ -1,0 +1,80 @@
+CREATE TABLE Users (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    nickname VARCHAR(16) NOT NULL UNIQUE,
+    email VARCHAR(128) NOT NULL UNIQUE,
+    profileDescription VARCHAR(1024) DEFAULT NULL,
+    profilePicture MEDIUMBLOB DEFAULT NULL,
+    provider ENUM('spotify', 'google') NOT NULL,
+    premiumAccount BOOLEAN DEFAULT NULL,
+    providerLoginID VARCHAR(256) DEFAULT NULL,
+    acessToken VARCHAR(1024) DEFAULT NULL,
+    refreshToken VARCHAR(1024) DEFAULT NULL,
+    tokenExpireAt TIMESTAMP DEFAULT NULL,
+    pushToken VARCHAR(4096) DEFAULT NULL,
+    PRIMARY KEY (id),
+) ENGINE=InnoDB;
+
+CREATE TABLE Groups (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    name VARCHAR(64) NOT NULL,
+    notifNB TINYINT UNSIGNED DEFAULT NULL,
+    groupPicture MEDIUMBLOB DEFAULT NULL,
+    choosenOneUserID INTEGER DEFAULT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (choosenOneUserID) REFERENCES Users(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE GroupsUsers (
+    groupID INTEGER NOT NULL,
+    userID INTEGER NOT NULL,
+    notifPending BOOLEAN DEFAULT NULL,
+    weeklyScore INTEGER UNSIGNED DEFAULT 0,
+    globalScore INTEGER UNSIGNED DEFAULT 0,
+    PRIMARY KEY (groupID, userID),
+    FOREIGN KEY (groupID) REFERENCES Groups(id),
+    FOREIGN KEY (userID) REFERENCES Users(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE Tracks (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    title VARCHAR(128) NOT NULL,
+    artist VARCHAR(32) NOT NULL,
+    ISRC VARCHAR(16) DEFAULT NULL,
+    youtubeLink VARCHAR(128) DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+CREATE TABLE GroupPlaylists (
+    groupID INTEGER NOT NULL,
+    trackID INTEGER NOT NULL,
+    userID INTEGER NOT NULL,
+    addedAt TIMESTAMP NOT NULL,
+    PRIMARY KEY (groupID, trackID, userID),
+    FOREIGN KEY (groupID) REFERENCES Groups(id),
+    FOREIGN KEY (trackID) REFERENCES Tracks(id),
+    FOREIGN KEY (userID) REFERENCES Users(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE RealRanking (
+    groupID INTEGER NOT NULL,
+    trackID INTEGER NOT NULL,
+    userID INTEGER NOT NULL,
+    rank TINYINT UNSIGNED NOT NULL,
+    PRIMARY KEY (groupID, trackID, userID),
+    FOREIGN KEY (groupID) REFERENCES Groups(id),
+    FOREIGN KEY (trackID) REFERENCES Tracks(id),
+    FOREIGN KEY (userID) REFERENCES Users(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE PredictingRanking (
+    groupID INTEGER NOT NULL,
+    trackID INTEGER NOT NULL,
+    userID INTEGER NOT NULL,
+    oracleUserID INTEGER NOT NULL,
+    rank TINYINT UNSIGNED NOT NULL,
+    PRIMARY KEY (groupID, trackID, userID),
+    FOREIGN KEY (groupID) REFERENCES Groups(id),
+    FOREIGN KEY (trackID) REFERENCES Tracks(id),
+    FOREIGN KEY (userID) REFERENCES Users(id),
+    FOREIGN KEY (oracleUserID) REFERENCES Users(id)
+) ENGINE=InnoDB;
