@@ -7,6 +7,7 @@ export const api = axios.create({
     timeout: 3000
 });
 
+
 export const testApi = {
     postText: (text: string) => api.post('/text', {message: text}),
     getText: () => api.get('/text')

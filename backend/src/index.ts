@@ -12,7 +12,7 @@ const port = process.env.PORT || 5175;
 
 app.use(express.json());
 app.use(logger);
-
+ 
 app.use('/auth', authRoutes);
 app.use('/text', testRoutes);
 app.use('/groups', authMiddleware, groupsRoutes);

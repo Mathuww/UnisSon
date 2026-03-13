@@ -6,7 +6,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const userId = Number(req.headers["x-user-id"]);
 
     if(!userId) {
-        return res.status(401).send("User ID not specified");
+        return res.status(400).send("User ID not specified");
     }
 
     let conn : PoolConnection | undefined;
