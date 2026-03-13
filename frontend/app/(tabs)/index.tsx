@@ -11,7 +11,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from "react";
 import { ImageSourcePropType, StyleSheet, Text, TextInput, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { api, testApi } from "@/api/BackendApi";
+import {ApiCall} from "@/api/BackendApi";
 
 const PlaceHolderImage = require('@/assets/images/palm-beach.jpg');
 
@@ -21,7 +21,7 @@ export default function Index() {
 
   const sendRequest = () => {
     if (textInput)
-      testApi.postText(textInput)
+      ApiCall.postText(textInput)
       .then((response) => {
         setText(response.data);
       })
