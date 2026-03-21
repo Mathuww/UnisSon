@@ -168,6 +168,19 @@ router.post('/:id/songs', async (req, res) => {
             return res.status(403).json({error: "This group is not in the right status for submission"});
         }
 
+        // numer0bis : c'est pas l'élu qui est en train d'ajouter un morceau ?
+        const chosenOneRows = await conn.query(
+            "SELECT choosenOneUserID FROM Groups WHERE id = ?",
+            [groupId]
+        );
+        if (chosenOneRows.length <= 0) {
+            console.error(`Cant check for group chosen one : group ${groupId} doesnt exist in table`);
+            return res.status(500).json({error: "Internal DB error, check server log"});
+        }
+        if (chosenOneRows[0].choosenOneUserID == user.id) {
+            return res.status(403).json({error: "Chosen one cant add song for themself..."});
+        }
+
         // 1 : le son existe-t-il dans Tracks ? si non, on le crée
         const trackId = await findOrCreateTrack(conn, "isrc", title, youtubeUrl);
 

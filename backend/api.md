@@ -89,9 +89,13 @@ Renvoie :
 
 ## /admin : Routes d'administration
 
-## /admin/poll : Déclencher le polling manuellement
+### /admin/poll : Déclencher le polling manuellement
 Par défaut, le polling (vérifier si c'est l'heure de déclencher des évènements) se fait automatiquement toutes les minutes, mais il peut être déclenché par un POST sur `/poll`.
 
 Attention à ne pas trop `poll`-uer le serveur avec ça ! ahaha (Penser à enlever cette phrase)
 
-## /admin/newcycle : Déclencher un nouveau cycle
+### /admin/newcycle : Déclencher un nouveau cycle
+
+### /admin/submode : Passer en mode "ajout de musique"
+
+### /admin/quiztime : Passer en mode "quiz"

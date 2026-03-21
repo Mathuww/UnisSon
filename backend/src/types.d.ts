@@ -9,7 +9,7 @@ export enum GroupStatus {
     "THEME_SET",
     "SUBMISSION",
     "QUIZ_TIME"
-};
+}
 
 interface GroupData {
     chosenOne: number | null; 

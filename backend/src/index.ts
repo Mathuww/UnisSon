@@ -11,6 +11,8 @@ import groupsRoutes from './routes/groups.routes.js';
 import usersRoutes from './routes/users.routes.js';
 import { startNewWeekCycle } from './tasks/newcycle.js';
 import { generalPollingTask } from './tasks/generalpolling.js';
+import { submissionMode } from './tasks/submissionmode.js';
+import { quiztimeMode } from './tasks/quiztime.js';
 
 const app = express();
 const port = process.env.PORT || 5175;
@@ -27,11 +29,17 @@ app.use('/users', authMiddleware, usersRoutes);
 app.use('/admin', adminRoutes);
 
 // Setup CRON
-nodeCron.schedule('0 0 * * SUN', () => { // Tous les dimanches à 00:00
-  startNewWeekCycle();
+nodeCron.schedule('0 0 * * SUN', async () => { // Tous les dimanches à 00:00
+  await startNewWeekCycle();
 });
-nodeCron.schedule('* * * * *', () => { // Tous les dimanches à 00:00
-  generalPollingTask();
+nodeCron.schedule('0 0 * * MON', async () => { // Tous les lundis à 00:00
+  await submissionMode();
+});
+nodeCron.schedule('0 0 * * SAT', async () => { // Tous les lundis à 00:00
+  await quiztimeMode();
+});
+nodeCron.schedule('* * * * *', async () => { // Tous les dimanches à 00:00
+  await generalPollingTask();
 });
 
 // On écoute

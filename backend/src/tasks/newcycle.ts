@@ -53,9 +53,9 @@ export async function startNewWeekCycle() {
             const updateResult = await conn.query(
                 `UPDATE Groups
                 SET choosenOneUserId = ?,
-                status = ${GroupStatus.WAITING_FOR_THEME}
+                status = ?
                 WHERE id = ?`,
-                [nextChosenOne, groupID]
+                [nextChosenOne, GroupStatus.WAITING_FOR_THEME, groupID]
             );
 
             await conn.commit();
