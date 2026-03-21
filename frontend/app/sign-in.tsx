@@ -2,21 +2,27 @@ import {TextInput, View, StyleSheet} from "react-native";
 import {useState} from "react";
 import Button from "@/components/Button";
 import {ApiCall} from "@/api/BackendApi";
+import {setItemAsync} from "expo-secure-store";
+import {useAuthStore} from "@/utils/authStore";
 
 export default function SignInScreen() {
     const [pseudo, setPseudo] = useState('');
+    const {logIn} = useAuthStore();
 
     const handleSignIn = async () => {
-        try {
-            const response = await ApiCall.signIn(pseudo)
-            if (response.status === 200) {
-
-            } else {
-                console.error(response.statusText);
-            }
-        } catch {
-            console.error("Could not access db")
-        }
+        ApiCall.signIn(pseudo)
+            .then((response) => {
+                if (response.status === 200) {
+                    setItemAsync(response.data.id, pseudo)
+                    console.log("heyo");
+                    logIn();
+                } else {
+                    console.error(response.data.error);
+                }
+        })
+            .catch((error) => {
+                console.error(error);
+            })
     }
 
     return (
