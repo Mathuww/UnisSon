@@ -1,16 +1,6 @@
 import Button from "@/components/Button";
-import CircleButton from "@/components/CircleButton";
-import EmojiList from "@/components/EmojiList";
-import EmojiPicker from "@/components/EmojiPicker";
-import EmojiSticker from "@/components/EmojiSticker";
-import IconButton from "@/components/IconButton";
-import ImageViewer from "@/components/ImageViewer";
-import { captureRef } from 'react-native-view-shot';
-import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from "react";
-import { ImageSourcePropType, StyleSheet, Text, TextInput, View } from "react-native";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {StyleSheet, Text, TextInput, View } from "react-native";
 import {ApiCall} from "@/api/BackendApi";
 
 const PlaceHolderImage = require('@/assets/images/palm-beach.jpg');
