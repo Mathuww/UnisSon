@@ -1,4 +1,4 @@
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
     id INTEGER NOT NULL AUTO_INCREMENT,
     nickname VARCHAR(16) NOT NULL UNIQUE,
     email VARCHAR(128) NOT NULL UNIQUE,
@@ -6,25 +6,27 @@ CREATE TABLE Users (
     profilePicture MEDIUMBLOB DEFAULT NULL,
     provider ENUM('spotify', 'google') NOT NULL,
     premiumAccount BOOLEAN DEFAULT NULL,
-    providerLoginID VARCHAR(256) DEFAULT NULL,
-    acessToken VARCHAR(1024) DEFAULT NULL,
-    refreshToken VARCHAR(1024) DEFAULT NULL,
-    tokenExpireAt TIMESTAMP DEFAULT NULL,
-    pushToken VARCHAR(4096) DEFAULT NULL,
-    PRIMARY KEY (id),
+    providerLoginID VARCHAR(256) NOT NULL,
+    acessToken VARCHAR(1024) NOT NULL UNIQUE,
+    refreshToken VARCHAR(1024) NOT NULL UNIQUE,
+    tokenExpireAt TIMESTAMP NOT NULL UNIQUE,
+    pushToken VARCHAR(4096) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE Groups (
+CREATE TABLE IF NOT EXISTS Groups (
     id INTEGER NOT NULL AUTO_INCREMENT,
     name VARCHAR(64) NOT NULL,
+    maxUsers TINYINT UNSIGNED DEFAULT 4 NOT NULL,
     notifNB TINYINT UNSIGNED DEFAULT NULL,
     groupPicture MEDIUMBLOB DEFAULT NULL,
     choosenOneUserID INTEGER DEFAULT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (choosenOneUserID) REFERENCES Users(id)
+    FOREIGN KEY (choosenOneUserID) REFERENCES Users(id),
+    CONSTRAINT nbUsers CHECK (maxUsers >= 2)
 ) ENGINE=InnoDB;
 
-CREATE TABLE GroupsUsers (
+CREATE TABLE IF NOT EXISTS GroupsUsers (
     groupID INTEGER NOT NULL,
     userID INTEGER NOT NULL,
     notifPending BOOLEAN DEFAULT NULL,
@@ -35,7 +37,7 @@ CREATE TABLE GroupsUsers (
     FOREIGN KEY (userID) REFERENCES Users(id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE Tracks (
+CREATE TABLE IF NOT EXISTS Tracks (
     id INTEGER NOT NULL AUTO_INCREMENT,
     title VARCHAR(128) NOT NULL,
     artist VARCHAR(32) NOT NULL,
@@ -44,7 +46,7 @@ CREATE TABLE Tracks (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE GroupPlaylists (
+CREATE TABLE IF NOT EXISTS GroupsPlaylists (
     groupID INTEGER NOT NULL,
     trackID INTEGER NOT NULL,
     userID INTEGER NOT NULL,
@@ -55,7 +57,7 @@ CREATE TABLE GroupPlaylists (
     FOREIGN KEY (userID) REFERENCES Users(id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE RealRanking (
+CREATE TABLE IF NOT EXISTS RealRanking (
     groupID INTEGER NOT NULL,
     trackID INTEGER NOT NULL,
     userID INTEGER NOT NULL,
@@ -66,7 +68,7 @@ CREATE TABLE RealRanking (
     FOREIGN KEY (userID) REFERENCES Users(id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE PredictingRanking (
+CREATE TABLE IF NOT EXISTS PredictingRanking (
     groupID INTEGER NOT NULL,
     trackID INTEGER NOT NULL,
     userID INTEGER NOT NULL,
@@ -77,4 +79,15 @@ CREATE TABLE PredictingRanking (
     FOREIGN KEY (trackID) REFERENCES Tracks(id),
     FOREIGN KEY (userID) REFERENCES Users(id),
     FOREIGN KEY (oracleUserID) REFERENCES Users(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Invitations (
+    id INTEGER AUTO_INCREMENT NOT NULL,
+    createdBy INTEGER NOT NULL,
+    groupID INTEGER NOT NULL,
+    token VARCHAR(1024) NOT NULL UNIQUE,
+    expiresAt TIMESTAMP NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (groupID) REFERENCES Groups(id),
+    FOREIGN KEY (createdBy) REFERENCES Users(id)
 ) ENGINE=InnoDB;
