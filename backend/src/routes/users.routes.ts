@@ -18,16 +18,24 @@ router.get('/me/groups', async (req, res) => {
         const groups = await conn.query(
             `SELECT g.id, g.name 
             FROM Groups g
-            JOIN GroupUsers gu ON g.id = gu.id 
-            WHERE gu.userId = ?`,
+            JOIN GroupsUsers gu ON g.id = gu.groupID 
+            WHERE gu.userID = ?`,
             [user.id]
         );
+ 
+        console.log(groups);
 
         if (groups.length > 0) {
             res.json(groups);
         } else {
-            res.status(404).send("User does not belong to any group");
+            res.status(404).json({error: "User does not belong to any group"});
         }
+     } catch (error) {
+        console.error("SQL error : ", error);
+        res.status(500).json({error: "Error while fetching data from DB"});
+    } finally {
+        if (conn)
+            conn.release();
     }
 });
 
