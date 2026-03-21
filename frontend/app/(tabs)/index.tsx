@@ -1,56 +1,39 @@
-import Button from "@/components/Button";
-import CircleButton from "@/components/CircleButton";
-import EmojiList from "@/components/EmojiList";
-import EmojiPicker from "@/components/EmojiPicker";
-import EmojiSticker from "@/components/EmojiSticker";
-import IconButton from "@/components/IconButton";
-import ImageViewer from "@/components/ImageViewer";
-import { captureRef } from 'react-native-view-shot';
-import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
-import { useEffect, useRef, useState } from "react";
-import { ImageSourcePropType, StyleSheet, Text, TextInput, View } from "react-native";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {ApiCall} from "@/api/BackendApi";
-
-const PlaceHolderImage = require('@/assets/images/palm-beach.jpg');
+import { ApiCall } from "@/api/BackendApi";
+import LinkGroups from "@/components/LinkGroups";
+import { useEffect, useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 
 export default function Index() {
-  const [textInput, setTextInput] = useState<string>("");
-  const [text, setText] = useState<string>("");
-
-  const sendRequest = () => {
-    if (textInput)
-      ApiCall.postText(textInput)
-      .then((response) => {
-        setText(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-        setText("Can't join the backend :(");
-      });
-  }
+  const [test, setTest] = useState<{id: number, name: string}[]>([]);
+  useEffect(() => {
+    ApiCall.users.getGroups(1)
+    .then(reponse => {
+      setTest(reponse.data);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Envoie un message à Gustave Eiffel : </Text>
-      <TextInput
-        style={styles.text}
-        placeholder="Gustave, je ..."
-        value={textInput}
-        onChangeText={setTextInput}
+      <FlatList
+        data={test}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({item}) => <LinkGroups id={item.id} label={item.name} ></LinkGroups>
+        }
       />
-      <Button label="Pigeon" onPress={sendRequest} />
-      {text && <Text style={styles.text}>{text}</Text>}
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#25292e',
     flex: 1,
-    alignItems: "center"
+    paddingTop: 20,
   },
   footerContainer: {
     flex: 1 / 3,
