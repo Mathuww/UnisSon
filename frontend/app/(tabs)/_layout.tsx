@@ -25,7 +25,7 @@ export default function TabsLayout() {
                 }} 
             />
             <Tabs.Screen 
-                name="groups"
+                name="group"
                 options={{ 
                     href: null
                 }} 
