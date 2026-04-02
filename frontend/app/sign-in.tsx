@@ -10,7 +10,7 @@ export default function SignInScreen() {
     const {logIn} = useAuthStore();
 
     const handleSignIn = async () => {
-        ApiCall.signIn(pseudo)
+        ApiCall.auth.signIn(pseudo)
             .then((response) => {
                 if (response.status === 200) {
                     setItemAsync(response.data.id, pseudo)
