@@ -4,25 +4,25 @@ import Button from "@/components/Button";
 import {ApiCall} from "@/api/BackendApi";
 import {setItemAsync} from "expo-secure-store";
 import {useAuthStore} from "@/utils/authStore";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
 
 export default function SignInScreen() {
     const [pseudo, setPseudo] = useState('');
-    const {logIn} = useAuthStore();
+    const {GoogleLogIn} = useAuthStore();
 
     const handleSignIn = async () => {
-        ApiCall.auth.signIn(pseudo)
-            .then((response) => {
-                if (response.status === 200) {
-                    setItemAsync(response.data.id, pseudo)
-                    console.log("heyo");
-                    logIn();
-                } else {
-                    console.error(response.data.error);
-                }
-        })
-            .catch((error) => {
-                console.error(error);
-            })
+        try {
+            await GoogleSignin.hasPlayServices();
+
+            const userInfo = await GoogleSignin.signIn();
+
+            if (userInfo.data?.idToken) {
+                await GoogleLogIn(userInfo.data.idToken);
+            } else throw new Error("no IdToken");
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 
     return (
