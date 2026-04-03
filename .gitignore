@@ -11,5 +11,6 @@ frontend/package-lock.json
 frontend/.expo
 frontend/.vscode
 frontend/expo-env.d.ts
+frontend/.env.local
 
 frontend/package-lock.json
