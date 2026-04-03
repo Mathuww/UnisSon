@@ -13,7 +13,8 @@ export const ApiCall = {
         getText: () => api.get('/text'),
     },
     auth: {
-        signIn : (nickname : string) => api.post("/auth/login", {nickname : nickname})
+        signIn : (nickname : string) => api.post("/auth/login", {nickname : nickname}),
+        GGLogIn : (idToken : string) => api.post("/auth/google", {idToken : idToken}),
     },
     users: {
         getGroups: (id:number) => api.get('/users/me/groups', 

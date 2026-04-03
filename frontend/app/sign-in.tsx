@@ -1,8 +1,6 @@
 import {TextInput, View, StyleSheet} from "react-native";
 import {useState} from "react";
 import Button from "@/components/Button";
-import {ApiCall} from "@/api/BackendApi";
-import {setItemAsync} from "expo-secure-store";
 import {useAuthStore} from "@/utils/authStore";
 import {GoogleSignin} from "@react-native-google-signin/google-signin";
 
@@ -17,7 +15,7 @@ export default function SignInScreen() {
             const userInfo = await GoogleSignin.signIn();
 
             if (userInfo.data?.idToken) {
-                await GoogleLogIn(userInfo.data.idToken);
+                GoogleLogIn(userInfo.data.idToken);
             } else throw new Error("no IdToken");
         }
         catch (error) {

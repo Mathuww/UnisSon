@@ -6,7 +6,7 @@ import {ApiCall} from "@/api/BackendApi";
 
 type UserState = {
     isLoggedIn: boolean;
-    shouldCreateAccount: boolean;
+    hasCompletedProfile: boolean;
     userInfo : {
         id : string;
     } | null;
@@ -14,26 +14,29 @@ type UserState = {
 
     GoogleLogIn : (idToken : string) => void;
     GoogleLogOut: () => void;
+    completeProfile: () => void;
 }
 
 export const useAuthStore = create(
     persist<UserState>(
     (set) => ({
         isLoggedIn : false,
-        shouldCreateAccount: false,
+        hasCompletedProfile: false,
         userInfo : null,
         appToken : null,
+
         GoogleLogIn : async (idToken : string) => {
             try {
-                const data = await ApiCall.auth.GGLogIn(idToken)
+                const response = await ApiCall.auth.GGLogIn(idToken)
+                const data = response.data
 
-                set((state) => {
-                    return {
-                        ...state,
-                        isLoggedIn : true,
-                        appToken : data.appToken,
-                        userInfo : data.userInfo,
-                    }
+                set({
+                    isLoggedIn : true,
+                    hasCompletedProfile: true, //change to data.hasCompletedProfile at some point
+                    userInfo : {
+                        id : data.userId
+                    },
+                    appToken : data.token,
                 })
             } catch (error) {
                 console.error(error)
@@ -42,16 +45,22 @@ export const useAuthStore = create(
         GoogleLogOut: async () => {
             try {
                 await  GoogleSignin.signOut()
-                set((state) => {
-                    return {
-                        ...state,
-                        isLoggedIn : false,
-                    }
+                set({
+                    isLoggedIn : false,
+                    hasCompletedProfile: false,
+                    userInfo : null,
+                    appToken : null,
                 })
             } catch (error) {
                 console.error(error)
             }
         },
+        completeProfile : () => {
+            set((state) => ({
+                ...state,
+                hasCompletedProfile : true,
+            }))
+        }
     }),
         {
             name : "auth-store",

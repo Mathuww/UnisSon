@@ -37,7 +37,7 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+          "iosUrlScheme": "com.googleusercontent.apps.com.googleusercontent.apps.643995195692-aeh67a1heqpat6k3shr17mpm72da6ll3"
         }
       ],
       "expo-router",
@@ -71,8 +71,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "cccd6eaf-d21b-4062-93d6-cd3ac362c667"
+        "projectId": "2b584c40-0ce1-4a6c-916d-cabc53e468a3"
       }
-    }
+    },
+    "owner": "nuwu"
   }
 }
