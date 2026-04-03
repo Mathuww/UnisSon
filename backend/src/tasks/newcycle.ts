@@ -13,7 +13,7 @@ le dimanche à minuit.
 Penser à donner un nom plus explicite. 
 */
 export async function startNewWeekCycle() {
-    console.log("[POLL] Updating the chosen one for every group.");
+    logger.info("[POLL] Updating the chosen one for every group.");
     // on setup la connection à la DB
     let conn: PoolConnection | undefined;
     try {
@@ -47,7 +47,7 @@ export async function startNewWeekCycle() {
                 nextChosenOne = usersInGroup[Math.floor(Math.random() * usersInGroup.length)];
             }
 
-            console.log(`[POLL] Updating chosen one for group ${groupID} to user ${nextChosenOne}`);
+            logger.info(`[POLL] Updating chosen one for group ${groupID} to user ${nextChosenOne}`);
 
             // mtn on doit faire la MAJ dans la DB
             const updateResult = await conn.query(
@@ -55,13 +55,13 @@ export async function startNewWeekCycle() {
                 SET choosenOneUserId = ?,
                 status = ?
                 WHERE id = ?`,
-                [nextChosenOne, GroupStatus.WAITING_FOR_THEME, groupID]
+                [nextChosenOne, GroupStatus.SUN_WAITING_THEME, groupID]
             );
 
             await conn.commit();
         }
     } catch (err) {
-        console.log("sql error : " + err);
+        logger.info("sql error : " + err);
         conn?.rollback();
     } finally {
         conn?.release();

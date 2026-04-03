@@ -1,3 +1,3 @@
 export async function generalPollingTask() {
-    console.log("[POLL] Running general polling task.");
+    logger.info("[POLL] Running general polling task.");
 }

@@ -1,5 +1,9 @@
 import { Request, Response, Router } from "express";
 import pool from "../dbpool.js";
+import { AuthService } from "../service/auth.service.js";
+import { authMiddleware } from "../middleware/auth.js";
+import { User } from "../types.js";
+import { logger } from "../middleware/logger.js";
 
 const router = Router();
 
@@ -25,12 +29,21 @@ router.post('/login', async (req: Request, res: Response) => {
             res.status(404).json({error: "User not found"});
         }
     } catch (error) {
-        console.error("SQL error : ", error);
+        logger.error("SQL error : ", error);
         res.status(500).json({error: "Error while fetching data from DB"});
     } finally {
         if (conn)
             conn.release();
     }
+});
+
+// /auth/google
+router.post('/google', AuthService.verifyGoogleToken);
+
+// /auth/checkjwt
+router.post('/checktoken', authMiddleware, async (req, res) => {
+    const user : User = (req as any).user;
+    res.status(200).json({message: "JWT valid", userId: user.id});
 });
 
 // /auth/signup
@@ -55,7 +68,7 @@ router.post('/signup', async (req, res) => {
 
         res.json({id: Number(result.insertId)});
     } catch (error) {
-        console.error("SQL error : ", error);
+        logger.error("SQL error : ", error);
         res.status(500).json({message: "Error while fetching data from DB"});
     } finally {
         if (conn)

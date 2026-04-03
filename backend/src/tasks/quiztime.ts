@@ -2,7 +2,7 @@ import pool from "../dbpool.js";
 import { GroupStatus } from "../types.d.js";
 
 export async function quiztimeMode() {
-    console.log("[POLL] Switching every group to quiz time mode.");
+    logger.info("[POLL] Switching every group to quiz time mode.");
 
     let conn;
     try {
@@ -11,10 +11,10 @@ export async function quiztimeMode() {
         await conn.query(
             `UPDATE Groups
             SET status = ?`,
-            [GroupStatus.QUIZ_TIME]
+            [GroupStatus.SAT_WAITING_QUIZ]
         );
     } catch (err) {
-        console.log("SQL error : " + err);
+        logger.info("SQL error : " + err);
     } finally {
         conn?.release();
     }

@@ -44,3 +44,13 @@ export async function checkGroupStatus(conn: PoolConnection, groupId: number) {
         return rows[0].status;
     return undefined;
 }
+
+export async function checkChosenOne(conn: PoolConnection, groupId: number) {
+    const rows = await conn.query(
+        "SELECT choosenOneUserID FROM Groups WHERE id = ?",
+        [groupId]
+    );
+    if (rows.length > 0)
+        return rows[0].choosenOneUserID;
+    return undefined;
+}

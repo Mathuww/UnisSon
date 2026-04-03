@@ -3,7 +3,8 @@ import pool from "../dbpool.js";
 import { GroupStatus, User } from "../types.d.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { findOrCreateTrack } from "../helpers/tracks.js";
-import { checkGroupStatus } from "../helpers/groups.js";
+import { checkChosenOne, checkGroupStatus } from "../helpers/groups.js";
+import { logger } from "../middleware/logger.js";
 
 const router = Router();
 
@@ -41,7 +42,7 @@ router.post('/', async (req, res) => {
     } catch (error) {
         if (conn)
             conn.rollback();
-        console.error("SQL error : ", error);
+        logger.error("SQL error : ", error);
         res.status(500).json({error: "Error while fetching data from DB"});
     } finally {
         if (conn)
@@ -73,7 +74,7 @@ router.get('/:id/members', async (req, res) => {
         // ca veut juste dire que le groupe est vide
         res.json(rows);
     } catch (error) {
-        console.error("SQL error : ", error);
+        logger.error("SQL error : ", error);
         res.status(500).json({error: "Error while fetching data from DB"});
     } finally {
         if (conn)
@@ -100,7 +101,58 @@ router.post('/:id/members', async (req, res) => {
 
         res.json({message: "User added to group"});
     } catch (error) {
-        console.error("SQL error : ", error);
+        logger.error("SQL error : ", error);
+        res.status(500).json({message: "Error while fetching data from DB"});
+    } finally {
+        if (conn)
+            conn.release();
+    }
+});
+
+// POST /groups/:id/theme (choisir thème cette semaine)
+// Required state : SUN_WAITING_THEME
+router.post('/:id/theme', async (req, res) => {
+    const user : User = (req as any).user;
+    const groupId = Number(req.params.id);
+
+    if (!groupId)
+        return res.status(400).json({message: "Missing group ID to add song to"});
+
+    const theme = req.body.theme;
+    if (!theme)// || !artist) 
+        return res.status(400).json({message: "Missing theme for theme request"});
+
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+
+        // 0 : on est bien dans le bon état du groupe ?
+        const groupStatus = await checkGroupStatus(conn, groupId);
+        if (groupStatus != GroupStatus.SUN_WAITING_THEME) {
+            return res.status(403).json({error: "This group is not in the right status for choosing a theme"});
+        }
+
+        // numer0bis : c'estb bien l'élu qui suggèere le thème ?
+        const chosenOne = await checkChosenOne(conn, groupId);
+        if (!chosenOne) {
+            logger.error(`Cant check for group chosen one : group ${groupId} doesnt exist in table`);
+            return res.status(500).json({error: "Internal DB error, check server log"});
+        }
+        if (chosenOne != user.id) {
+            return res.status(403).json({error: "Only chosen one can choose a theme..."});
+        }
+
+        // 1 : ajtr thème
+        const result = await conn.query(
+            "UPDATE Groups theme = ?",
+            [theme]
+        )
+        await conn.commit();
+
+        res.json({message: "Theme added"});
+    } catch (error) {
+        logger.error("SQL error : ", error);
         res.status(500).json({message: "Error while fetching data from DB"});
     } finally {
         if (conn)
@@ -130,7 +182,7 @@ router.get('/:id/songs', async (req, res) => {
             [groupId]
         );
     } catch (error) {
-        console.error("SQL error : ", error);
+        logger.error("SQL error : ", error);
         res.status(500).json({message: "Error while fetching data from DB"});
     } finally {
         if (conn)
@@ -139,20 +191,15 @@ router.get('/:id/songs', async (req, res) => {
 });
 
 // POST /groups/:id/songs (ajtr une musique)
+// Required group state : WK_WAITING_SUB
 router.post('/:id/songs', async (req, res) => {
     const user : User = (req as any).user;
-    const groupId = req.params.id;
+    const groupId = Number(req.params.id);
 
     if (!groupId)
         return res.status(400).json({message: "Missing group ID to add song to"});
 
-    /*
-    const isrc = req.body.isrc;
-    if (!isrc)
-        return res.status(400).json({message: "Missing ISRC for song to add to group you can be do what you want to do"});
-    */
     const title = req.body.title;
-   // const artist = req.body.artist;
     const youtubeUrl = req.body.youtubeUrl;
     if (!title)// || !artist) 
         return res.status(400).json({message: "Missing song metadata from add request"});
@@ -163,21 +210,18 @@ router.post('/:id/songs', async (req, res) => {
         await conn.beginTransaction();
 
         // 0 : on est bien dans le bon état du groupe ?
-        const groupStatus = await checkGroupStatus(conn, Number(groupId));
-        if (groupStatus != GroupStatus.SUBMISSION) {
+        const groupStatus = await checkGroupStatus(conn, groupId);
+        if (groupStatus != GroupStatus.WK_WAITING_SUB) {
             return res.status(403).json({error: "This group is not in the right status for submission"});
         }
 
         // numer0bis : c'est pas l'élu qui est en train d'ajouter un morceau ?
-        const chosenOneRows = await conn.query(
-            "SELECT choosenOneUserID FROM Groups WHERE id = ?",
-            [groupId]
-        );
-        if (chosenOneRows.length <= 0) {
-            console.error(`Cant check for group chosen one : group ${groupId} doesnt exist in table`);
+        const chosenOne = await checkChosenOne(conn, groupId);
+        if (!chosenOne) {
+            logger.error(`Cant check for group chosen one : group ${groupId} doesnt exist in table`);
             return res.status(500).json({error: "Internal DB error, check server log"});
         }
-        if (chosenOneRows[0].choosenOneUserID == user.id) {
+        if (chosenOne == user.id) {
             return res.status(403).json({error: "Chosen one cant add song for themself..."});
         }
 
@@ -190,9 +234,10 @@ router.post('/:id/songs', async (req, res) => {
             [groupId, user.id, trackId]
         );
 
+        await conn.commit();
         res.json({message: "Track added to group", trackId: trackId});
     } catch (error) {
-        console.error("SQL error : ", error);
+        logger.error("SQL error : ", error);
         res.status(500).json({message: "Error while fetching data from DB"});
     } finally {
         if (conn)

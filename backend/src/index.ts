@@ -4,7 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import nodeCron from 'node-cron';
 import { authMiddleware } from './middleware/auth.js';
-import { logger } from './middleware/logger.js';
+import { logger, loggerMiddleware } from './middleware/logger.js';
 import adminRoutes from './routes/admin.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import groupsRoutes from './routes/groups.routes.js';
@@ -19,9 +19,9 @@ const port = process.env.PORT || 5175;
 
 // Middlewares
 app.use(express.json());
-app.use(logger);
+app.use(loggerMiddleware);
 app.use(cors());
- 
+
 // Routes API
 app.use('/auth', authRoutes);
 app.use('/groups', authMiddleware, groupsRoutes);
@@ -44,5 +44,5 @@ nodeCron.schedule('* * * * *', async () => { // Tous les dimanches à 00:00
 
 // On écoute
 app.listen(port, () => {
-    console.log(`Listening on ${port}`);
+    logger.info(`Listening on ${port}`);
 });
