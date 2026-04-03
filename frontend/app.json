@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "ExpoUniverselle1906",
-    "slug": "ExpoUniverselle1906",
+    "name": "UnisSon",
+    "slug": "UnisSon",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "expouniverselle1906",
+    "scheme": "UnisSon",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.UnisSon"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,13 +20,26 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES"
+      ],
+      "package": "com.anonymous.UnisSon"
     },
     "web": {
-      "output": "static",
+      "output": "server",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -44,13 +58,21 @@
         {
           "photosPermission": "ALLOW ${PRODUCT_NAME} to ACCESS PICTURE NOW.",
           "savePhotosPermission": "ALLOW ${PRODUCT_NAME} to SAVE PICTURE NOW.",
-          "granularPermissions": ["photo"]
+          "granularPermissions": [
+            "photo"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cccd6eaf-d21b-4062-93d6-cd3ac362c667"
+      }
     }
   }
 }

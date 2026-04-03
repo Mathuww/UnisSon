@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const BACKEND_API_URL = "https://srv833678.hstgr.cloud:8085";
 
