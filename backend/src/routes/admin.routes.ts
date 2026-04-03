@@ -7,22 +7,22 @@ import { quiztimeMode } from "../tasks/quiztime.js";
 const router = Router();
 
 router.post('/poll', async (req, res) => {
-    console.log("[Polled by manual API call]");
+    logger.info("[Polled by manual API call]");
     generalPollingTask();
 });
 
 router.post('/newcycle', async (req, res) => {
-    console.log("[New week cycle triggered by manual API call]");
+    logger.info("[New week cycle triggered by manual API call]");
     startNewWeekCycle();
 })
 
 router.post('/submode', async (req, res) => {
-    console.log("[Submission mode triggered for all groups by manual API call]");
+    logger.info("[Submission mode triggered for all groups by manual API call]");
     submissionMode();
 })
 
 router.post('/quiztime', async (req, res) => {
-    console.log("[Quiz time mode triggered for all groups by manual API call]");
+    logger.info("[Quiz time mode triggered for all groups by manual API call]");
     quiztimeMode();
 })
 
