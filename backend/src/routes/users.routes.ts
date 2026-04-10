@@ -2,6 +2,7 @@ import { Response, Router } from "express";
 import pool from "../dbpool.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { User } from "../types.js";
+import { logger } from "../middleware/logger.js";
 
 const router = Router();
 
