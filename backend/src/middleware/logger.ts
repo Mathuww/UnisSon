@@ -2,7 +2,7 @@ import { NextFunction, RequestHandler } from "express";
 import winston from "winston";
 
 export const logger = winston.createLogger({
-    level: 'info', // niveau minimal : 'info', 'warn', 'error', 'debug'
+    level: 'debug', // niveau minimal : 'info', 'warn', 'error', 'debug'
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()

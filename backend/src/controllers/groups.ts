@@ -107,6 +107,8 @@ export const GroupController = {
 
         await group.addTrack(track);
 
+        await group.update({status: GroupStatus.WK_DONE_SUB});
+
         if (trackCreated) {
             logger.info("New track created : ", track);
             return res.status(201).json({message: "Track created and added", track: track});
@@ -136,7 +138,10 @@ export const GroupController = {
         if ((await group.getChosenUser()).id != user.id)
             return res.status(403).json({message: `Only chosen user can set a theme !`});
 
-        group.theme = theme;
+        await group.update({
+            theme: theme,
+            status: GroupStatus.SUN_DONE_THEME
+        });
 
         return res.status(200).json({message: "Theme updated"});
     })

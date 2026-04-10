@@ -6,6 +6,8 @@ const router = Router();
 
 // /auth/login
 router.post('/login', AuthController.basicLogin);
+// /auth/signup
+router.post('/signup', AuthController.basicSignup);
 
 // /auth/google
 router.post('/google', AuthController.googleLogin);

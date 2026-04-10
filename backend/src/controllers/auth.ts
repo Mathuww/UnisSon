@@ -9,6 +9,9 @@ import { create } from "node:domain";
 
 export const AuthController = {
     basicLogin: asyncHandler( async (req: Request, res: Response) => {
+        if (!process.env.DEV_MODE)
+            return res.status(403);
+
         const { nickname } = req.body;
 
         if (!nickname)
@@ -20,6 +23,19 @@ export const AuthController = {
             res.json({id: user.id});
         else 
             res.status(404).json({error: "User not found"});
+    }),
+    basicSignup: asyncHandler( async (req: Request, res: Response) => {
+        if (!process.env.DEV_MODE)
+            return res.status(403);
+
+        const { nickname, email } = req.body;
+
+        if (!nickname || !email)
+            return res.status(400).json({message: "Nickname/mail missing from signup request"});
+
+        const user = await User.create({nickname, email});
+
+        res.json(user);
     }),
     googleLogin: asyncHandler( async (req: Request, res: Response) => {
         const { idToken }  = req.body;
