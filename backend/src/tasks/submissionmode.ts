@@ -1,22 +1,18 @@
 import pool from "../dbpool.js";
 import { logger } from "../middleware/logger.js";
+import Group from "../models/groupModel.js";
 import { GroupStatus } from "../types.d.js";
 
 export async function submissionMode() {
     logger.info("[POLL] Switching every group to submission mode.");
 
-    let conn;
     try {
-        conn = await pool.getConnection();
-
-        await conn.query(
-            `UPDATE Groups
-            SET status = ?`,
-            [GroupStatus.WK_WAITING_SUB]
+        const [affectedRowsNb] = await Group.update(
+            { status: GroupStatus.WK_WAITING_SUB },
+            { where: {} }
         );
+        logger.info(`${affectedRowsNb} groups set to sub mode`);
     } catch (err) {
-        logger.info("SQL error : " + err);
-    } finally {
-        conn?.release();
+        logger.info("DB error : " + err);
     }
 }

@@ -1,8 +1,5 @@
 import { Request } from "express";
 
-export type User = {
-    id: number
-};
 
 export enum GroupStatus {
     "SUN_WAITING_THEME",
@@ -13,6 +10,7 @@ export enum GroupStatus {
     "SAT_DONE_QUIZ"
 }
 
+/*
 interface UserData {
     id: number;
     email: string;
@@ -24,3 +22,4 @@ interface GroupData {
     chosenOne: number | null; 
     members: number[];      
 }
+    */
