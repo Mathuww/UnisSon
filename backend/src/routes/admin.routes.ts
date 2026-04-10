@@ -3,6 +3,7 @@ import { generalPollingTask } from "../tasks/generalpolling.js";
 import { startNewWeekCycle } from "../tasks/newcycle.js";
 import { submissionMode } from "../tasks/submissionmode.js";
 import { quiztimeMode } from "../tasks/quiztime.js";
+import { logger } from "../middleware/logger.js";
 
 const router = Router();
 

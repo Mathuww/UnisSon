@@ -1,4 +1,5 @@
 import pool from "../dbpool.js";
+import { logger } from "../middleware/logger.js";
 import { GroupStatus } from "../types.d.js";
 
 export async function submissionMode() {
