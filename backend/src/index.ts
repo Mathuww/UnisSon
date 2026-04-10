@@ -13,6 +13,10 @@ import { startNewWeekCycle } from './tasks/newcycle.js';
 import { generalPollingTask } from './tasks/generalpolling.js';
 import { submissionMode } from './tasks/submissionmode.js';
 import { quiztimeMode } from './tasks/quiztime.js';
+import { errorHandler } from './middleware/error.js';
+import { dbConnect } from './dbconnect.js';
+
+await dbConnect();
 
 const app = express();
 const port = process.env.PORT || 5175;
@@ -27,6 +31,9 @@ app.use('/auth', authRoutes);
 app.use('/groups', authMiddleware, groupsRoutes);
 app.use('/users', authMiddleware, usersRoutes);
 app.use('/admin', adminRoutes);
+
+// Error handler
+app.use(errorHandler);
 
 // Setup CRON
 nodeCron.schedule('0 0 * * SUN', async () => { // Tous les dimanches à 00:00

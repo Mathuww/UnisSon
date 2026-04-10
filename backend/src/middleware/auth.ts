@@ -3,6 +3,7 @@ import pool from "../dbpool.js";
 import { PoolConnection } from "mariadb/*";
 import jwt from 'jsonwebtoken';
 import { logger } from "./logger.js";
+import User from "../models/userModel.js";
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
     const authHeader = req.headers["authorization"];
@@ -23,23 +24,15 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
         return res.status(403).json({message: "Invalid or expired JWT"});
     }
 
-    let conn : PoolConnection | undefined;
     try {
-        conn = await pool.getConnection();
+        const user = await User.findByPk(userId);
+        if (!user)
+            return res.status(404).json({message: `User ${userId} does not exist in database`});
 
-        const rows = await conn.query("SELECT id FROM Users WHERE id = ? LIMIT 1", [userId]);
-        if (rows.length === 0) {
-            logger.error("User ID not found in DB");
-            return res.status(401).json({message: "User ID not found"});
-        }
-
-        (req as any).user = {id : userId};
+        (req as any).user = user;
         next();
     } catch (error) {
         logger.error("Auth middleware error : ", error);
         res.status(500).json({message: "Internal server error while authenticating"});
-    } finally {
-        if (conn)
-            conn.release();
     }
 }

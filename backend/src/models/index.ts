@@ -1,0 +1,9 @@
+import './groupModel.js';
+import './userModel.js';
+import './trackModel.js';
+import './groupPlaylistsModel.js';
+import './realRankingModel.js';
+import './predRankingModel.js';
+import './trackModel.js';
+import './userFavTrack.js';
+import './groupUsersModel.js';
