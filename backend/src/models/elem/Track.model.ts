@@ -3,12 +3,12 @@ import {
     InferAttributes, InferCreationAttributes, CreationOptional,
     HasManyGetAssociationsMixin, BelongsToManyGetAssociationsMixin,
 } from 'sequelize';
-import db from '../dbpool.js';
-import Group from './groupModel.js';
-import User from './userModel.js';
-import PredRank from './predRankingModel.js';
-import RealRank from './realRankingModel.js';
-import GroupPlaylist from './groupPlaylistsModel.js';
+import db from '../../dbpool.js';
+import Group from './Group.model.js';
+import User from './User.model.js';
+import PredRank from '../logic/PredRank.model.js';
+import RealRank from '../logic/RealRank.model.js';
+import GroupPlaylist from '../link/GroupPlaylist.model.js';
 
 export class Track extends Model <
     InferAttributes<Track, { omit: 'createdAt' | 'updatedAt' }>,

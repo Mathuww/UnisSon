@@ -7,9 +7,13 @@ import {
     BelongsToManyRemoveAssociationMixin,
     BelongsToManyAddAssociationMixin
 } from 'sequelize';
-import db from '../dbpool.js';
-import User from './userModel.js';
-import Track from './trackModel.js';
+import db from '../../dbpool.js';
+import User from './User.model.js';
+import Track from './Track.model.js';
+import GroupPeriod from '../logic/GroupPeriod.model.js';
+import { Op } from 'sequelize';
+import GroupPlaylist from '../link/GroupPlaylist.model.js';
+import { GroupStatus } from '../../types.js';
 
 export class Group extends Model<InferAttributes<Group>, InferCreationAttributes<Group>> {
     declare id: CreationOptional<number>;
@@ -18,7 +22,7 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
     declare notifNB: number | null;
     declare groupPicture: Buffer | null;
     declare chosenOneUserID: number | null;
-    declare status: number | null;
+    declare status: GroupStatus | null;
     declare lastCycleChange: Date | null;
     declare theme: string | null;
 
@@ -30,6 +34,45 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
 
     declare getTracks: BelongsToManyGetAssociationsMixin<Track>;
     declare addTrack: BelongsToManyAddAssociationMixin<Track, number>;
+
+    declare getPeriods: HasManyGetAssociationsMixin<GroupPeriod>;
+
+    async getCurrentPeriod(): Promise<GroupPeriod | null> {
+        const periods = await this.getPeriods({order: ['periodStart', 'ASC']});
+        const now = new Date();
+
+        const current: GroupPeriod | undefined = periods.find((p: GroupPeriod, i: number) => {
+            const next = periods[i + 1]?.periodStart ?? new Date("9999-12-31");
+            return p.periodStart <= now && now < next;
+        });
+
+        return current ?? null;
+    }
+    
+    async canUserAdd(userID: number): Promise<boolean> {
+        const currentPeriod = await this.getCurrentPeriod();
+        if (!currentPeriod)
+            return false;
+
+        const currentUserTracks = await GroupPlaylist.findOne({
+            where: {
+                groupID: this.id,
+                userID: userID,
+                addedAt: {[Op.gte]: currentPeriod.periodStart}
+            }
+        });
+
+        return !currentUserTracks;
+    }
+
+    async allUsersAdded(): Promise<boolean> {
+        const users = await this.getUsers();
+        const canAddChecks = await Promise.all(
+            users.map(user => this.canUserAdd(user.id))
+        );
+
+        return canAddChecks.every(canAdd => !canAdd);
+    }
 }
 
 Group.init({
@@ -79,13 +122,5 @@ Group.init({
     tableName: 'Groups',
 });
 
-Group.belongsTo(User, {
-    foreignKey: 'chosenOneUserID',
-    as: 'chosenUser'
-});
-User.hasMany(Group, {
-    foreignKey: 'chosenOneUserID',
-    as: 'chosenInGroups'
-});
 
 export default Group;

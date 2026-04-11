@@ -2,9 +2,9 @@ import {
     DataTypes, Model,
     InferAttributes, InferCreationAttributes,
 } from 'sequelize';
-import db from '../dbpool.js';
-import { Track } from './trackModel.js';
-import { User } from './userModel.js';
+import db from '../../dbpool.js';
+import { Track } from '../elem/Track.model.js';
+import { User } from '../elem/User.model.js';
 
 export class FavTrack extends Model <
     InferAttributes<FavTrack>,
@@ -41,7 +41,5 @@ FavTrack.init({
     tableName: 'UsersFavoriteTracks',
 });
 
-User.belongsToMany(Track, { through: FavTrack, foreignKey: 'userID', otherKey: 'trackID', as: 'favoriteTracks' });
-Track.belongsToMany(User, { through: FavTrack, foreignKey: 'trackID', otherKey: 'userID', as: 'favoritedBy' });
 
 export default FavTrack;

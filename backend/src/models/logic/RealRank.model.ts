@@ -3,10 +3,10 @@ import {
     InferAttributes, InferCreationAttributes,
     BelongsToGetAssociationMixin,
 } from 'sequelize';
-import db from '../dbpool.js';
-import { Group } from './groupModel.js';
-import { User } from './userModel.js';
-import { Track } from './trackModel.js';
+import db from '../../dbpool.js';
+import { Group } from '../elem/Group.model.js';
+import { User } from '../elem/User.model.js';
+import { Track } from '../elem/Track.model.js';
 
 export class RealRank extends Model <
     InferAttributes<RealRank>,
@@ -54,17 +54,5 @@ RealRank.init({
     timestamps: false,
     tableName: 'RealRanking',
 });
-
-Group.hasMany(RealRank, { foreignKey: 'groupID' });
-RealRank.belongsTo(Group, { foreignKey: 'groupID' });
-
-Track.hasMany(RealRank, { foreignKey: 'trackID' });
-RealRank.belongsTo(Track, { foreignKey: 'trackID' });
-
-User.hasMany(RealRank, { foreignKey: 'userID', as: 'receivedRealRanks' });
-RealRank.belongsTo(User, { foreignKey: 'userID', as: 'realSubject' });
-
-User.hasMany(RealRank, { foreignKey: 'oracleUserID', as: 'madeRealRanks' });
-RealRank.belongsTo(User, { foreignKey: 'oracleUserID', as: 'realPredictor' });
 
 export default RealRank;

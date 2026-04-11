@@ -3,9 +3,9 @@ import pool from "../dbpool.js";
 import { AuthService } from "../service/auth.service.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { logger } from "../middleware/logger.js";
-import User from "../models/userModel.js";
 import { asyncHandler } from "../middleware/error.js";
 import { create } from "node:domain";
+import User from "../models/elem/User.model.js";
 
 export const AuthController = {
     basicLogin: asyncHandler( async (req: Request, res: Response) => {

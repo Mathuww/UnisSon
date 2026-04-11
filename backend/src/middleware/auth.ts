@@ -3,7 +3,7 @@ import pool from "../dbpool.js";
 import { PoolConnection } from "mariadb/*";
 import jwt from 'jsonwebtoken';
 import { logger } from "./logger.js";
-import User from "../models/userModel.js";
+import User from "../models/elem/User.model.js";
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
     let userId;

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/error.js";
 import { logger } from "../middleware/logger.js";
-import Group from "../models/groupModel.js";
-import Track from "../models/trackModel.js";
+import Group from "../models/elem/Group.model.js";
+import Track from "../models/elem/Track.model.js";
 import { GroupStatus } from "../types.d.js";
-import User from "../models/userModel.js";
+import User from "../models/elem/User.model.js";
 
 export const GroupController = {
     createGroup: asyncHandler( async (req: Request, res: Response) => {
@@ -96,6 +96,9 @@ export const GroupController = {
         if ((await group.getChosenUser()).id == user.id)
             return res.status(403).json({message: `Chosen user cant add a song !`});
 
+        if (!(await group.canUserAdd(user.id)))
+            return res.status(403).json({message: "This user cant add to this group: they probably already added one song for this period."});
+
         const [track, trackCreated] = await Track.findOrCreate({
             where: {
                 youtubeLink: youtubeLink,
@@ -107,13 +110,16 @@ export const GroupController = {
 
         await group.addTrack(track);
 
-        await group.update({status: GroupStatus.WK_DONE_SUB});
+        // Si tous les membres du groupe ont ajouté pour cette période,
+        // on passe en WK_DONE_SUB pour ce groupe
+        if (await group.allUsersAdded())
+            await group.update({status: GroupStatus.WK_DONE_SUB});
 
         if (trackCreated) {
-            logger.info("New track created : ", track);
+            logger.info("New track created and added to group : ", track);
             return res.status(201).json({message: "Track created and added", track: track});
         } else {
-            logger.info("Track already existing : ", track);
+            logger.info("Track already existed, but was added to group : ", track);
             return res.status(200).json({message: "Track already existed, added to group", track: track});
         }
     }),

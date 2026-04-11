@@ -16,7 +16,7 @@ router.post('/:id/members', GroupController.addUser);
 
 // POST /groups/:id/theme (choisir thème cette semaine)
 // Required state : SUN_WAITING_THEME
-router.post('/:id/theme',GroupController.setTheme);
+router.post('/:id/theme', GroupController.setTheme);
 
 // GET /groups/:id/songs (musiques ajoutées cette semaine)
 router.get('/:id/songs', GroupController.getTracks);

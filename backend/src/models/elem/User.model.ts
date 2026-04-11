@@ -6,10 +6,11 @@ import {
     InferAttributes, InferCreationAttributes,
     Model,
 } from 'sequelize';
-import db from '../dbpool.js';
-import Group from './groupModel.js';
-import PredRank from './predRankingModel.js';
-import Track from './trackModel.js';
+import db from '../../dbpool.js';
+import Group from './Group.model.js';
+import PredRank from '../logic/PredRank.model.js';
+import Track from './Track.model.js';
+import Notif from '../logic/Notif.model.js';
 
 export class User extends Model<
     InferAttributes<User, { omit: 'createdAt' | 'updatedAt' }>,
@@ -36,6 +37,7 @@ export class User extends Model<
     declare getReceivedPredictions: HasManyGetAssociationsMixin<PredRank>;
     declare getMadePredictions: HasManyGetAssociationsMixin<PredRank>;
     declare getChosenInGroups: HasManyGetAssociationsMixin<Group>;
+    declare getNotifs: HasManyGetAssociationsMixin<Notif>;
 }
 
 User.init({
