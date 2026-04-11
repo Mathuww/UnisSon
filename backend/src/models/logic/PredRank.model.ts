@@ -3,10 +3,10 @@ import {
     InferAttributes, InferCreationAttributes,
     BelongsToGetAssociationMixin,
 } from 'sequelize';
-import db from '../dbpool.js';
-import { Group } from './groupModel.js';
-import { User } from './userModel.js';
-import { Track } from './trackModel.js';
+import db from '../../dbpool.js';
+import { Group } from '../elem/Group.model.js';
+import { User } from '../elem/User.model.js';
+import { Track } from '../elem/Track.model.js';
 
 export class PredRank extends Model <
     InferAttributes<PredRank>,
@@ -55,16 +55,5 @@ PredRank.init({
     tableName: 'PredictingRanking',
 });
 
-Group.hasMany(PredRank, { foreignKey: 'groupID' });
-PredRank.belongsTo(Group, { foreignKey: 'groupID' });
-
-Track.hasMany(PredRank, { foreignKey: 'trackID' });
-PredRank.belongsTo(Track, { foreignKey: 'trackID' });
-
-User.hasMany(PredRank, { foreignKey: 'userID', as: 'receivedPredictions' });
-PredRank.belongsTo(User, { foreignKey: 'userID', as: 'subject' });
-
-User.hasMany(PredRank, { foreignKey: 'oracleUserID', as: 'madePredictions' });
-PredRank.belongsTo(User, { foreignKey: 'oracleUserID', as: 'predictor' });
 
 export default PredRank;

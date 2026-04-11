@@ -1,7 +1,6 @@
-import pool from "../dbpool.js";
 import { logger } from "../middleware/logger.js";
-import Group from "../models/groupModel.js";
-import { GroupStatus } from "../types.d.js";
+import Group from "../models/elem/Group.model.js";
+import type { GroupStatus } from "../types.d.ts";
 
 export async function quiztimeMode() {
     logger.info("[POLL] Switching every group to quiz time mode.");

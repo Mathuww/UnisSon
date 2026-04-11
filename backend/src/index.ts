@@ -9,10 +9,10 @@ import adminRoutes from './routes/admin.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import groupsRoutes from './routes/groups.routes.js';
 import usersRoutes from './routes/users.routes.js';
-import { startNewWeekCycle } from './tasks/newcycle.js';
-import { generalPollingTask } from './tasks/generalpolling.js';
+import { startNewWeekCycle } from './tasks/newcycle.task.js';
+import { generalPollingTask } from './tasks/polling.task.js';
 import { submissionMode } from './tasks/submissionmode.js';
-import { quiztimeMode } from './tasks/quiztime.js';
+import { quiztimeMode } from './tasks/quiztime.task.js';
 import { errorHandler } from './middleware/error.js';
 import { dbConnect } from './dbconnect.js';
 
@@ -38,9 +38,6 @@ app.use(errorHandler);
 // Setup CRON
 nodeCron.schedule('0 0 * * SUN', async () => { // Tous les dimanches à 00:00
   await startNewWeekCycle();
-});
-nodeCron.schedule('0 0 * * MON', async () => { // Tous les lundis à 00:00
-  await submissionMode();
 });
 nodeCron.schedule('0 0 * * SAT', async () => { // Tous les lundis à 00:00
   await quiztimeMode();

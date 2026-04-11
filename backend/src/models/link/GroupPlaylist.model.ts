@@ -3,10 +3,10 @@ import {
     InferAttributes, InferCreationAttributes, CreationOptional,
     BelongsToGetAssociationMixin,
 } from 'sequelize';
-import db from '../dbpool.js';
-import { Group } from './groupModel.js';
-import { Track } from './trackModel.js';
-import { User } from './userModel.js';
+import db from '../../dbpool.js';
+import { Track } from '../elem/Track.model.js';
+import { User } from '../elem/User.model.js';
+import Group from '../elem/Group.model.js';
 
 export class GroupPlaylist extends Model <
     InferAttributes<GroupPlaylist>,
@@ -49,16 +49,5 @@ GroupPlaylist.init({
     tableName: 'GroupsPlaylists',
 });
 
-Group.belongsToMany(Track, { through: GroupPlaylist, foreignKey: 'groupID', otherKey: 'trackID' });
-Track.belongsToMany(Group, { through: GroupPlaylist, foreignKey: 'trackID', otherKey: 'groupID' });
-
-User.hasMany(GroupPlaylist, { foreignKey: 'userID', as: 'addedTracks' });
-GroupPlaylist.belongsTo(User, { foreignKey: 'userID', as: 'addedBy' });
-
-Group.hasMany(GroupPlaylist, { foreignKey: 'groupID' });
-GroupPlaylist.belongsTo(Group, { foreignKey: 'groupID' });
-
-Track.hasMany(GroupPlaylist, { foreignKey: 'trackID' });
-GroupPlaylist.belongsTo(Track, { foreignKey: 'trackID' });
 
 export default GroupPlaylist;

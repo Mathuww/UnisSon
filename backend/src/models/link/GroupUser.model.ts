@@ -2,9 +2,9 @@ import {
     DataTypes, Model,
     InferAttributes, InferCreationAttributes, CreationOptional,
 } from 'sequelize';
-import db from '../dbpool.js';
-import { Group } from './groupModel.js';
-import { User } from './userModel.js';
+import db from '../../dbpool.js';
+import { Group } from '../elem/Group.model.js';
+import { User } from '../elem/User.model.js';
 
 export class GroupUser extends Model <
     InferAttributes<GroupUser>,
@@ -48,8 +48,5 @@ GroupUser.init({
     timestamps: false,
     tableName: 'GroupsUsers',
 });
-
-Group.belongsToMany(User, { through: GroupUser, foreignKey: 'groupID', otherKey: 'userID' });
-User.belongsToMany(Group, { through: GroupUser, foreignKey: 'userID', otherKey: 'groupID' });
 
 export default GroupUser;
