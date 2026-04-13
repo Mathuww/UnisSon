@@ -1,6 +1,6 @@
-import db from "./dbpool.js"
-import { logger } from "./middleware/logger.js";
-import './models/index.js';
+import db from "./db.js"
+import { logger } from "../middleware/logger.js";
+import '../models/index.js';
 
 export const dbConnect = async () => {
     try {

@@ -6,7 +6,7 @@ import {
     InferAttributes, InferCreationAttributes,
     Model,
 } from 'sequelize';
-import db from '../../dbpool.js';
+import db from '../../shared/db.js';
 import Group from './Group.model.js';
 import PredRank from '../logic/PredRank.model.js';
 import Track from './Track.model.js';

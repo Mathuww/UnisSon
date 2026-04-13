@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import pool from "../dbpool.js";
+import pool from "../shared/db.js";
 import { AuthService } from "../service/auth.service.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { logger } from "../middleware/logger.js";

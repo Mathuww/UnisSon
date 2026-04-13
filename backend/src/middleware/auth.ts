@@ -1,5 +1,5 @@
 import { NextFunction, RequestHandler } from "express";
-import pool from "../dbpool.js";
+import pool from "../shared/db.js";
 import { PoolConnection } from "mariadb/*";
 import jwt from 'jsonwebtoken';
 import { logger } from "./logger.js";
