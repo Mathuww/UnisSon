@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import pool from "../dbpool.js";
+import pool from "../shared/db.js";
 import { asyncHandler } from "../middleware/error.js";
 import { logger } from "../middleware/logger.js";
 import User from "../models/elem/User.model.js";

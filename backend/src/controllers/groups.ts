@@ -3,7 +3,7 @@ import { asyncHandler } from "../middleware/error.js";
 import { logger } from "../middleware/logger.js";
 import Group from "../models/elem/Group.model.js";
 import Track from "../models/elem/Track.model.js";
-import { GroupStatus } from "../types.d.js";
+import { GroupStatus } from "../shared/GroupStatus.js";
 import User from "../models/elem/User.model.js";
 
 export const GroupController = {

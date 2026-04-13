@@ -2,8 +2,8 @@ import { Op } from "sequelize";
 import { logger } from "../middleware/logger.js";
 import GroupPeriod from "../models/logic/GroupPeriod.model.js";
 import Group from "../models/elem/Group.model.js";
-import type { GroupStatus } from "../types.d.ts";
-import db from "../dbpool.js";
+import { GroupStatus } from "../shared/GroupStatus.js";
+import db from "../shared/db.js";
 
 export async function generalPollingTask() {
     logger.info("[POLL] Running general polling task.");

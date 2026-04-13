@@ -3,7 +3,7 @@ import {
     InferAttributes, InferCreationAttributes, CreationOptional,
     HasManyGetAssociationsMixin, BelongsToManyGetAssociationsMixin,
 } from 'sequelize';
-import db from '../../dbpool.js';
+import db from '../../shared/db.js';
 import Group from './Group.model.js';
 import User from './User.model.js';
 import PredRank from '../logic/PredRank.model.js';

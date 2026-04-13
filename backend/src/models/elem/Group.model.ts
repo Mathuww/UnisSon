@@ -7,13 +7,13 @@ import {
     BelongsToManyRemoveAssociationMixin,
     BelongsToManyAddAssociationMixin
 } from 'sequelize';
-import db from '../../dbpool.js';
+import db from '../../shared/db.js';
 import User from './User.model.js';
 import Track from './Track.model.js';
 import GroupPeriod from '../logic/GroupPeriod.model.js';
 import { Op } from 'sequelize';
 import GroupPlaylist from '../link/GroupPlaylist.model.js';
-import { GroupStatus } from '../../types.js';
+import { GroupStatus } from '../../shared/GroupStatus.js';
 
 export class Group extends Model<InferAttributes<Group>, InferCreationAttributes<Group>> {
     declare id: CreationOptional<number>;

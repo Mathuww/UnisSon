@@ -1,8 +1,8 @@
 import { Transaction } from "sequelize";
-import db from "../dbpool.js";
+import db from "../shared/db.js";
 import { logger } from "../middleware/logger.js";
 import Group from "../models/elem/Group.model.js";
-import type { GroupStatus } from "../types.d.ts";
+import { GroupStatus } from "../shared/GroupStatus.js";
 import GroupPeriod from "../models/logic/GroupPeriod.model.js";
 
 const DEFAULT_PERIOD_NB = 2;

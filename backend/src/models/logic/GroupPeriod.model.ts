@@ -1,6 +1,6 @@
 import { BelongsToGetAssociationMixin, CreationOptional, DataTypes, HasManyGetAssociationsMixin, InferAttributes, InferCreationAttributes, Model, NonAttribute } from "sequelize";
 import Group from "../elem/Group.model.js";
-import db from "../../dbpool.js";
+import db from "../../shared/db.js";
 
 export class GroupPeriod extends Model<
     InferAttributes<GroupPeriod>,

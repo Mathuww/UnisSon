@@ -1,7 +1,7 @@
 import { BelongsToGetAssociationMixin, CreationOptional, DataTypes, HasManyGetAssociationsMixin, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import User from "../elem/User.model.js";
 import Group from "../elem/Group.model.js";
-import db from "../../dbpool.js";
+import db from "../../shared/db.js";
 
 export class Notif extends Model<
     InferAttributes<Notif>,

@@ -2,7 +2,7 @@ import {
     DataTypes, Model,
     InferAttributes, InferCreationAttributes,
 } from 'sequelize';
-import db from '../../dbpool.js';
+import db from '../../shared/db.js';
 import { Track } from '../elem/Track.model.js';
 import { User } from '../elem/User.model.js';
 

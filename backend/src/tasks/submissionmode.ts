@@ -1,6 +1,6 @@
 import { logger } from "../middleware/logger.js";
 import Group from "../models/elem/Group.model.js";
-import type { GroupStatus } from "../types.d.ts";
+import { GroupStatus } from "../shared/GroupStatus.js";
 
 export async function submissionMode() {
     logger.info("[POLL] Switching every group to submission mode.");
