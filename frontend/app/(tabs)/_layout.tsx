@@ -9,16 +9,16 @@ export default function TabsLayout() {
             <Tabs.Screen 
                 name="index" 
                 options={{ 
-                    title: 'Home',
+                    title: 'Accueil',
                     tabBarIcon: ({color, focused}) => (
                         <Ionicons name={focused ? "home-sharp" : "home-outline"} color={color} size={24} />
                     )
                 }} 
             />
             <Tabs.Screen 
-                name="about" 
+                name="profile" 
                 options={{ 
-                    title: 'Eheheeh',
+                    title: 'Profil',
                     tabBarIcon: ({color, focused}) => (
                         <Ionicons name={focused ? "information-circle": "information-circle-outline"} color={color} size={24} />
                     )
@@ -26,6 +26,12 @@ export default function TabsLayout() {
             />
             <Tabs.Screen 
                 name="group"
+                options={{ 
+                    href: null
+                }} 
+            />
+            <Tabs.Screen 
+                name="creation"
                 options={{ 
                     href: null
                 }} 

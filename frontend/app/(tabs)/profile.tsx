@@ -1,9 +1,12 @@
+import { Button } from "@react-navigation/elements";
 import { StyleSheet, Text, View } from "react-native";
+import LinkPageIcon from "@/components/LinkPageIcon";
 
 export default function AboutScreen() {
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>About ExpoUniverselle</Text>
+            <Text style={styles.text}>Page de profil</Text>
+            <LinkPageIcon label={"Se déconnecter"}></LinkPageIcon>
         </View>
     );
 }
