@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ExpoUniverselle1906",
-    "slug": "ExpoUniverselle1906",
+    "name": "UnisSon",
+    "slug": "UnisSon",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "expouniverselle1906",
+    "scheme": "UnisSon",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

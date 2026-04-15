@@ -25,14 +25,21 @@ export default function Groups() {
 
 
   return (
-    <View style={styles.container}>
-      <FlatList
-              data={test}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({item}) => <Text style={styles.text}>{item.nickname}</Text>
-              }
-            />
-    </View>
+    <>
+      <View style={styles.container}>
+        <Text style={styles.title}>
+          Les casquettes
+        </Text>
+      </View>
+      <View style={styles.container}>
+        <FlatList
+                data={test}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({item}) => <Text style={styles.text}>{item.nickname}</Text>
+                }
+              />
+      </View>
+    </>
   );
 }
 
@@ -47,6 +54,12 @@ const styles = StyleSheet.create({
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
+  },
+  title: {
+    color: '#fff',
+    alignSelf: 'center',
+    fontSize: 26,
+    fontWeight: 'bold',
   },
   text: {
     color: '#fff'

@@ -91,3 +91,13 @@ CREATE TABLE IF NOT EXISTS Invitations (
     FOREIGN KEY (groupID) REFERENCES Groups(id),
     FOREIGN KEY (createdBy) REFERENCES Users(id)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS UsersFavoriteTracks (
+    trackID INTEGER NOT NULL,
+    userID INTEGER NOT NULL,
+    comment VARCHAR(1024) DEFAULT NULL,
+    rank TINYINT UNSIGNED NOT NULL,
+    PRIMARY KEY (trackID, userID),
+    FOREIGN KEY (trackID) REFERENCES Tracks(id),
+    FOREIGN KEY (userID) REFERENCES Users(id)
+) ENGINE=InnoDB;
