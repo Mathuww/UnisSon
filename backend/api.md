@@ -21,10 +21,20 @@ Corps    :
 Renvoie : 
 - id : ID de l'utilisateur, pour les futures requêtes.
 
+### /auth/google (POST)
+Fonction : S'inscrire/se connecter avec un token Google.
+
+Corps : 
+- idToken : ID token d'OAuth Google
+
+Renvoie :
+- token : JWT nécessaire plus tard pour l'accès aux routes protégées
+- userID : ID de l'utilisateur soit existant, soit créé
+
 ## /users/ : Routes concernant l'utilisateur
 **Routes sécurisées.**
 
-**Chaque requête doit comporter le header `x-user-id` qui contient l'ID de l'utilisateur qui fait la requête.**
+**Chaque requête doit comporter le header `authorization` qui contient "Bearer [le JWT]".**
 
 ### /users/me/groups (GET)
 Fonction : Liste les groupes auxquels appartient l'utilisateur.
@@ -36,8 +46,8 @@ Pour chaque groupe :
 - name : Nom du groupe
 
 ## /groups/ : Routes concernant les groupes
-**Routes sécurisées.** : 
-**Chaque requête doit comporter le header `x-user-id` qui contient l'ID de l'utilisateur qui fait la requête.**
+**Routes sécurisées.**
+**Chaque requête doit comporter le header `authorization` qui contient "Bearer [le JWT]".**
 
 **Remplacer `:id` dans l'URL par l'ID du groupe concerné.**
 
@@ -61,6 +71,13 @@ Pour chaque membre :
 
 ### /groups/:id/members (POST)
 Fonction : Rejoindre ce groupe.
+
+Renvoie :
+ - message : Un message de succès.
+
+### /groups/:id/theme (POST)
+Fonction : Ajouter le thème de la semaine.
+Uniquement accessible par l'élu.e
 
 Renvoie :
  - message : Un message de succès.
@@ -89,9 +106,13 @@ Renvoie :
 
 ## /admin : Routes d'administration
 
-## /admin/poll : Déclencher le polling manuellement
+### /admin/poll : Déclencher le polling manuellement
 Par défaut, le polling (vérifier si c'est l'heure de déclencher des évènements) se fait automatiquement toutes les minutes, mais il peut être déclenché par un POST sur `/poll`.
 
 Attention à ne pas trop `poll`-uer le serveur avec ça ! ahaha (Penser à enlever cette phrase)
 
-## /admin/newcycle : Déclencher un nouveau cycle
+### /admin/newcycle : Déclencher un nouveau cycle
+
+### /admin/submode : Passer en mode "ajout de musique"
+
+### /admin/quiztime : Passer en mode "quiz"
