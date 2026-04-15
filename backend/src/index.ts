@@ -4,37 +4,64 @@ import express from 'express';
 import cors from 'cors';
 import nodeCron from 'node-cron';
 import { authMiddleware } from './middleware/auth.js';
-import { logger } from './middleware/logger.js';
-import adminRoutes from './routes/admin.routes.js';
-import authRoutes from './routes/auth.routes.js';
-import groupsRoutes from './routes/groups.routes.js';
-import usersRoutes from './routes/users.routes.js';
-import { startNewWeekCycle } from './tasks/newcycle.js';
-import { generalPollingTask } from './tasks/generalpolling.js';
+import { errorHandler } from './middleware/error.js';
+import { logger, loggerMiddleware } from './middleware/logger.js';
+import adminRoutes from './routes/api/admin.routes.js';
+import authRoutes from './routes/api/auth.routes.js';
+import groupsRoutes from './routes/api/groups.routes.js';
+import usersRoutes from './routes/api/users.routes.js';
+import inviteRoutes from './routes/api/invites.routes.js';
+import joinRoutes from './routes/web/invites.routes.js';
+import { dbConnect } from './shared/dbconnect.js';
+import { startNewWeekCycle } from './tasks/newcycle.task.js';
+import { generalPollingTask } from './tasks/polling.task.js';
+import { quiztimeMode } from './tasks/quiztime.task.js';
+
+await dbConnect();
 
 const app = express();
 const port = process.env.PORT || 5175;
 
 // Middlewares
+app.use(loggerMiddleware);
 app.use(express.json());
-app.use(logger);
 app.use(cors());
- 
+
 // Routes API
-app.use('/auth', authRoutes);
-app.use('/groups', authMiddleware, groupsRoutes);
-app.use('/users', authMiddleware, usersRoutes);
-app.use('/admin', adminRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/groups', authMiddleware, groupsRoutes);
+app.use('/api/join', authMiddleware, inviteRoutes);
+app.use('/api/users', authMiddleware, usersRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Templates (EJS)
+app.set('view engine', 'ejs');
+app.set('views', 'src/views');
+
+// Web
+app.use('/join', joinRoutes);
+
+// Error handler
+app.use(errorHandler);
 
 // Setup CRON
-nodeCron.schedule('0 0 * * SUN', () => { // Tous les dimanches à 00:00
-  startNewWeekCycle();
+
+// Tous les dimanches à 00:00
+nodeCron.schedule('0 0 * * SUN', async () => { 
+  await startNewWeekCycle();
 });
-nodeCron.schedule('* * * * *', () => { // Tous les dimanches à 00:00
-  generalPollingTask();
+
+// Tous les lundis à 00:00
+nodeCron.schedule('0 0 * * SAT', async () => {
+  await quiztimeMode();
+});
+
+// Tous les dimanches à 00:00
+nodeCron.schedule('* * * * *', async () => { 
+  await generalPollingTask();
 });
 
 // On écoute
 app.listen(port, () => {
-    console.log(`Listening on ${port}`);
+    logger.info(`Listening on ${port}`);
 });
