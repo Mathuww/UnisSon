@@ -3,3 +3,6 @@ backend/misc/
 backend/logs
 backend/.env
 frontend/node_modules
+.idea/
+frontend/.idea/
+

@@ -36,15 +36,18 @@ export async function generalPollingTask() {
             groupsToSet.add(p.Group.id);
         }
 
-        await Group.update(
-            {status: GroupStatus.WK_WAITING_SUB},
-            {
-                where: {id: { [Op.in]: [...groupsToSet] }},
-                transaction: transaction
-            }
-        );
+        if (groupsToSet.size > 0) {
+            await Group.update(
+                {status: GroupStatus.WK_WAITING_SUB},
+                {
+                    where: {id: { [Op.in]: [...groupsToSet] }},
+                    transaction: transaction
+                }
+            );
+        }
 
         await transaction.commit();
+        logger.info("polling task end");
     } catch (err) {
         logger.error("error in general poll task : ", err);
         await transaction.rollback();

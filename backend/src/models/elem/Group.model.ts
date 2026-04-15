@@ -29,6 +29,17 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
     // Associations
     declare getChosenUser: BelongsToGetAssociationMixin<User>;
     declare getUsers: BelongsToManyGetAssociationsMixin<User>;
+
+    async isUserInGroup(userID: number): Promise<boolean> {
+        const user = await this.getUsers({
+            where: { id: userID },
+            attributes: ['id'], // on élimine le bruit
+            joinTableAttributes: [] // pareil
+        });
+
+        return user.length > 0;
+    }
+
     declare addUser: BelongsToManyAddAssociationMixin<User, number>;
     declare removeUser: BelongsToManyRemoveAssociationMixin<User, number>;
 
