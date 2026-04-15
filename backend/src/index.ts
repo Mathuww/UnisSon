@@ -6,10 +6,12 @@ import nodeCron from 'node-cron';
 import { authMiddleware } from './middleware/auth.js';
 import { errorHandler } from './middleware/error.js';
 import { logger, loggerMiddleware } from './middleware/logger.js';
-import adminRoutes from './routes/admin.routes.js';
-import authRoutes from './routes/auth.routes.js';
-import groupsRoutes from './routes/groups.routes.js';
-import usersRoutes from './routes/users.routes.js';
+import adminRoutes from './routes/api/admin.routes.js';
+import authRoutes from './routes/api/auth.routes.js';
+import groupsRoutes from './routes/api/groups.routes.js';
+import usersRoutes from './routes/api/users.routes.js';
+import inviteRoutes from './routes/api/invites.routes.js';
+import joinRoutes from './routes/web/invites.routes.js';
 import { dbConnect } from './shared/dbconnect.js';
 import { startNewWeekCycle } from './tasks/newcycle.task.js';
 import { generalPollingTask } from './tasks/polling.task.js';
@@ -21,15 +23,23 @@ const app = express();
 const port = process.env.PORT || 5175;
 
 // Middlewares
-app.use(express.json());
 app.use(loggerMiddleware);
+app.use(express.json());
 app.use(cors());
 
 // Routes API
-app.use('/auth', authRoutes);
-app.use('/groups', authMiddleware, groupsRoutes);
-app.use('/users', authMiddleware, usersRoutes);
-app.use('/admin', adminRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/groups', authMiddleware, groupsRoutes);
+app.use('/api/join', authMiddleware, inviteRoutes);
+app.use('/api/users', authMiddleware, usersRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Templates (EJS)
+app.set('view engine', 'ejs');
+app.set('views', 'src/views');
+
+// Web
+app.use('/join', joinRoutes);
 
 // Error handler
 app.use(errorHandler);

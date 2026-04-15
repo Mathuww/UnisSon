@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import { asyncHandler } from "../middleware/error.js";
-import { logger } from "../middleware/logger.js";
-import Group from "../models/elem/Group.model.js";
-import Track from "../models/elem/Track.model.js";
-import { GroupStatus } from "../shared/GroupStatus.js";
-import User from "../models/elem/User.model.js";
+import { NextFunction, Request, Response } from "express";
+import { asyncHandler } from "../../middleware/error.js";
+import { logger } from "../../middleware/logger.js";
+import Group from "../../models/elem/Group.model.js";
+import Track from "../../models/elem/Track.model.js";
+import { GroupStatus } from "../../shared/GroupStatus.js";
+import User from "../../models/elem/User.model.js";
 
 export const GroupController = {
     createGroup: asyncHandler( async (req: Request, res: Response) => {
@@ -26,16 +26,31 @@ export const GroupController = {
 
         return res.status(201).json(group);
     }),
+    groupUserCheck: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user = (req as any).user;
+            const groupId = Number(req.params.id);
+
+            if (!groupId)
+                return res.status(400).json({error: "Missing group ID"});
+
+            const group = await Group.findByPk(groupId);
+            if (!group)
+                return res.status(404).json({message: "Unable to find group"});
+
+            if (!(await group.isUserInGroup(user.id)))
+                return res.status(403).json({message: "User is not in group"});
+
+            (req as any).group = group;
+            next();
+        } catch (err) {
+            logger.error("Error in group user check middleware");
+            return res.status(500).json({message: "Internal server error"});
+        }
+    },
     getUsers: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
-        const groupId = Number(req.params.id);
-
-        if (!groupId)
-            return res.status(400).json({error: "Missing group ID"});
-
-        const group = await Group.findByPk(groupId);
-        if (!group)
-            return res.status(404).json({message: "Unable to find group"});
+        const group: Group = (req as any).group;
 
         const users = await group?.getUsers();
 
@@ -43,16 +58,9 @@ export const GroupController = {
     }),
     addUser: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
-        const groupId = Number(req.params.id);
+        const group: Group = (req as any).group;
 
-        if (!groupId)
-            return res.status(400).json({error: "Missing group ID"});
-
-        const group = await Group.findByPk(groupId);
-        if (!group)
-            return res.status(404).json({message: "Unable to find group"});
-
-        await group?.addUser(user.id, {
+        await group.addUser(user.id, {
             through: {
                 notifPending: false,
                 weeklyScore: 0,
@@ -64,31 +72,19 @@ export const GroupController = {
     }),
     getTracks: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
-        const groupId = Number(req.params.id);
-
-        if (!groupId)
-            return res.status(400).json({message: "Missing group ID"});
-
-        const group = await Group.findByPk(groupId);
-        if (!group)
-            return res.status(404).json({message: "Unable to find group"});
+        const group: Group = (req as any).group;
 
         const tracks = group.getTracks();
         return res.status(200).json(tracks);
     }),
     addTrack: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
-        const groupId = Number(req.params.id);
-        const { title, youtubeLink } = req.body;
+        const group: Group = (req as any).group;
 
-        if (!groupId)
-            return res.status(400).json({message: "Missing group ID"});
+        const { title, youtubeLink } = req.body;
+        
         if (!title || !youtubeLink)
             return res.status(400).json({message: "Missing song data"});
-
-        const group = await Group.findByPk(groupId);
-        if (!group)
-            return res.status(404).json({message: "Unable to find group"});
 
         if (group.status != GroupStatus.WK_WAITING_SUB)
             return res.status(403).json({message: `Wrong status for adding song (${group.status})`});
@@ -125,18 +121,12 @@ export const GroupController = {
     }),
     setTheme: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
-        const groupId = Number(req.params.id);
+        const group: Group = (req as any).group;
+
         const { theme }  = req.body;
-
-        if (!groupId)
-            return res.status(400).json({message: "Missing group ID"});
-
         if (!theme)
             return res.status(400).json({message: "Missing theme for theme request"});
 
-        const group = await Group.findByPk(groupId);
-        if (!group)
-            return res.status(404).json({message: "Unable to find group"});
 
         if (group.status != GroupStatus.SUN_WAITING_THEME)
             return res.status(403).json({message: `Wrong status for setting theme (${group.status})`})

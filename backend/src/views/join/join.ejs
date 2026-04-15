@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rejoindre <%= groupName %></title>
+</head>
+<body>
+    <h1>Rejoindre <%= groupName %></h1>
+    <a id="download" style="display:none" href="https://marcorobo.space">
+        Télécharger l'app
+    </a>
+    <script>
+        window.location = "unisson://join/<%= token %>";
+        
+        setTimeout(() => {
+            document.getElementById('download').style.display = 'block';
+        }, 2500);
+    </script>
+</body>
+</html>
