@@ -5,11 +5,12 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "UnisSon",
+    "scheme": "unisson",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.UnisSon"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,13 +20,26 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES"
+      ],
+      "package": "com.anonymous.UnisSon"
     },
     "web": {
-      "output": "static",
+      "output": "server",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.com.googleusercontent.apps.643995195692-aeh67a1heqpat6k3shr17mpm72da6ll3"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -44,13 +58,22 @@
         {
           "photosPermission": "ALLOW ${PRODUCT_NAME} to ACCESS PICTURE NOW.",
           "savePhotosPermission": "ALLOW ${PRODUCT_NAME} to SAVE PICTURE NOW.",
-          "granularPermissions": ["photo"]
+          "granularPermissions": [
+            "photo"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2b584c40-0ce1-4a6c-916d-cabc53e468a3"
+      }
+    },
+    "owner": "nuwu"
   }
 }

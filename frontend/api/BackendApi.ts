@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const BACKEND_API_URL = "https://srv833678.hstgr.cloud:8085";
 
@@ -8,29 +8,29 @@ export const api = axios.create({
 });
 
 export const ApiCall = {
-    test: {
-        postText: (text: string) => api.post('/text', {message: text}),
-        getText: () => api.get('/text'),
-    },
     auth: {
-        signIn : (nickname : string) => api.post("/auth/login", {nickname : nickname})
+        GGLogIn : (idToken : string) => api.post("/api/auth/google", {idToken : idToken}),
     },
     users: {
-        getGroups: (id:number) => api.get('/users/me/groups', 
+        //All groups
+        getAllGroup: (apptoken : string) => api.get('/api/users/me/groups',
             {
                 headers: {
-                    'x-user-id': id // "x-" => headers
+                    'authorization' : "Bearer " + apptoken
                 }
             }
-        )
-        // récupérer id du secure storage
+        ),
+        getProfile: (apptoken : string) => api.get('/api/users/me', {
+            headers: {
+                'authorization' : "Bearer " + apptoken
+            }
+        }),
     },
     groups: {
-        getGroupData: (userID:number, groupID:number) => api.get(`/groups/${groupID}/members`,
-            { headers: {
-                    'x-user-id': userID // "x-" => headers
-                }
+        getGroupData: (apptoken: string, groupID:number) => api.get(`/api/groups/${groupID}/members`, {
+            headers: {
+                'authorization' : "Bearer " + apptoken
             }
-        )    
+        }),    
     }
 };
