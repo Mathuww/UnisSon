@@ -38,13 +38,13 @@ export const useAuthStore = create(
         GoogleLogIn : async (idToken : string) => {
             try {
                 const response = await ApiCall.auth.GGLogIn(idToken)
-                const data = response.data
+                const data = response.data.data;
 
                 set({
                     isLoggedIn : true,
                     hasCompletedProfile: true, //change to data.hasCompletedProfile at some point
                     userInfo : {
-                        id : data.userId
+                        id : data.user.id
                     },
                     appToken : data.token,
                 })
