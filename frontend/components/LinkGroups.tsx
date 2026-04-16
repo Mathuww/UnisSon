@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
 
     },
     linkLabel: {
-        color: '#ffffff',
+        color: "#ffffff",
         fontSize: width > 800 ? 44 : 32,
         textAlign: "center"
     },

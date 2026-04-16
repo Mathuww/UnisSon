@@ -1,6 +1,6 @@
 import {TextInput, View, StyleSheet} from "react-native";
 import {useState} from "react";
-import Button from "@/components/Button";
+import UnissonButton from "@/components/UnissonButton";
 import {ApiCall} from "@/api/BackendApi";
 import {setItemAsync} from "expo-secure-store";
 import {useAuthStore} from "@/utils/authStore";
@@ -33,7 +33,7 @@ export default function SignInScreen() {
                 value={pseudo}
                 onChangeText={setPseudo}
             />
-            <Button label={"Se Connecter"} onPress={handleSignIn}/>
+            <UnissonButton label={"Se Connecter"} OnValidation={handleSignIn}/>
         </View>
     );
 }
