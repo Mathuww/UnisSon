@@ -33,7 +33,7 @@ export const useGroupStore = create(
 
             fetchGroups : async (token : string) => {
                 try {
-                    const response = await ApiCall.groups.getAll(token)
+                    const response = await ApiCall.users.getAll(token)
                 } catch (error) {
                     console.error(error)
                 }
