@@ -4,25 +4,18 @@ import IconLink from "@/components/IconLink";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import {useAuthStore} from "@/utils/authStore";
+import { useGroupStore } from "@/utils/groupStore";
 
 
 export default function Index() {
-  const [test, setTest] = useState<{id: number, name: string}[]>([]);
-  useEffect(() => {
-    ApiCall.users.getGroups(1)
-    .then(reponse => {
-      setTest(reponse.data);
-    })
-    .catch(err => {
-      console.error(err);
-    });
-  }, []);
+  const {groups} = useGroupStore();
+  const {GoogleLogOut} = useAuthStore();
 
   return (
     <View style={styles.container}>
       
       <FlatList
-        data={test}
+        data={groups}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => <LinkGroups id={item.id} label={item.name} ></LinkGroups>
         }

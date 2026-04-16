@@ -1,5 +1,6 @@
 import { ApiCall } from "@/api/BackendApi";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useAuthStore } from "@/utils/authStore";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import UnissonButton from "@/components/UnissonButton";
@@ -22,16 +23,21 @@ export default function Group() {
 
   const router = useRouter();
 
+  const {appToken} = useAuthStore();
+
   //Débuguer en attente du backend
   const [choosenState, setChoosenState] = useState(true);
   const choosenName = "Pablo";
   
 
-  const [test, setTest] = useState<{id: number, nickname: string}[]>([]);
+  const [groupData, setGroupData] = useState<{id: number, nickname: string}[]>([]);
   useEffect(() => {
-    ApiCall.groups.getGroupData(1, parseInt(id, 10))
+    if(!appToken) {
+      return
+    } 
+    ApiCall.groups.getGroupData(appToken, parseInt(id, 10))
     .then(reponse => {
-      setTest(reponse.data);
+      setGroupData(reponse.data.data);
     })
     .catch(err => {
       console.error(err);
@@ -91,7 +97,7 @@ export default function Group() {
         </Text>
         <View style={styles.container}>
           <FlatList
-                  data={test}
+                  data={groupData}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({item}) => <Text style={styles.text}>{item.nickname}</Text>
                   }
