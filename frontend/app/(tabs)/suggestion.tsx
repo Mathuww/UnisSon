@@ -29,7 +29,7 @@ export default function Suggestion() {
       //En attendant
       router.push({ pathname: '/(tabs)/group'/*, params: { id: .id }*/ });
     } catch (error) {
-      alert("On n'arrive pas à transmettre votre suggestion musicale. Veuillez réessayer!");
+      console.error("On n'arrive pas à transmettre votre suggestion musicale. Veuillez réessayer!");
     }
   }
 
@@ -43,7 +43,7 @@ export default function Suggestion() {
               Par ailleurs, n'oubliez pas que la suggestion doit être personnalisée à l'élu et à son thème :)
             </Text>
             <UnissonTextInput labelDefault="Le lien de votre suggestion musicale" text={yourSuggestion} OnWrite={setYourSuggestion}/>
-            <UnissonButton label="Définition d'une nouvelle ère" colorText="#e76f51" OnValidation={handleSuggestion}></UnissonButton>
+            <UnissonButton label="Confirmer votre propagande de la nouvelle ère" colorText="#e76f51" OnValidation={handleSuggestion}></UnissonButton>
         </View>
     );
 }
