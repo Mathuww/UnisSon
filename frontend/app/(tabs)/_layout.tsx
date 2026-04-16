@@ -42,6 +42,18 @@ export default function TabsLayout() {
                     href: null
                 }} 
             />
+            <Tabs.Screen 
+                name="choosenTheme"
+                options={{ 
+                    href: null
+                }} 
+            />
+            <Tabs.Screen 
+                name="suggestion"
+                options={{ 
+                    href: null
+                }} 
+            />
         </Tabs>
     );
 }
