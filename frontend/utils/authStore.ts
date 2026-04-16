@@ -11,20 +11,30 @@ type UserState = {
         id : string;
     } | null;
     appToken : string | null;
-
+    _hasHydrated : boolean;
     GoogleLogIn : (idToken : string) => void;
     GoogleLogOut: () => void;
     completeProfile: () => void;
+    setHasHydrated: (value: boolean) => void;
+    refreshSession: () => Promise<void>;
 }
 
 export const useAuthStore = create(
     persist<UserState>(
-    (set) => ({
+    (set, get) => ({
         isLoggedIn : false,
         hasCompletedProfile: false,
         userInfo : null,
         appToken : null,
-
+        _hasHydrated : false,
+        setHasHydrated: (value: boolean) => {
+            set((state) => {
+                return {
+                    ...state,
+                    _hasHydrated: value,
+                };
+            });
+        },
         GoogleLogIn : async (idToken : string) => {
             try {
                 const response = await ApiCall.auth.GGLogIn(idToken)
@@ -60,6 +70,27 @@ export const useAuthStore = create(
                 ...state,
                 hasCompletedProfile : true,
             }))
+        },
+        refreshSession: async () => {
+            const currentToken = get().appToken;
+
+            if (!currentToken) return;
+
+            try {
+                const response = await ApiCall.users.getProfile(currentToken);
+                const freshData = response.data;
+
+                set((state) => ({
+                    ...state,
+                    hasCompletedProfile: freshData.hasCompletedProfile,
+                    userInfo: {
+                        ...state.userInfo,
+                        ...freshData.userInfo
+                    }
+                }));
+            } catch (error) {
+                console.error(error);
+            }
         }
     }),
         {
@@ -69,5 +100,8 @@ export const useAuthStore = create(
                 getItem,
                 removeItem : deleteItemAsync,
             })),
+            onRehydrateStorage: (state) => {
+                return () => state.setHasHydrated(true);
+            },
         }
     ));
