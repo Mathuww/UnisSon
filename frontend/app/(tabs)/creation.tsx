@@ -5,6 +5,9 @@ import {StyleSheet, View, Text, TextInput} from "react-native";
 import UnissonTextInput from "@/components/UnissonTextInput";
 import NumberSlider from "@/components/NumberSlider";
 import UnissonButton from "@/components/UnissonButton";
+import { useGroupStore } from "@/utils/groupStore";
+import { ActionResult } from "@/shared/types";
+import { useAuthStore } from "@/utils/authStore";
 
 
 
@@ -14,6 +17,10 @@ export default function Creation() {
   const [groupMaxUser, setGroupMaxUser] = useState(4);
 
   const router = useRouter();
+
+  const {appToken} = useAuthStore();
+
+  const createGroup = useGroupStore((state) => state.createGroup);
 
   const resetInput = useCallback(() => {
     setGroupName("");
@@ -25,17 +32,25 @@ export default function Creation() {
   );
 
   const handleCreateGroup = async () => {
+    if (!appToken) {
+      console.error("Not logged in");
+      return;
+    }
     console.log(groupName, groupMaxUser);
     try {
-      /*
-      Appel au Backend
-      GAIA IT IS YOUR JOB
-      */
+      if(groupName == "") {
+        throw new Error("Nom du groupe incorrect (vide)");
+      }
 
-      //En attendant
-      router.push({ pathname: '/(tabs)/group'/*, params: { id: .id }*/ });
+      const result: ActionResult = await createGroup(appToken, groupName, groupMaxUser);
+
+      if (result.success) {
+        router.push({ pathname: '/(tabs)/group', params: {id: result.groupID}});
+      } else {
+        throw new Error(String(result.error));
+      }
     } catch (error) {
-      console.error("On ne peut pas créer ce groupe. Veuillez réessayer!");
+      console.error("On ne peut pas créer ce groupe. Veuillez réessayer! \n" + error);
     }
   }
 

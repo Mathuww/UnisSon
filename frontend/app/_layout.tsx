@@ -3,7 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import React, {useEffect} from "react";
 import {useAuthStore} from "@/utils/authStore";
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {useSocketStore} from "@/utils/socketStore";
+//import {useSocketStore} from "@/utils/socketStore";
 import {useAppInitialization} from "@/hooks/useAppInitialization";
 
 GoogleSignin.configure({
