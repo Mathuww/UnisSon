@@ -13,3 +13,4 @@ frontend/.vscode
 frontend/expo-env.d.ts
 
 frontend/package-lock.json
+frontend/android
