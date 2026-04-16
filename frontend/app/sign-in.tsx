@@ -10,20 +10,17 @@ export default function SignInScreen() {
 
     const handleSignIn = async () => {
         try {
-            console.log("Vérification Play Services...");
             await GoogleSignin.hasPlayServices();
 
-            console.log("Lancement de la modale Google...");
             const userInfo = await GoogleSignin.signIn();
 
             if (userInfo.data?.idToken) {
-                console.log("Token reçu, envoi au backend...");
                 GoogleLogIn(userInfo.data.idToken);
             } else {
                 throw new Error("Pas de IdToken reçu de Google");
             }
         } catch (error : any) {
-            console.error("Erreur détaillée Google Sign-In :", error.message());
+            console.error(error.message);
         }
     }
 
