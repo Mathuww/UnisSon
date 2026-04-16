@@ -32,5 +32,13 @@ export const ApiCall = {
                 'authorization' : "Bearer " + apptoken
             }
         }),    
+        createGroup: (apptoken: string, name: string, maxUsers: number) => api.post('/api/groups/', {
+            name: name,
+            maxUsers: maxUsers,
+        }, {
+            headers: {
+                'authorization' : "Bearer " + apptoken
+            }
+        })
     }
 };
