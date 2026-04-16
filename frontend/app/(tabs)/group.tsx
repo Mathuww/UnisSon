@@ -1,4 +1,5 @@
 import { ApiCall } from "@/api/BackendApi";
+import { useAuthStore } from "@/utils/authStore";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
@@ -10,12 +11,16 @@ type LocalParams = {
 
 export default function Groups() {
   const {id} = useLocalSearchParams<LocalParams>();
+  const {appToken} = useAuthStore();
 
-  const [test, setTest] = useState<{id: number, nickname: string}[]>([]);
+  const [groupData, setGroupData] = useState<{id: number, nickname: string}[]>([]);
   useEffect(() => {
-    ApiCall.groups.getGroupData(1, parseInt(id, 10))
+    if(!appToken) {
+      return
+    } 
+    ApiCall.groups.getGroupData(appToken, parseInt(id, 10))
     .then(reponse => {
-      setTest(reponse.data);
+      setGroupData(reponse.data.data);
     })
     .catch(err => {
       console.error(err);
@@ -27,7 +32,7 @@ export default function Groups() {
   return (
     <View style={styles.container}>
       <FlatList
-              data={test}
+              data={groupData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({item}) => <Text style={styles.text}>{item.nickname}</Text>
               }

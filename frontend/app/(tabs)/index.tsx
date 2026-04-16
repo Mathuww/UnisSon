@@ -1,28 +1,25 @@
 import { ApiCall } from "@/api/BackendApi";
 import LinkGroups from "@/components/LinkGroups";
+import { useAuthStore } from "@/utils/authStore";
+import { useGroupStore } from "@/utils/groupStore";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View, Pressable, Text } from "react-native";
 
 export default function Index() {
-  const [test, setTest] = useState<{id: number, name: string}[]>([]);
-  useEffect(() => {
-    ApiCall.users.getGroups(1)
-    .then(reponse => {
-      setTest(reponse.data);
-    })
-    .catch(err => {
-      console.error(err);
-    });
-  }, []);
+  const {groups} = useGroupStore();
+  const {GoogleLogOut} = useAuthStore();
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={test}
+        data={groups}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => <LinkGroups id={item.id} label={item.name} ></LinkGroups>
         }
       />
+      <Pressable onPress={GoogleLogOut} style={styles.btn}>
+        <Text style={styles.text}>ok</Text>
+      </Pressable>
     </View>
   );
 }
@@ -41,5 +38,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff'
+  },
+  btn: {
+    backgroundColor: '#f00',
+    height:50,
   }
 })

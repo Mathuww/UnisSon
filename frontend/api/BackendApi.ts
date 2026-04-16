@@ -13,7 +13,7 @@ export const ApiCall = {
     },
     users: {
         //All groups
-        getAll: (apptoken : string) => api.get('/api/users/me/groups',
+        getAllGroup: (apptoken : string) => api.get('/api/users/me/groups',
             {
                 headers: {
                     'authorization' : "Bearer " + apptoken
@@ -27,11 +27,10 @@ export const ApiCall = {
         }),
     },
     groups: {
-        getGroupData: (userID:number, groupID:number) => api.get(`/groups/${groupID}/members`,
-            { headers: {
-                    'x-user-id': userID // "x-" => headers
-                }
+        getGroupData: (apptoken: string, groupID:number) => api.get(`/api/groups/${groupID}/members`, {
+            headers: {
+                'authorization' : "Bearer " + apptoken
             }
-        )    
+        }),    
     }
 };
