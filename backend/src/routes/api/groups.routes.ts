@@ -8,12 +8,13 @@ const router = Router();
 
 // /groups/
 router.post('/', GroupController.createGroup);
+router.get('/:id', GroupController.groupInfo);
 
 // GET /groups/:id/members (liste des membres)
 router.get('/:id/members', GroupController.groupUserCheck, GroupController.getUsers);
 
 // POST /groups/:id/members (ajt un membre)
-router.post('/:id/members', GroupController.groupUserCheck, GroupController.addUser);
+router.post('/:id/members', GroupController.addUser);
 
 // POST /groups/:id/theme (choisir thème cette semaine)
 // Required state : SUN_WAITING_THEME

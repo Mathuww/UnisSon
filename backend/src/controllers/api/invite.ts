@@ -30,7 +30,7 @@ export const InviteController = {
         });
 
         if (existing) {
-            return res.status(200).json(existing);
+            return res.status(200).json({token: existing.token});
         } else {
             const expireDate = new Date(today);
             expireDate.setHours(today.getHours() + INVITE_EXPIRE_DELAY_HOURS);
@@ -50,7 +50,7 @@ export const InviteController = {
 
         const token = req.params.token;
         if (!token)
-            return res.status(400).json({message: "Missing token from join request"});
+            return res.status(400).json({error: {message: "Missing token from join request"}});
 
         const invite = await Invite.findOne({
             where: {
@@ -59,10 +59,10 @@ export const InviteController = {
         });
 
         if (!invite)
-            return res.status(404).json({message: "Invite not found"});
+            return res.status(404).json({error: {message: "Invite not found"}});
 
         if (invite.expiresAt <= new Date())
-            return res.status(410).json({message: "Invite expired"});
+            return res.status(410).json({error: {message: "Invite expired"}});
 
         const group = await invite.getGroup();
         await group.addUser(user.id, {
@@ -73,6 +73,6 @@ export const InviteController = {
             }
         });
 
-        return res.status(201).json(group);
+        return res.status(201).json({data: group});
     })
 }

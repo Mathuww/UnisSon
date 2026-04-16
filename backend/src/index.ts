@@ -14,13 +14,32 @@ import inviteRoutes from './routes/api/invites.routes.js';
 import joinRoutes from './routes/web/invites.routes.js';
 import { dbConnect } from './shared/dbconnect.js';
 import { startNewWeekCycle } from './tasks/newcycle.task.js';
+
 import { generalPollingTask } from './tasks/polling.task.js';
 import { quiztimeMode } from './tasks/quiztime.task.js';
-
+import http from 'http';
+import { Server } from "socket.io";
 await dbConnect();
 
 const app = express();
+const server = http.createServer(app);
 const port = process.env.PORT || 5175;
+
+const io = new Server(server, {
+  cors: { origin: "*" }
+});
+
+io.on("connection", (socket) => {
+  logger.log("connected:", socket.id);
+
+  socket.on("message", (data) => {
+    logger.log("msg:", data);
+
+    socket.emit("message", {
+      text: "Hello client"
+    });
+  });
+});
 
 // Middlewares
 app.use(loggerMiddleware);
@@ -62,6 +81,6 @@ nodeCron.schedule('* * * * *', async () => {
 });
 
 // On écoute
-app.listen(port, () => {
+server.listen(port, () => {
     logger.info(`Listening on ${port}`);
 });
