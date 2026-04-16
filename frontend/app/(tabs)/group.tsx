@@ -1,5 +1,5 @@
 import { ApiCall } from "@/api/BackendApi";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import UnissonButton from "@/components/UnissonButton";
@@ -19,6 +19,13 @@ export default function Group() {
 
   const {id} = useLocalSearchParams<LocalParams>();
 
+  const router = useRouter();
+
+  //Débuguer en attente du backend
+  const [choosenState, setChoosenState] = useState(true);
+  const choosenName = "Pablo";
+  
+
   const [test, setTest] = useState<{id: number, nickname: string}[]>([]);
   useEffect(() => {
     ApiCall.groups.getGroupData(1, parseInt(id, 10))
@@ -30,8 +37,36 @@ export default function Group() {
     });
   }, [id]);
 
+  const handleChoosenTheme = async () => {
+    try {
+      /*
+      Appel au Backend
+      GAIA IT IS YOUR JOB
+      */
 
+      //En attendant
+      setGroupState("finishSunday")
+      router.push({ pathname: '/(tabs)/choosenTheme'/*, params: { id: .id }*/ });
+    } catch (error) {
+      alert("On ne pas accèder à ta sélection de ton thème en tant qu'élu!");
+    }
+  }
 
+  const handleSuggestion = async () => {
+    try {
+      /*
+      Appel au Backend
+      GAIA IT IS YOUR JOB
+      */
+
+      //En attendant
+      setGroupState("finishWeek")
+      router.push({ pathname: '/(tabs)/suggestion'/*, params: { id: .id }*/ });
+    } catch (error) {
+      alert("On ne pas accèder à la page de proposition de ta dernière suggestion!");
+    }
+  }
+  
   return (
     <>
       <View style={styles.container}>
@@ -47,22 +82,37 @@ export default function Group() {
                 />
         </View>
         <View style={styles.containerButton}>
-          {groupState == "startSunday" && (
-            <UnissonButton
-              label="À vous d'être à la hauteur d'un élu d'Unisson"
-              colorText="#e76f51"
-              //Pour débugger avant l'arrivée du backend
-              OnValidation={() => setGroupState("finishSunday")}
-            />
-          )}
-          {groupState == "startWeek" && (
+          {(groupState == "startSunday") && ((choosenState == true) && (
+            <View>
+              <Text style={styles.subtitle}>
+                Toc Toc, Unisson vous informe que vous allez cartonner cette semaine car vous êtes maintenant élu :)
+              </Text>
+              <UnissonButton
+                label="À vous d'être à la hauteur d'un élu d'Unisson"
+                colorText="#e76f51"
+                //Pour débugger avant l'arrivée du backend
+                OnValidation={handleChoosenTheme}
+              />
+            </View>
+            ) || ((choosenState == false) && (
+              <Text style={styles.subtitle}>
+                Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {choosenName} :)
+              </Text>
+            )
+          ))}
+          {(groupState == "startWeek") && ((choosenState == false) && (
             <UnissonButton
               label="À vous d'impressionner votre élu avec votre musique !"
               colorText="#e76f51"
               //Pour débugger avant l'arrivée du backend
-              OnValidation={() => setGroupState("finishWeek")}
+              OnValidation={handleSuggestion}
             />
-          )}
+            ) || ((choosenState == true) && (
+              <Text style={styles.subtitle}>
+                Attendez tranquillement que vos amis choississent bien leurs chansons :)
+              </Text>
+            )
+          ))}
           {groupState == "startSaturday" && (
             <UnissonButton
               label="Qui connaît mieux l'élu ?"
@@ -71,20 +121,33 @@ export default function Group() {
               OnValidation={() => setGroupState("finishSaturday")}
             />
           )}
-          <UnissonButton
+          <View style={styles.containerTest}>
+            <UnissonButton
               //Pour débugger avant l'arrivée du backend
               label="Passer à l'état suivant"
               colorText="#2a9d8f"
               OnValidation=
-                {(groupState == "finishSunday" &&
+                {(((groupState == "finishSunday") || (groupState == "startSunday" && choosenState == false)) &&
                 (() => setGroupState("startWeek"))) ||
-                (groupState == "finishWeek" &&
+
+                (((groupState == "finishWeek") || (groupState == "startWeek" && choosenState == true)) &&
                 (() => setGroupState("startSaturday"))) ||
+
                 (groupState == "finishSaturday" &&
                 (() => setGroupState("startSunday"))) ||
+
                 (() => {})
               }
             />
+            <UnissonButton
+              //Pour débugger avant l'arrivée du backend
+              label="Êtes-vous vraiment élu ?"
+              colorText="#2a9d8f"
+              OnValidation= {
+                () => {setChoosenState(!choosenState);}
+              }
+            />
+          </View>
         </View>
       </View>
 
@@ -102,13 +165,22 @@ const styles = StyleSheet.create({
   },
   containerButton:{
     paddingBottom: 30,
-    gap: 22,
+    gap: 72,
+  },
+  containerTest: {
+    gap: 20,
   },
   title: {
     color: "#fff",
     alignSelf: "center",
     fontSize: 32,
     fontWeight: "bold",
+  },
+  subtitle: {
+    padding : 5,
+    color: "#ffe",
+    fontSize : 12,
+    paddingBottom : 5,
   },
   text: {
     color: "#fff"
