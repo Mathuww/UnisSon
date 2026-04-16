@@ -3,9 +3,10 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import UnissonButton from "@/components/UnissonButton";
+import IconLink from "@/components/IconLink";
 
 
-type LocalParams = {
+type Local = {
   id: string;
 };
 
@@ -17,7 +18,7 @@ export default function Group() {
   //Pour débugger avant l'arrivée du backend
   const [groupState, setGroupState] = useState<GroupState>("startSunday");
 
-  const {id} = useLocalSearchParams<LocalParams>();
+  const {id} = useLocalSearchParams<Local>();
 
   const router = useRouter();
 
@@ -48,7 +49,7 @@ export default function Group() {
       setGroupState("finishSunday")
       router.push({ pathname: '/(tabs)/choosenTheme'/*, params: { id: .id }*/ });
     } catch (error) {
-      alert("On ne pas accèder à ta sélection de ton thème en tant qu'élu!");
+      console.error("On ne pas accèder à ta page de sélection de ton thème en tant qu'élu!");
     }
   }
 
@@ -63,7 +64,22 @@ export default function Group() {
       setGroupState("finishWeek")
       router.push({ pathname: '/(tabs)/suggestion'/*, params: { id: .id }*/ });
     } catch (error) {
-      alert("On ne pas accèder à la page de proposition de ta dernière suggestion!");
+      console.error("On ne pas accèder à la page de proposition de ta dernière suggestion!");
+    }
+  }
+
+  const handleQuiz = async () => {
+    try {
+      /*
+      Appel au Backend
+      GAIA IT IS YOUR JOB
+      */
+
+      //En attendant
+      setGroupState("finishSaturday")
+      router.push({ pathname: '/(tabs)/quiz', params: { choosenState: String(choosenState) } });
+    } catch (error) {
+      console.error("On ne pas accèder à la page de quiz de la semaine!");
     }
   }
   
@@ -82,7 +98,7 @@ export default function Group() {
                 />
         </View>
         <View style={styles.containerButton}>
-          {(groupState == "startSunday") && ((choosenState == true) && (
+          {(groupState === "startSunday") && ((choosenState === true) && (
             <View>
               <Text style={styles.subtitle}>
                 Toc Toc, Unisson vous informe que vous allez cartonner cette semaine car vous êtes maintenant élu :)
@@ -94,31 +110,31 @@ export default function Group() {
                 OnValidation={handleChoosenTheme}
               />
             </View>
-            ) || ((choosenState == false) && (
+            ) || ((choosenState === false) && (
               <Text style={styles.subtitle}>
                 Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {choosenName} :)
               </Text>
             )
           ))}
-          {(groupState == "startWeek") && ((choosenState == false) && (
+          {(groupState === "startWeek") && ((choosenState === false) && (
             <UnissonButton
               label="À vous d'impressionner votre élu avec votre musique !"
               colorText="#e76f51"
               //Pour débugger avant l'arrivée du backend
               OnValidation={handleSuggestion}
             />
-            ) || ((choosenState == true) && (
+            ) || ((choosenState === true) && (
               <Text style={styles.subtitle}>
                 Attendez tranquillement que vos amis choississent bien leurs chansons :)
               </Text>
             )
           ))}
-          {groupState == "startSaturday" && (
+          {groupState === "startSaturday" && (
             <UnissonButton
               label="Qui connaît mieux l'élu ?"
               colorText="#e76f51"
               //Pour débugger avant l'arrivée du backend
-              OnValidation={() => setGroupState("finishSaturday")}
+              OnValidation={handleQuiz}
             />
           )}
           <View style={styles.containerTest}>
@@ -127,13 +143,13 @@ export default function Group() {
               label="Passer à l'état suivant"
               colorText="#2a9d8f"
               OnValidation=
-                {(((groupState == "finishSunday") || (groupState == "startSunday" && choosenState == false)) &&
+                {(((groupState === "finishSunday") || (groupState === "startSunday" && choosenState === false)) &&
                 (() => setGroupState("startWeek"))) ||
 
-                (((groupState == "finishWeek") || (groupState == "startWeek" && choosenState == true)) &&
+                (((groupState === "finishWeek") || (groupState === "startWeek" && choosenState === true)) &&
                 (() => setGroupState("startSaturday"))) ||
 
-                (groupState == "finishSaturday" &&
+                (groupState === "finishSaturday" &&
                 (() => setGroupState("startSunday"))) ||
 
                 (() => {})
@@ -149,6 +165,11 @@ export default function Group() {
             />
           </View>
         </View>
+        <IconLink 
+                img="delete-forever" 
+                pageRef="/"
+                OnValidation={() => {}}
+        />
       </View>
 
     </>

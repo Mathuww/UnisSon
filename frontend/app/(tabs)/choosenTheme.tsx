@@ -29,7 +29,7 @@ export default function ChoosenTheme() {
       //En attendant
       router.push({ pathname: '/(tabs)/group'/*, params: { id: .id }*/ });
     } catch (error) {
-      alert("On n'arrive pas à transmettre votre thème. Veuillez réessayer!");
+      console.error("On n'arrive pas à transmettre votre thème. Veuillez réessayer!");
     }
   }
 

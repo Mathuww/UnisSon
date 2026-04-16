@@ -54,6 +54,18 @@ export default function TabsLayout() {
                     href: null
                 }} 
             />
+            <Tabs.Screen 
+                name="quiz"
+                options={{ 
+                    href: null
+                }} 
+            />
+            <Tabs.Screen 
+                name="ranking"
+                options={{ 
+                    href: null
+                }} 
+            />
         </Tabs>
     );
 }

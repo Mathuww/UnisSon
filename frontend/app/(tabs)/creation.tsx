@@ -35,7 +35,7 @@ export default function Creation() {
       //En attendant
       router.push({ pathname: '/(tabs)/group'/*, params: { id: .id }*/ });
     } catch (error) {
-      alert("On ne peut pas créer ce groupe. Veuillez réessayer!");
+      console.error("On ne peut pas créer ce groupe. Veuillez réessayer!");
     }
   }
 

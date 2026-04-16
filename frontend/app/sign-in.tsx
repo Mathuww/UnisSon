@@ -33,7 +33,7 @@ export default function SignInScreen() {
                 value={pseudo}
                 onChangeText={setPseudo}
             />
-            <UnissonButton label={"Se Connecter"} OnValidation={handleSignIn}/>
+            <UnissonButton label={"Se Connecter"} colorText="333" OnValidation={handleSignIn}/>
         </View>
     );
 }
