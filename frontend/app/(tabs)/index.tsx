@@ -29,7 +29,8 @@ export default function Index() {
       />
       <IconLink 
         img="add" 
-        pageRef="./(tabs)/creation"
+        pageRef="/(tabs)/creation"
+        OnValidation={() => {}}
       />
     </View>
   );
@@ -39,15 +40,13 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#25292e',
+    backgroundColor: "#25292e",
     flex: 1,
     paddingTop: 20,
-  },
-  footerContainer: {
-    flex: 1 / 3,
-    alignItems: 'center',
+    justifyContent : "space-between",
+
   },
   text: {
-    color: '#fff'
+    color: "#fff"
   }
 })

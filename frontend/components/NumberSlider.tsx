@@ -32,15 +32,15 @@ export default function NumberSlider({numberDefault, min, max, numberActual, OnS
 
 const styles = StyleSheet.create({
     input: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         height: 45,
         borderWidth: 2,
-        borderColor: '#bbb',
+        borderColor: "#bbb",
         borderRadius: 11,
         paddingHorizontal: 20,
         fontSize: 16,
-        backgroundColor: '#fff',
+        backgroundColor: "#fff",
         margin : 8,
     },
     slicer: {
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 16,
         marginLeft: 11,
-        alignSelf:'center',
+        alignSelf:"center",
         minWidth: 20,
     }
 })

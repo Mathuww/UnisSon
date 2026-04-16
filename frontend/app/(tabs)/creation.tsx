@@ -45,7 +45,7 @@ export default function Creation() {
       <Text style={styles.subtitle}>Mais avant tout, je te demandes quelques tatonnements :</Text>
       <UnissonTextInput labelDefault="Nom du groupe" text={groupName} OnWrite={setGroupName}></UnissonTextInput>
       <NumberSlider numberDefault={4} min={2} max={11} numberActual={groupMaxUser} OnSlice={setGroupMaxUser}></NumberSlider>
-      <UnissonButton label="Explosion d'un nouveau univers" OnValidation={handleCreateGroup}></UnissonButton>
+      <UnissonButton label="Explosion d'un nouveau univers" colorText="#e76f51" OnValidation={handleCreateGroup}></UnissonButton>
     </View>  
   );
 }
@@ -60,15 +60,15 @@ const styles = StyleSheet.create({
   },
   title: {
     padding : 5,
-    color: '#fff',
-    alignSelf: 'center',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: "#fff",
+    alignSelf: "center",
+    fontSize: 18,
+    fontWeight: "bold",
     paddingBottom : 20,
   },
   subtitle: {
     padding : 5,
-    color: '#ffe',
+    color: "#ffe",
     fontSize : 12,
     paddingBottom : 5,
   },
