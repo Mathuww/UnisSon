@@ -1,15 +1,21 @@
 import { ApiCall } from "@/api/BackendApi";
 import LinkGroups from "@/components/LinkGroups";
-import IconLink from "@/components/IconLink";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import {useAuthStore} from "@/utils/authStore";
 import { useGroupStore } from "@/utils/groupStore";
+import IconAction from "@/components/IconAction";
+import { useRouter } from "expo-router";
 
 
 export default function Index() {
+  const router = useRouter();
   const {groups} = useGroupStore();
-  const {GoogleLogOut} = useAuthStore();
+
+  const handleCreation = () => {
+    console.log("log test");
+    router.push({ pathname: '/(tabs)/creation' /*, params: {id: } */});
+  }
 
   return (
     <View style={styles.container}>
@@ -20,10 +26,9 @@ export default function Index() {
         renderItem={({item}) => <LinkGroups id={item.id} label={item.name} ></LinkGroups>
         }
       />
-      <IconLink 
-        img="add" 
-        pageRef="/(tabs)/creation"
-        OnValidation={() => {}}
+      <IconAction 
+        img="group-add" 
+        OnValidation={handleCreation}
       />
     </View>
   );

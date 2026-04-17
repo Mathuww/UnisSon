@@ -1,44 +1,69 @@
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig } from "axios";
 
 const BACKEND_API_URL = "https://srv833678.hstgr.cloud:8085";
 
+let authToken: string | null = null;
+
 export const api = axios.create({
     baseURL: BACKEND_API_URL,
-    timeout: 3000
+    timeout: 5000
 });
+
+
+export const setAuthToken = (token: string | null) => {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    console.log("Token set to : " + token);
+};
 
 export const ApiCall = {
     auth: {
-        GGLogIn : (idToken : string) => api.post("/api/auth/google", {idToken : idToken}),
+        GGLogIn: (idToken: string) =>
+            api.post("/api/auth/google", { idToken: idToken }),
     },
     users: {
         //All groups
-        getAllGroup: (apptoken : string) => api.get('/api/users/me/groups',
-            {
-                headers: {
-                    'authorization' : "Bearer " + apptoken
-                }
-            }
-        ),
-        getProfile: (apptoken : string) => api.get('/api/users/me', {
-            headers: {
-                'authorization' : "Bearer " + apptoken
-            }
-        }),
+        getAllGroup: () => api.get('/api/users/me/groups'),
+
+        getProfile: () => api.get('/api/users/me'),
     },
     groups: {
-        getGroupData: (apptoken: string, groupID:number) => api.get(`/api/groups/${groupID}/members`, {
-            headers: {
-                'authorization' : "Bearer " + apptoken
-            }
-        }),    
-        createGroup: (apptoken: string, name: string, maxUsers: number) => api.post('/api/groups/', {
+        getGroupData: (
+            groupID: number,
+            includeUsers = true
+        ) => api.get(`/api/groups/${groupID}?includeUsers=${includeUsers}`),
+
+        createGroup: (
+            name: string,
+            maxUsers: number
+        ) => api.post('/api/groups/', {
             name: name,
             maxUsers: maxUsers,
-        }, {
-            headers: {
-                'authorization' : "Bearer " + apptoken
+        }),
+
+        setTheme: (id: number, theme: string) =>
+            api.post(`/api/groups/${id}/theme`, { theme }),
+
+        getSongs: (id: number) =>
+            api.get(`/api/groups/${id}/songs`),
+
+        addSong: (
+            id: number,
+            track: {
+                title: string;
+                artist?: string;
+                ISRC?: string;
+                youtubeLink: string;
             }
-        })
+        ) =>
+            api.post(`/api/groups/${id}/songs`, track),
+
+        createInvite: (id: number) =>
+            api.post(`/api/groups/${id}/invite`),
+
+        forceChangeStatus: (id: number) =>
+            api.post(`/api/groups/${id}/status`),
+
+        forceChangeChosen: (id: number, chosenOneUserID: number) =>
+            api.post(`/api/groups/${id}/chosen`, { chosenOneUserID }),
     }
 };

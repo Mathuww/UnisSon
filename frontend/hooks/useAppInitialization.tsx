@@ -4,6 +4,7 @@ import { useAuthStore } from "@/utils/authStore";
 //import {useSocketStore} from "@/utils/socketStore";
 import { SplashScreen } from "expo-router";
 import { useGroupStore } from "@/utils/groupStore";
+import { setAuthToken } from "@/api/BackendApi";
 
 export const useAppInitialization = () => {
     const appState = useRef(AppState.currentState)
@@ -14,6 +15,7 @@ export const useAppInitialization = () => {
     const syncApp = async () => {
         if (isLoggedIn && appToken) {
             //connect(appToken);
+            setAuthToken(appToken);
             await fetchGroups(appToken);
         }
     };
