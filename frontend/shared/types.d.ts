@@ -32,7 +32,7 @@ export type GroupData = {
   maxUsers: number;
   notifNB?: number;
   groupPicture?: string | null;
-  chosenOneUserID: number;
+  chosenOneUserID: number | null;
   status: GroupStatus;
   theme: string;
   users?: UserData[];

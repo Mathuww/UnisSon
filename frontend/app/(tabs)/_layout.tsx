@@ -30,16 +30,12 @@ export default function TabsLayout() {
                     href: null
                 }} 
             />
-            {
-                /*
-                <Tabs.Screen 
-                    name="invite"
-                    options={{ 
-                        href: null
-                    }} 
-                />
-                */
-            }
+            <Tabs.Screen 
+                name="invite"
+                options={{ 
+                    href: null
+                }} 
+            />
             <Tabs.Screen 
                 name="creation"
                 options={{ 

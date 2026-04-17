@@ -2,14 +2,30 @@ import { StyleSheet, Text, View } from "react-native";
 import { useState, useCallback} from "react";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import IconAction from "@/components/IconAction";
+import { UserData } from "@/shared/types";
+import { useAuthStore } from "@/utils/authStore";
 
 type Local = {
-  choosenState: string;
+  id: string;
+  groupName : string,
+  users?: string;
+  choosenOneUserID: string;
 };
 
 export default function Quiz() {
-  const params = useLocalSearchParams<Local>();
-  const choosenState = params.choosenState === "true";
+  const {id, groupName, users, choosenOneUserID} = useLocalSearchParams<Local>();
+  const { appToken, userInfo } = useAuthStore();
+  let isChoosen = false;
+  
+  const usersGroup: UserData[] = users ? JSON.parse(users) : [];
+  const choosenOneGroup: UserData[] = choosenOneUserID ? JSON.parse(choosenOneUserID) : [];
+
+  if(userInfo == null) {
+    throw "userInfo null"
+  } else {
+    isChoosen = (userInfo.id == Number(id));
+  }
+  
 
   const router = useRouter()
 
@@ -21,10 +37,10 @@ export default function Quiz() {
       <View style={styles.container}>
         <Text style={styles.title}>C'est l'heure!!</Text>
           {
-            ((choosenState &&
+            ((isChoosen &&
               <Text style={styles.title}>Le quizz de l'élu</Text>
             ) || 
-            (!choosenState &&
+            (!isChoosen &&
               <Text style={styles.title}>Le quizz du peuple</Text>
             ))
           }

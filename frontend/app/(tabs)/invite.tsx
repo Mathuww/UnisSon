@@ -8,13 +8,13 @@ import IconAction from "@/components/IconAction";
 type Local = {
   id: string;
   groupName : string,
-  users?: UserData[];
+  users?: string;
 };
 
 export default function Invitation() {
-  const {id, groupName, users} = useLocalSearchParams();
+  const {id, groupName, users} = useLocalSearchParams<Local>();
 
-  const usersGroup = JSON.parse(users as string);
+  const usersGroup: UserData[] = users ? JSON.parse(users) : [];
 
   const router = useRouter()
 
