@@ -26,24 +26,28 @@ export default function Group() {
 
     const [groupData, setGroupData] = useState<GroupData | null>(null);
 
-    useEffect(async () => {
-        if (!appToken) {
-            console.log("no app token");
-            return;
-        }
-        console.log("after apptokencheck");
+    useEffect(() => {
+        (async () => {
+            if (!appToken) {
+                console.log("no app token");
+                return;
+            }
+            console.log("after apptokencheck");
 
-        /*ApiCall.groups.getGroupData(parseInt(id, 10))
-            .then(reponse => {
-                console.log("received group data");
-                console.log(reponse.data);
-                setGroupData(reponse.data.data);
-            })
-            .catch(err => {
-                console.error(err);
-            });*/
-        await fetchCurrentGroup(Number(id));
-        setGroupData(await getGroup(Number(id)) || null);
+            /*
+            ApiCall.groups.getGroupData(parseInt(id, 10))
+                .then(reponse => {
+                    console.log("received group data");
+                    console.log(reponse.data);
+                    setGroupData(reponse.data.data);
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+            */
+            await fetchCurrentGroup(Number(id));
+            setGroupData(await getGroup(Number(id)) || null);
+        })();
     }, [id]);
 
 
@@ -65,7 +69,11 @@ export default function Group() {
 
     const handleQuiz = async (isChosen: boolean) => {
         try {
-            router.push({ pathname: '/(tabs)/quiz', params: { choosenState: String(isChosen) } });
+            if(groupData) {
+                router.push({ pathname: '/(tabs)/quiz', params: {id:id, groupName:groupData.name, users: JSON.stringify(groupData?.users ?? []), choosenOneUserID: JSON.stringify(groupData.chosenOneUserID ?? []) } });  
+            } else {
+                throw "groupData is null before quizz Page";
+            }
         } catch (error) {
             console.error("On ne pas accèder à la page de quiz de la semaine!");
         }
@@ -86,7 +94,9 @@ export default function Group() {
     const handleNextState = async () => {
         await updateGroupAction({groupId: Number(id), type: GroupActionType.FORCE_CHANGE_STATUS});
         await fetchCurrentGroup(Number(id));
-        setGroupData(await getGroup(Number(id)) || null);
+        const data = await getGroup(Number(id)) || null;
+        console.log("supposing to update group date")
+        setGroupData(data);
     }
 
     const renderUIForOthers = (): ReactNode => {

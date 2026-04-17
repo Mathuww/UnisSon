@@ -25,7 +25,7 @@ export const useAppInitialization = () => {
             SplashScreen.hideAsync();
             syncApp();
         }
-    }, [isLoggedIn, _hasHydrated]);
+    }, [isLoggedIn, _hasHydrated, syncApp]);
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", (next) => {
@@ -35,7 +35,7 @@ export const useAppInitialization = () => {
             appState.current = next;
         });
         return () => subscription.remove();
-    }, [isLoggedIn, appToken]);
+    }, [isLoggedIn, appToken, syncApp]);
 
-    return { isReady: _hasHydrated }
+    return { isReady: _hasHydrated}
 }
