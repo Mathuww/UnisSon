@@ -3,6 +3,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import CopiedInput from "@/components/CopiedInput";
 import IconAction from "@/components/IconAction";
+import {useEffect, useState} from "react";
+import {useGroupStore} from "@/utils/groupStore";
 
 
 type Local = {
@@ -13,10 +15,21 @@ type Local = {
 
 export default function Invitation() {
   const {id, groupName, users} = useLocalSearchParams<Local>();
-
+  const [inviteLink, setInviteLink] = useState<string>("loading...");
   const usersGroup: UserData[] = users ? JSON.parse(users) : [];
+  const {createInvite} = useGroupStore();
 
   const router = useRouter()
+
+  useEffect(() => {
+    (async () => {
+        const result = await createInvite(Number(id));
+        if (result.success && result.data) {
+          console.log("setting invite link to ", result.data);
+          setInviteLink(result.data);
+        }
+    })();
+  }, [createInvite, id]);
 
   const handleQuitInvite = () => {
     router.back()
@@ -35,7 +48,7 @@ export default function Invitation() {
         />
         <Text style={styles.subtitle}>Si vous voulez agrandir votre communauté, voici l'unique anneau à partager :</Text>
         <View style={styles.sharedButton}>
-          <CopiedInput url="unisson.qbert.fr"/>
+          <CopiedInput url={inviteLink}/>
         </View>
         <IconAction 
           img="close" 

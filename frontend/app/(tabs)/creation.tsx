@@ -42,10 +42,10 @@ export default function Creation() {
         throw new Error("Nom du groupe incorrect (vide)");
       }
 
-      const result: ActionResult = await createGroup(appToken, groupName, groupMaxUser);
+      const result: ActionResult<number> = await createGroup(appToken, groupName, groupMaxUser);
 
       if (result.success) {
-        router.push({ pathname: '/(tabs)/group', params: {id: result.groupID}});
+        router.push({ pathname: '/(tabs)/group', params: {id: result.data}});
       } else {
         throw new Error(String(result.error));
       }
