@@ -116,7 +116,7 @@ Group.init({
         references: { model: User, key: 'id' },
     },
     status: {
-        type: DataTypes.TINYINT,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     lastCycleChange: {
