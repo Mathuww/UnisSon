@@ -6,71 +6,71 @@ export default function TabsLayout() {
         <Tabs
             screenOptions={tabOptions}
         >
-            <Tabs.Screen 
-                name="index" 
-                options={{ 
+            <Tabs.Screen
+                name="index"
+                options={{
                     title: 'Accueil',
                     tabBarIcon: ({color, focused}) => (
                         <Ionicons name={focused ? "home-sharp" : "home-outline"} color={color} size={24} />
                     )
-                }} 
+                }}
             />
-            <Tabs.Screen 
-                name="profile" 
-                options={{ 
+            <Tabs.Screen
+                name="profile"
+                options={{
                     title: 'Profil',
                     tabBarIcon: ({color, focused}) => (
                         <Ionicons name={focused ? "information-circle": "information-circle-outline"} color={color} size={24} />
                     )
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="group"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="invite"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="creation"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="joins"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="choosenTheme"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="suggestion"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="quiz"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="ranking"
-                options={{ 
+                options={{
                     href: null
-                }} 
+                }}
             />
         </Tabs>
     );

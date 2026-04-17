@@ -21,8 +21,8 @@ export default function Group() {
 
     const router = useRouter();
 
-    const { appToken, userInfo } = useAuthStore();
-    const {updateGroupAction, fetchCurrentGroup, getGroup} = useGroupStore();
+    const {appToken, userInfo } = useAuthStore();
+    const {fetchCurrentGroup, getGroup, forceChangeStatus} = useGroupStore();
 
     const [groupData, setGroupData] = useState<GroupData | null>(null);
 
@@ -38,7 +38,7 @@ export default function Group() {
             ApiCall.groups.getGroupData(parseInt(id, 10))
                 .then(reponse => {
                     console.log("received group data");
-                    console.log(reponse.data);
+                    console.log(reponse.data);quick
                     setGroupData(reponse.data.data);
                 })
                 .catch(err => {
@@ -92,10 +92,9 @@ export default function Group() {
     }
 
     const handleNextState = async () => {
-        await updateGroupAction({groupId: Number(id), type: GroupActionType.FORCE_CHANGE_STATUS});
+        await forceChangeStatus(Number(id));
         await fetchCurrentGroup(Number(id));
         const data = await getGroup(Number(id)) || null;
-        console.log("supposing to update group date")
         setGroupData(data);
     }
 
@@ -254,7 +253,6 @@ export default function Group() {
                     {(userInfo?.id === groupData.chosenOneUserID) ? renderUIForChosen() : renderUIForOthers()}
                     <View style={styles.containerTest}>
                         <UnissonButton
-                            //Pour débugger avant l'arrivée du backend
                             label="Passer à l'état suivant"
                             colorText="#2a9d8f"
                             OnValidation={handleNextState}
