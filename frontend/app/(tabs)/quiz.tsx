@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useState, useCallback} from "react";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import IconLink from "@/components/IconLink";
+import IconAction from "@/components/IconAction";
 
 type Local = {
   choosenState: string;
@@ -10,6 +10,12 @@ type Local = {
 export default function Quiz() {
   const params = useLocalSearchParams<Local>();
   const choosenState = params.choosenState === "true";
+
+  const router = useRouter()
+
+  const handleQuitQuiz = () => {
+    router.back()
+  }
 
   return (
       <View style={styles.container}>
@@ -22,10 +28,9 @@ export default function Quiz() {
               <Text style={styles.title}>Le quizz du peuple</Text>
             ))
           }
-          <IconLink 
+          <IconAction 
             img="close" 
-            pageRef="/(tabs)/group"
-            OnValidation={() => {}}
+            OnValidation={handleQuitQuiz}
           />
       </View>
   );

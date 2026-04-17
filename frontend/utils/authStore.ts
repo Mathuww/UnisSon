@@ -2,13 +2,13 @@ import {create} from "zustand"
 import {persist, createJSONStorage} from "zustand/middleware"
 import {getItem, setItem, deleteItemAsync} from "expo-secure-store"
 import {GoogleSignin} from '@react-native-google-signin/google-signin'
-import {ApiCall} from "@/api/BackendApi";
+import {ApiCall, setAuthToken} from "@/api/BackendApi";
 
 type UserState = {
     isLoggedIn: boolean;
     hasCompletedProfile: boolean;
     userInfo : {
-        id : string;
+        id : number;
     } | null;
     appToken : string | null;
     _hasHydrated : boolean;
@@ -48,6 +48,7 @@ export const useAuthStore = create(
                     },
                     appToken : data.token,
                 })
+                setAuthToken(data.token);
             } catch (error) {
                 console.error(error)
             }
@@ -61,8 +62,9 @@ export const useAuthStore = create(
                     userInfo : null,
                     appToken : null,
                 })
+                setAuthToken(null);
             } catch (error) {
-                console.error(error)
+                throw error;
             }
         },
         completeProfile : () => {
@@ -77,7 +79,7 @@ export const useAuthStore = create(
             if (!currentToken) return;
 
             try {
-                const response = await ApiCall.users.getProfile(currentToken);
+                const response = await ApiCall.users.getProfile();
                 const freshData = response.data;
 
                 set((state) => ({

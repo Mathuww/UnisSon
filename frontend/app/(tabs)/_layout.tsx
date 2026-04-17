@@ -30,6 +30,16 @@ export default function TabsLayout() {
                     href: null
                 }} 
             />
+            {
+                /*
+                <Tabs.Screen 
+                    name="invite"
+                    options={{ 
+                        href: null
+                    }} 
+                />
+                */
+            }
             <Tabs.Screen 
                 name="creation"
                 options={{ 
@@ -37,7 +47,7 @@ export default function TabsLayout() {
                 }} 
             />
             <Tabs.Screen 
-                name="invitation"
+                name="joins"
                 options={{ 
                     href: null
                 }} 

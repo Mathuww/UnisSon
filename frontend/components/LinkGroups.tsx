@@ -1,6 +1,6 @@
-import { Link } from "expo-router";
+import {useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, Pressable, StyleSheet, Text } from "react-native";
 
 
 type Props = {
@@ -13,6 +13,8 @@ const { width } = Dimensions.get('window');
 
 export default function LinkGroups({id, label} : Props) {
     const [bgColor, setBgColor] = useState('#4E6E5D');
+
+    const router = useRouter();
 
     const randomColor = () => {
         let color = "#";
@@ -28,18 +30,20 @@ export default function LinkGroups({id, label} : Props) {
 
     useEffect(() => randomColor(), []);
 
+    const handleDestinationGroup = (id : number) => {
+        router.push({ 
+            pathname: '/(tabs)/group',
+            params: {id: id}
+        });
+    }
+
 
     return (
-        <View style={[styles.container, {backgroundColor: bgColor}]}> 
-            <Link 
-                href={{
-                    pathname: "./(tabs)/group",
-                    params: {id:id}
-                }}
-                style={styles.linkLabel}>
-                    {label}
-            </Link>
-        </View>
+        <Pressable style={[styles.container, { backgroundColor: bgColor }]} onPress={() => handleDestinationGroup(id)}>
+            <Text style={styles.linkLabel}>
+                {label}
+            </Text>
+        </Pressable>
     )
 }
 
