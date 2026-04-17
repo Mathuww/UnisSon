@@ -13,7 +13,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
         if (!userId)
             return res.status(401).json({error: {message: "Missing user ID from dev auth request (in auth middleware)"}});
     } else {
-        const authHeader = req.headers["authorization"];
+        const authHeader = req.headers["authorization"] as string;
         const token = authHeader && authHeader.split(' ')[1]; // Partie après 'Bearer '
 
         if (!token) {

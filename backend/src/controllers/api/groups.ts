@@ -3,7 +3,7 @@ import { asyncHandler } from "../../middleware/error.js";
 import { logger } from "../../middleware/logger.js";
 import Group from "../../models/elem/Group.model.js";
 import Track from "../../models/elem/Track.model.js";
-import { GroupStatus } from "../../shared/GroupStatus.js";
+import { getNextGroupStatus, GroupStatus } from "../../shared/GroupStatus.js";
 import User from "../../models/elem/User.model.js";
 
 export const GroupController = {
@@ -52,7 +52,23 @@ export const GroupController = {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
 
-        return res.status(200).json({data: group});
+        const includeUsers = req.query.includeUsers === "true";
+
+        if (includeUsers) {
+            const users = await group?.getUsers();
+            return res.status(200).json({
+                data: {
+                    id: group.id,
+                    name: group.name,
+                    status: group.status,
+                    chosenOneUserID: group.chosenOneUserID,
+                    theme: group.theme,
+                    maxUsers: group.maxUsers,
+                    users
+                }
+            });
+        } else
+            return res.status(200).json({data: group});
     }),
     getUsers: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
@@ -148,5 +164,27 @@ export const GroupController = {
         });
 
         return res.status(200).json({data: group});
-    })
+    }),
+    forceChangeStatus: asyncHandler( async (req, res) => {
+        const group: Group = (req as any).group;
+        console.log("in forcechangestatus");
+
+        await group.update({
+            status: group.status ? getNextGroupStatus(group.status) : GroupStatus.SUN_WAITING_THEME
+        });
+        console.log("switched to " + group.status);
+        return res.status(200).json({data: group});
+    }),
+    forceChangeChosen: asyncHandler( async (req, res) => {
+        const user : User = (req as any).user;
+        const group: Group = (req as any).group;
+
+        const chosenOneUserID = req.body.chosenOneUserID || user.id;
+
+        await group.update({
+            chosenOneUserID
+        });
+
+        return res.status(200).json({data: group});
+    }),
 }
