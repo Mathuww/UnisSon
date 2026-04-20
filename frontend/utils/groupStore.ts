@@ -4,13 +4,6 @@ import {getItem, setItem, deleteItemAsync} from "expo-secure-store";
 import {ApiCall, BACKEND_API_URL} from "@/api/BackendApi";
 import {ActionResult, GroupData, TrackData} from "@/shared/types";
 
-export enum GroupActionType {
-    SUBMIT_THEME = "SUBMIT_THEME",
-    SUBMIT_TRACK = "SUBMIT_TRACK",
-    FORCE_CHANGE_STATUS = "FORCE_CHANGE_STATUS"
-}
-
-
 type GroupState = {
     groups: GroupData[];
     setGroups: (groups: GroupData[]) => void;
@@ -49,7 +42,7 @@ export const useGroupStore = create(
                     );
                 } catch (error) {
                     console.error(error)
-                  }
+                }
             },
 
 

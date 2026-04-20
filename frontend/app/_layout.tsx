@@ -30,7 +30,7 @@ export default function RootLayout() {
 
             if (!(whitelist.includes(cleanPath))) {
                 console.log(`STOP!! you cant go here with a deep`);
-                router.replace('/');
+                //router.replace('/');
             }
         }
     }, [initialUrl]);

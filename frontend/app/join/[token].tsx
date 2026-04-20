@@ -4,6 +4,9 @@ import {Text, StyleSheet, View, FlatList} from "react-native";
 import { useEffect, useState } from "react";
 import {UserData} from "@/shared/types";
 import {ApiCall} from "@/api/BackendApi";
+import {useAppInitialization} from "@/hooks/useAppInitialization";
+
+import UnissonButton from "@/components/UnissonButton";
 
 type InviteInfo = {
     groupName: string,
@@ -12,6 +15,7 @@ type InviteInfo = {
 }
 
 export default function JoinScreen() {
+    const { isReady } = useAppInitialization();
     const { token } = useLocalSearchParams();
     const router = useRouter();
     const [inviteInfo, setInviteInfo] = useState<InviteInfo | null>(null);
@@ -21,14 +25,18 @@ export default function JoinScreen() {
             try {
                 const res = await ApiCall.invites.tokenInfo(token as string);
                 const data = res.data.data;
+                console.log(data);
+                if (data.isUserInGroup) {
+                    console.log("User already in group, redirecting to group homepage.");
+                    router.replace({pathname: `/(tabs)/tempindex/group/${data.group.id}/`});
+                }
                 setInviteInfo({
                     groupName: data.group.name,
-                    inviterName: data.user.name,
+                    inviterName: data.inviter.nickname,
                     otherGroupMembers: data.group.users
                 });
-                console.log(inviteInfo);
             } catch (err) {
-                console.error("cant retrieve invite info " + err);
+                console.error("cant retrieve invite info ", err);
             }
         })();
     }, [token]);
@@ -37,7 +45,7 @@ export default function JoinScreen() {
         try {
             const res = await ApiCall.invites.join(token as string);
             const group = res.data.data;
-            router.replace({pathname: "/(tabs)/group"});
+            router.replace({pathname: `/(tabs)/tempindex/group/${group.id}/`});
         } catch (err) {
             console.error("cant join group " + err);
         }
@@ -56,6 +64,9 @@ export default function JoinScreen() {
         <View>
             <Text>
                 {inviteInfo.inviterName} vous a invité dans {inviteInfo.groupName} !!
+
+                Voici la douce liste des membres, qui vous est proposée par le troubadour Gustave de Dupuis :
+                🎵
             </Text>
             <FlatList
                 data={inviteInfo.otherGroupMembers}
@@ -64,6 +75,10 @@ export default function JoinScreen() {
                     ({item}) => <Text>{item.nickname}</Text>
                 }
             />
+            <Text>
+                🎵
+            </Text>
+            <UnissonButton label="Rejoindre le doux groupe" colorText="#fff" OnValidation={handleJoin} />
         </View>
     );
 }

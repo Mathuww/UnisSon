@@ -24,54 +24,6 @@ export default function TabsLayout() {
                     )
                 }}
             />
-            <Tabs.Screen
-                name="group"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen
-                name="invite"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen
-                name="creation"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen
-                name="joins"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen
-                name="choosenTheme"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen
-                name="suggestion"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen
-                name="quiz"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen
-                name="ranking"
-                options={{
-                    href: null
-                }}
-            />
         </Tabs>
     );
 }
