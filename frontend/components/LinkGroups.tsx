@@ -32,8 +32,7 @@ export default function LinkGroups({id, label} : Props) {
 
     const handleDestinationGroup = (id : number) => {
         router.push({ 
-            pathname: '/(tabs)/group',
-            params: {id: id}
+            pathname: `/(tabs)/tempindex/group/${id}`,
         });
     }
 

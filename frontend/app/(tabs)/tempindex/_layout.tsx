@@ -1,14 +1,12 @@
 import {Stack} from "expo-router";
 import React from "react";
 
-export default function HomeStackLayout() {
+export default function GroupStackLayout() {
     return (
         <React.Fragment>
             <Stack>
-                <Stack.Screen name="index" />
-                <Stack.Screen name="group/[id]" />
-                <Stack.Screen name="invite" />
-                <Stack.Screen name="creation" />
+                <Stack.Screen name="group/[id]"/>
+                <Stack.Screen name="creation"/>
             </Stack>
         </React.Fragment>
     )

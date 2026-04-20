@@ -14,7 +14,7 @@ export default function Index() {
 
   const handleCreation = () => {
     console.log("log test");
-    router.push({ pathname: '/(tabs)/creation' /*, params: {id: } */});
+    router.push({ pathname: '/(tabs)/tempindex/creation'});
   }
 
   return (
