@@ -1,28 +1,20 @@
-import { ApiCall } from "@/api/BackendApi";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuthStore } from "@/utils/authStore";
 import { ReactNode, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import UnissonButton from "@/components/UnissonButton";
 import IconAction from "@/components/IconAction";
-import { GroupData, GroupStatus } from "@/shared/types";
-import { GroupActionType, useGroupStore } from "@/utils/groupStore";
-
-type Local = {
-    id: string;
-};
-
-//Pour débugger avant l'arrivée du backend
-
+import { GroupData } from "@/shared/types";
+import { useGroupStore } from "@/utils/groupStore";
 
 export default function Group() {
 
-    const { id } = useLocalSearchParams<Local>();
+    const { id } = useLocalSearchParams();
 
     const router = useRouter();
 
-    const { appToken, userInfo } = useAuthStore();
-    const {updateGroupAction, fetchCurrentGroup, getGroup} = useGroupStore();
+    const {appToken, userInfo } = useAuthStore();
+    const {fetchCurrentGroup, leaveGroup, getGroup, forceChangeStatus} = useGroupStore();
 
     const [groupData, setGroupData] = useState<GroupData | null>(null);
 
@@ -32,70 +24,63 @@ export default function Group() {
                 console.log("no app token");
                 return;
             }
-            console.log("after apptokencheck");
 
-            /*
-            ApiCall.groups.getGroupData(parseInt(id, 10))
-                .then(reponse => {
-                    console.log("received group data");
-                    console.log(reponse.data);
-                    setGroupData(reponse.data.data);
-                })
-                .catch(err => {
-                    console.error(err);
-                });
-            */
             await fetchCurrentGroup(Number(id));
             setGroupData(await getGroup(Number(id)) || null);
         })();
-    }, [id]);
-
+    }, [id, appToken, fetchCurrentGroup, getGroup]);
 
     const handleChoosenTheme = async () => {
         try {
-            router.push({ pathname: '/(tabs)/choosenTheme'/*, params: { id: .id }*/ });
+            router.push(`/(tabs)/tempindex/group/${id}/addTheme`);
         } catch (error) {
-            console.error("On ne pas accèder à ta page de sélection de ton thème en tant qu'élu!");
+            console.error("On ne pas accèder à ta page de sélection de ton thème en tant qu'élu!", error);
         }
     }
 
     const handleSuggestion = async () => {
         try {
-            router.push({ pathname: '/(tabs)/suggestion'/*, params: { id: .id }*/ });
+            router.push(`/(tabs)/tempindex/group/${id}/addTrack`);
         } catch (error) {
-            console.error("On ne pas accèder à la page de proposition de ta dernière suggestion!");
+            console.error("On ne pas accèder à la page de proposition de ta dernière suggestion!", error);
         }
     }
 
-    const handleQuiz = async (isChosen: boolean) => {
+    const handleQuiz = async () => {
         try {
             if(groupData) {
-                router.push({ pathname: '/(tabs)/quiz', params: {id:id, groupName:groupData.name, users: JSON.stringify(groupData?.users ?? []), choosenOneUserID: JSON.stringify(groupData.chosenOneUserID ?? []) } });  
+                router.push(`/(tabs)/tempindex/group/${id}/quizz`);
             } else {
-                throw "groupData is null before quizz Page";
+                console.error("groupData is null before quizz Page");
             }
         } catch (error) {
-            console.error("On ne pas accèder à la page de quiz de la semaine!");
+            console.error("On ne pas accèder à la page de quiz de la semaine!", error);
         }
     }
 
     const handleInviteOthersMembers = () => {
         if (groupData) {
-            router.push({ pathname: '/(tabs)/invite', params: { id: id, groupName: groupData.name, users: JSON.stringify(groupData?.users ?? []) } });
+            router.push(`/(tabs)/tempindex/group/${id}/invitation`);
         } else {
             console.error("groupData is null before invite Page");
         }
     }
 
-    const handleGroupDelete = () => {
-        router.push({ pathname: '/' /*, params: {id: } */ });
+    const handleLeaveGroup = async () => {
+        try {
+            await leaveGroup(Number(id));
+            router.push("/");
+        } catch (error) {
+            console.error("you can't leave your group");
+        }
     }
 
+
+
     const handleNextState = async () => {
-        await updateGroupAction({groupId: Number(id), type: GroupActionType.FORCE_CHANGE_STATUS});
+        await forceChangeStatus(Number(id));
         await fetchCurrentGroup(Number(id));
         const data = await getGroup(Number(id)) || null;
-        console.log("supposing to update group date")
         setGroupData(data);
     }
 
@@ -117,7 +102,6 @@ export default function Group() {
                         />
                     </>
                 );
-                break;
 
             case "WK_DONE_SUB":
                 return (
@@ -125,7 +109,6 @@ export default function Group() {
                         Vous avez déjà ajouté un son pour cette période.
                     </Text>
                 )
-                break;
 
             case "SAT_WAITING_QUIZ":
                 return (<UnissonButton
@@ -134,7 +117,6 @@ export default function Group() {
                     //Pour débugger avant l'arrivée du backend
                     OnValidation={() => console.log("Sois patient")}
                 />)
-                break;
 
             case "SAT_DONE_QUIZ":
                 return (
@@ -142,7 +124,6 @@ export default function Group() {
                         Vous avez déjà répondu au quiz, sorry.
                     </Text>
                 )
-                break;
 
             case "SUN_WAITING_THEME":
                 return (
@@ -150,7 +131,6 @@ export default function Group() {
                         L'élu choisit un thème.
                     </Text>
                 )
-                break;
 
             case "SUN_DONE_THEME":
                 return (
@@ -158,11 +138,9 @@ export default function Group() {
                         L'élu a choisi un thème.
                     </Text>
                 )
-                break;
 
             default:
                 return (<></>)
-                break;
         }
     }
 
@@ -184,7 +162,6 @@ export default function Group() {
                         />
                     </View>
                 )
-                break;
 
             case "SUN_DONE_THEME":
                 return (
@@ -192,39 +169,34 @@ export default function Group() {
                         Vous avez déjà choisi un thème.
                     </Text>
                 )
-                break;
 
             case "WK_WAITING_SUB":
                 return (
                     <Text style={styles.subtitle}>
-                        Attendez tranquillement que vos amis choississent bien leurs chansons :)
+                        Attendez tranquillement que vos amis choisissent bien leurs chansons :)
                     </Text>
                 )
-                break;
 
             case "WK_DONE_SUB":
                 return (
                     <Text style={styles.subtitle}>
-                        Vos amis ont choisi leur chanson, bientôt l'heure du quiz mon salopard :)
+                        Vos amis ont choisi leur chanson, bientôt l'heure du quiz ^^ :)
                     </Text>
                 )
-                break;
 
             case "SAT_WAITING_QUIZ":
                 return (<UnissonButton
                     label="Qui connaît mieux mon moi-même ?"
                     colorText="#e76f51"
                     //Pour débugger avant l'arrivée du backend
-                    OnValidation={() => handleQuiz(true)}
+                    OnValidation={() => handleQuiz()}
                 />)
-                break;
 
             case "SAT_DONE_QUIZ":
-                break;
+                return (<Text>sat-done-quiz</Text>);
 
             default:
-                return (<></>)
-                break;
+                return (<></>);
         }
     }
 
@@ -254,7 +226,6 @@ export default function Group() {
                     {(userInfo?.id === groupData.chosenOneUserID) ? renderUIForChosen() : renderUIForOthers()}
                     <View style={styles.containerTest}>
                         <UnissonButton
-                            //Pour débugger avant l'arrivée du backend
                             label="Passer à l'état suivant"
                             colorText="#2a9d8f"
                             OnValidation={handleNextState}
@@ -266,8 +237,8 @@ export default function Group() {
                             OnValidation={handleInviteOthersMembers}
                         />
                         <IconAction
-                            img="delete-forever"
-                            OnValidation={handleGroupDelete}
+                            img="group-off"
+                            OnValidation={handleLeaveGroup}
                         />
                     </View>
                 </View>
@@ -282,7 +253,8 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: "#25292e",
         flex: 1,
-        paddingTop: 20,
+        padding:10,
+        paddingTop: 100,
     },
     containerButton: {
         paddingBottom: 30,

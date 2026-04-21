@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 100,
   }, title: {
     padding : 5,
     color: "#fff",

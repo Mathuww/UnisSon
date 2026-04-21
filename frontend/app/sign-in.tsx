@@ -1,4 +1,4 @@
-import {TextInput, View, StyleSheet} from "react-native";
+import {TextInput, Text, View, StyleSheet} from "react-native";
 import {useState} from "react";
 import UnissonButton from "@/components/UnissonButton";
 import {ApiCall} from "@/api/BackendApi";
@@ -27,18 +27,31 @@ export default function SignInScreen() {
     }
 
     return (
-        <View>
+        <View style={styles.container}>
+            <Text style={styles.text}>Connectez-vous avec votre compte Google :</Text>
             <TextInput
                 style={styles.textInput}
                 placeholder={"Enter Username"}
                 value={pseudo}
                 onChangeText={setPseudo}
             />
-            <UnissonButton label={"Se Connecter"} colorText="333" OnValidation={handleSignIn}/>
+            <UnissonButton label={"Se Connecter"} colorText="#e76f51" OnValidation={handleSignIn}/>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    textInput: {}
+    container: {
+    backgroundColor: "#25292e",
+    flex: 1,
+    padding: 10,
+    paddingTop: 100,
+
+    },
+    text: {
+        color: "#fff"
+    },
+    textInput: {
+        color: "#fff"
+    },
 })

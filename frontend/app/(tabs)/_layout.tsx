@@ -3,44 +3,25 @@ import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
     return (
-        <Tabs
-            screenOptions={tabOptions}
-        >
-            <Tabs.Screen 
-                name="index" 
-                options={{ 
+        
+        <Tabs screenOptions={tabOptions }>
+            <Tabs.Screen
+                name="index"
+                options={{
                     title: 'Accueil',
                     tabBarIcon: ({color, focused}) => (
                         <Ionicons name={focused ? "home-sharp" : "home-outline"} color={color} size={24} />
                     )
-                }} 
+                }}
             />
-            <Tabs.Screen 
-                name="profile" 
-                options={{ 
+            <Tabs.Screen
+                name="profile"
+                options={{
                     title: 'Profil',
                     tabBarIcon: ({color, focused}) => (
                         <Ionicons name={focused ? "information-circle": "information-circle-outline"} color={color} size={24} />
                     )
-                }} 
-            />
-            <Tabs.Screen 
-                name="group"
-                options={{ 
-                    href: null
-                }} 
-            />
-            <Tabs.Screen 
-                name="invite"
-                options={{ 
-                    href: null
-                }} 
-            />
-            <Tabs.Screen 
-                name="creation"
-                options={{ 
-                    href: null
-                }} 
+                }}
             />
             <Tabs.Screen 
                 name="joins"
@@ -49,29 +30,12 @@ export default function TabsLayout() {
                 }} 
             />
             <Tabs.Screen 
-                name="choosenTheme"
+                name="tempindex"
                 options={{ 
                     href: null
                 }} 
             />
-            <Tabs.Screen 
-                name="suggestion"
-                options={{ 
-                    href: null
-                }} 
-            />
-            <Tabs.Screen 
-                name="quiz"
-                options={{ 
-                    href: null
-                }} 
-            />
-            <Tabs.Screen 
-                name="ranking"
-                options={{ 
-                    href: null
-                }} 
-            />
+
         </Tabs>
     );
 }
@@ -81,6 +45,7 @@ const tabOptions = {
     headerStyle: {
         backgroundColor: '#25292e'
     },
+    headerShown: false,
     headerShadowVisible: false,
     headerTintColor: '#fff',
     tabBarStyle: {

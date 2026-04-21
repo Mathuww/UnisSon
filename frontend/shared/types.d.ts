@@ -1,6 +1,6 @@
-export type ActionResult = {
+export type ActionResult<T = unverified> = {
     success: boolean;
-    groupID?: number;
+    data?: T;
     error?: unknown;
 }
 
@@ -39,8 +39,8 @@ export type GroupData = {
 };
 
 export type TrackData = {
-  id: number;
-  title: string;
+  id?: number;
+  title?: string;
   artist?: string;
   ISRC?: string;
   youtubeLink: string;
