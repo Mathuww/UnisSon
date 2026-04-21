@@ -6,11 +6,7 @@ import { useAuthStore } from "@/utils/authStore";
 import {useGroupStore} from "@/utils/groupStore";
 
 export default function Quiz() {
-<<<<<<< HEAD
   const { id } = useLocalSearchParams()
-=======
-  const id = useLocalSearchParams()
->>>>>>> a0cc4dba78d591cc1ddf3d8e8fcca496746deb4d
   const router = useRouter()
   const {getGroup} = useGroupStore(); /* Note : utilise ça pour récupérer les infos utilisateurs */
   const {userInfo} = useAuthStore();

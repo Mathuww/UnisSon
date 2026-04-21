@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from "react-native";
 import {useState, useCallback} from "react";
-import {useFocusEffect, useRouter} from "expo-router";
+import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import UnissonTextInput from "@/components/UnissonTextInput";
 import UnissonButton from "@/components/UnissonButton";
 import {useGroupStore} from "@/utils/groupStore";
@@ -8,6 +8,7 @@ import {useGroupStore} from "@/utils/groupStore";
 
 export default function SubmitTracks() {
     const [yourSuggestion, setYourSuggestion] = useState('');
+    const {id} = useLocalSearchParams();
     const {submitTrack} = useGroupStore();
 
     const router = useRouter();
@@ -24,7 +25,7 @@ export default function SubmitTracks() {
         console.log(yourSuggestion);
         try {
             //submitTrack()
-            router.push({pathname: '/(tabs)/group'/*, params: { id: .id }*/});
+            router.push({pathname: `/(tabs)/group/${id}/` as any });
         } catch (error) {
             console.error("On n'arrive pas à transmettre votre suggestion musicale. Veuillez réessayer!");
         }
@@ -40,9 +41,9 @@ export default function SubmitTracks() {
                 Par ailleurs, n'oubliez pas que la suggestion doit être personnalisée à l'élu et à son thème :)
             </Text>
             <UnissonTextInput labelDefault="Le lien de votre suggestion musicale" text={yourSuggestion}
-                              OnWrite={setYourSuggestion}/>
+                OnWrite={setYourSuggestion}/>
             <UnissonButton label="Confirmer votre propagande de la nouvelle ère" colorText="#e76f51"
-                           OnValidation={handleSuggestion}></UnissonButton>
+                OnValidation={handleSuggestion}></UnissonButton>
         </View>
     );
 }

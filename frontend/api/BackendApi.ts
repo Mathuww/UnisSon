@@ -10,6 +10,17 @@ export const api = axios.create({
     timeout: 5000
 });
 
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response) {
+            console.error(`${error.response.status}]`, error.response.data);
+        } else {
+            console.error(error.message);
+        }
+        return Promise.reject(error)
+    }
+)
 
 export const setAuthToken = (token: string | null) => {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;

@@ -16,6 +16,10 @@ export default function LinkGroups({id, label} : Props) {
 
     const router = useRouter();
 
+    useEffect(() => {
+        console.log("Creating link group for " + id)
+    }, [id]);
+
     const randomColor = () => {
         let color = "#";
         const possibility = "0123456789abcdef";
@@ -31,6 +35,7 @@ export default function LinkGroups({id, label} : Props) {
     useEffect(() => randomColor(), []);
 
     const handleDestinationGroup = (id : number) => {
+        console.log(`getting to group/${id}`);
         router.push({ 
             pathname: `/(tabs)/tempindex/group/${id}` as any,
         });
