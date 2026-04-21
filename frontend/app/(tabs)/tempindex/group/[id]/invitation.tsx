@@ -50,7 +50,7 @@ export default function Invitation() {
           renderItem={({item}) => <Text style={styles.text}>-{item.nickname}</Text>
           }
         />
-        <Text style={styles.subtitle}>Si vous voulez agrandir votre communauté, voici l'unique anneau à partager :</Text>
+        <Text style={styles.subtitle}>Si vous voulez agrandir votre communauté, voici l&#39;unique anneau à partager :</Text>
         <View style={styles.sharedButton}>
           <CopiedInput url={inviteLink}/>
         </View>

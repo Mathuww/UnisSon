@@ -6,7 +6,11 @@ import { useAuthStore } from "@/utils/authStore";
 import {useGroupStore} from "@/utils/groupStore";
 
 export default function Quiz() {
+<<<<<<< HEAD
   const { id } = useLocalSearchParams()
+=======
+  const id = useLocalSearchParams()
+>>>>>>> a0cc4dba78d591cc1ddf3d8e8fcca496746deb4d
   const router = useRouter()
   const {getGroup} = useGroupStore(); /* Note : utilise ça pour récupérer les infos utilisateurs */
   const {userInfo} = useAuthStore();
@@ -17,21 +21,8 @@ export default function Quiz() {
   useEffect(() => {
     const loadGroupData = async () => {
       const group = await getGroup(Number(id));
-      console.log("Hey oh");
       if (group && group.chosenOneUserID) {
-        console.log("Il y a un élu");
         setChosenOne(group.chosenOneUserID);
-        /*
-        if(group.chosenOneUserID == userInfo?.id) {
-          console.log("Je suis élu")
-          setIsChosen(true);
-        } else {
-          console.log("Je ne suis pas élu")
-        }
-        */
-      } else {
-        console.log("Je ne comprends pas");
-        console.log(group);
       }
     };
     loadGroupData();
@@ -42,7 +33,6 @@ export default function Quiz() {
       setIsChosen(chosenOne === Number(userInfo.id));
     }
   }, [chosenOne, userInfo]);
-
 
 
   const handleQuitQuiz = () => {

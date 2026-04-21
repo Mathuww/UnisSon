@@ -92,7 +92,7 @@ export default function Group() {
                 return (
                     <>
                         <Text style={styles.subtitle}>
-                            Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement  (inserer nom élu) :
+                            Cette semaine, ce ne sera pas vous l&#39;élu. À vous d&#39;épater musicalement  (inserer nom élu) :
                         </Text>
                         <UnissonButton
                             label="À vous d'impressionner votre élu avec votre musique !"
@@ -128,14 +128,14 @@ export default function Group() {
             case "SUN_WAITING_THEME":
                 return (
                     <Text>
-                        L'élu choisit un thème.
+                        L&#39;élu choisit un thème.
                     </Text>
                 )
 
             case "SUN_DONE_THEME":
                 return (
                     <Text>
-                        L'élu a choisi un thème.
+                        L&#39;élu a choisi un thème.
                     </Text>
                 )
 
