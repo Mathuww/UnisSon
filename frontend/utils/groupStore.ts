@@ -11,7 +11,10 @@ type GroupState = {
     submitTrack: (groupId: number, track: TrackData) => Promise<void>;
     submitTheme: (groupId: number, theme: string) => Promise<void>;
     createInvite: (groupId: number) => Promise<ActionResult<string>>;
+<<<<<<< HEAD
     leaveGroup: (groupId: number) => Promise<void>;
+=======
+>>>>>>> a0cc4dba78d591cc1ddf3d8e8fcca496746deb4d
     clearAllActions: () => void;
     fetchGroups: () => Promise<void>;
     fetchCurrentGroup: (id: number) => Promise<void>;
@@ -34,6 +37,35 @@ export const useGroupStore = create(
                 }
             },
 
+<<<<<<< HEAD
+=======
+
+            submitTrack: async (groupId: number, track: TrackData) => {
+                try {
+                    const response = await ApiCall.groups.addSong(
+                        groupId,
+                        track
+                    );
+                } catch (error) {
+                    console.error(error)
+                }
+            },
+
+
+            submitTheme: async (groupId: number, theme: string) => {
+                try {
+                    const response = await ApiCall.groups.setTheme(
+                        groupId,
+                        theme
+                    );
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+
+            clearAllActions: () => {
+            },
+>>>>>>> a0cc4dba78d591cc1ddf3d8e8fcca496746deb4d
 
             submitTrack: async (groupId: number, track: TrackData) => {
                 try {
