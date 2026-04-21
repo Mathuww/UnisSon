@@ -1,37 +1,35 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useState, useCallback} from "react";
-import { useFocusEffect, useRouter } from "expo-router";
+import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import UnissonTextInput from "@/components/UnissonTextInput";
 import UnissonButton from "@/components/UnissonButton";
 
 
-export default function ChoosenTheme() {
+export default function SubmitTheme() {
   const [groupTheme, setGroupTheme] = useState('');
+  const { id } = useLocalSearchParams();
 
   const router = useRouter();
 
   const resetInput = useCallback(() => {
       setGroupTheme("");
     }, []);
-  
+
     useFocusEffect(
       resetInput
     );
 
     const handleTheme = async () => {
-    console.log(groupTheme);
-    try {
-      /*
-      Appel au Backend
-      GAIA IT IS YOUR JOB
-      */
+      console.log(groupTheme);
+      try {
+        await ApiCall.groups.setTheme(id, groupTheme);
 
-      //En attendant
-      router.push({ pathname: '/(tabs)/group'/*, params: { id: .id }*/ });
-    } catch (error) {
-      console.error("On n'arrive pas à transmettre votre thème. Veuillez réessayer!");
-    }
-  }
+        //En attendant
+        router.push({ pathname: '/(tabs)/groups'/*, params: { id: .id }*/ });
+      } catch (error) {
+        console.error("On n'arrive pas à transmettre votre thème. Veuillez réessayer!");
+      }
+   }
 
 
     return (
@@ -48,6 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#25292e",
     flex: 1,
     justifyContent: "center",
+    paddingTop: 100,
   }, title: {
     padding : 5,
     color: "#fff",

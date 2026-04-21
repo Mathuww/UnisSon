@@ -13,8 +13,7 @@ export default function Index() {
   const {groups} = useGroupStore();
 
   const handleCreation = () => {
-    console.log("log test");
-    router.push({ pathname: '/(tabs)/creation' /*, params: {id: } */});
+    router.push({ pathname: '/(tabs)/tempindex/creation'});
   }
 
   return (
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#25292e",
     flex: 1,
-    paddingTop: 20,
+    paddingTop: 100,
     justifyContent : "space-between",
 
   },

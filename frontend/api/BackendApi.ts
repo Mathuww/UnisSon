@@ -1,6 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
+import {TrackData} from "@/shared/types";
 
-const BACKEND_API_URL = "https://srv833678.hstgr.cloud:8085";
+export const BACKEND_API_URL = "https://srv833678.hstgr.cloud:8085";
 
 let authToken: string | null = null;
 
@@ -40,6 +41,9 @@ export const ApiCall = {
             maxUsers: maxUsers,
         }),
 
+        leaveGroup: (id: number) =>
+            api.delete(`/api/groups/${id}/members/me`),
+
         setTheme: (id: number, theme: string) =>
             api.post(`/api/groups/${id}/theme`, { theme }),
 
@@ -48,12 +52,7 @@ export const ApiCall = {
 
         addSong: (
             id: number,
-            track: {
-                title: string;
-                artist?: string;
-                ISRC?: string;
-                youtubeLink: string;
-            }
+            track: TrackData
         ) =>
             api.post(`/api/groups/${id}/songs`, track),
 
@@ -65,5 +64,10 @@ export const ApiCall = {
 
         forceChangeChosen: (id: number, chosenOneUserID: number) =>
             api.post(`/api/groups/${id}/chosen`, { chosenOneUserID }),
+    },
+    invites: {
+        tokenInfo: (token: string) => api.get(`/api/invites/${token}`),
+
+        join: (token: string) => api.post(`/api/invites/${token}`)
     }
 };
