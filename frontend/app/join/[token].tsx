@@ -60,22 +60,19 @@ export default function JoinScreen() {
 
     return (
         <View style={styles.container}>
-            <Text>
+            <Text style={styles.title}>
                 {inviteInfo.inviterName} vous a invité dans {inviteInfo.groupName} !!
-
+            </Text>
+            <Text style={styles.subtitle}>
                 Voici la douce liste des membres, qui vous est proposée par le troubadour Gustave de Dupuis :
-                🎵
             </Text>
             <FlatList
                 data={inviteInfo.otherGroupMembers}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={
-                    ({item}) => <Text>{item.nickname}</Text>
+                    ({item}) => <Text style={styles.text}>{item.nickname}</Text>
                 }
             />
-            <Text>
-                🎵
-            </Text>
             <UnissonButton label="Rejoindre le doux groupe" colorText="#fff" OnValidation={handleJoin} />
         </View>
     );
@@ -87,5 +84,23 @@ const styles = StyleSheet.create({
         flex: 1,
         padding:10,
         paddingTop: 100,
+        paddingBottom:30,
     },
+    title: {
+        padding : 5,
+        color: "#fff",
+        alignSelf: "center",
+        fontSize: 18,
+        fontWeight: "bold",
+        paddingBottom : 20,
+    },
+    subtitle: {
+        padding: 5,
+        color: "#ffe",
+        fontSize: 12,
+        paddingBottom: 5,
+    },
+    text: {
+        color: "#fff"
+    }
 })

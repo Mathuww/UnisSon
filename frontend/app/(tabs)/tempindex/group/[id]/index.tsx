@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useGlobalSearchParams, useLocalSearchParams, useRouter } from "expo-router";
 import { useAuthStore } from "@/utils/authStore";
 import { ReactNode, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
@@ -9,7 +9,9 @@ import { useGroupStore } from "@/utils/groupStore";
 
 export default function Group() {
 
-    const { id } = useLocalSearchParams();
+    const params = useLocalSearchParams();
+    console.log(params);
+    const id = params.id;
 
     const router = useRouter();
 
@@ -20,6 +22,8 @@ export default function Group() {
 
     useEffect(() => {
         (async () => {
+            console.log("welcome to group page " + id);
+
             if (!appToken) {
                 console.log("no app token");
                 return;
