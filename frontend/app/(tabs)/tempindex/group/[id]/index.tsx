@@ -10,7 +10,6 @@ import { useGroupStore } from "@/utils/groupStore";
 export default function Group() {
 
     const params = useLocalSearchParams();
-    console.log(params);
     const id = params.id;
 
     const router = useRouter();
@@ -19,6 +18,9 @@ export default function Group() {
     const {fetchCurrentGroup, leaveGroup, getGroup, forceChangeStatus} = useGroupStore();
 
     const [groupData, setGroupData] = useState<GroupData | null>(null);
+    
+    const [chosenOne, setChosenOne] = useState<number | null>(null);
+    const [isChosen, setIsChosen] = useState<boolean>(false);
 
     useEffect(() => {
         (async () => {
@@ -28,11 +30,21 @@ export default function Group() {
                 console.log("no app token");
                 return;
             }
-
+            console.log("fetching current group data...")
             await fetchCurrentGroup(Number(id));
             setGroupData(await getGroup(Number(id)) || null);
+            if (groupData && groupData.chosenOneUserID) {
+                setChosenOne(groupData.chosenOneUserID);
+            }
         })();
     }, [id, appToken, fetchCurrentGroup, getGroup]);
+
+    
+    useEffect(() => {
+        if (userInfo) {
+        setIsChosen(chosenOne === Number(userInfo.id));
+        }
+    }, [chosenOne, userInfo]);
 
     const handleChoosenTheme = async () => {
         try {
