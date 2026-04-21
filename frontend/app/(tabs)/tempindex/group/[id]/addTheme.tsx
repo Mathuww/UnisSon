@@ -3,11 +3,13 @@ import { useState, useCallback} from "react";
 import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import UnissonTextInput from "@/components/UnissonTextInput";
 import UnissonButton from "@/components/UnissonButton";
+import { useGroupStore } from "@/utils/groupStore";
 
 
 export default function SubmitTheme() {
   const [groupTheme, setGroupTheme] = useState('');
   const { id } = useLocalSearchParams();
+  const {submitTheme} = useGroupStore();
 
   const router = useRouter();
 
@@ -22,10 +24,10 @@ export default function SubmitTheme() {
     const handleTheme = async () => {
       console.log(groupTheme);
       try {
-        await ApiCall.groups.setTheme(id, groupTheme);
+        await submitTheme(Number(id), groupTheme);
 
         //En attendant
-        router.push({ pathname: '/(tabs)/groups'/*, params: { id: .id }*/ });
+        router.push({ pathname: `/(tabs)/tempindex/group/${id}/` as any});
       } catch (error) {
         console.error("On n'arrive pas à transmettre votre thème. Veuillez réessayer!");
       }

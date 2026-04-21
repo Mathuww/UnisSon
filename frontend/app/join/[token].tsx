@@ -7,6 +7,7 @@ import {ApiCall} from "@/api/BackendApi";
 import {useAppInitialization} from "@/hooks/useAppInitialization";
 
 import UnissonButton from "@/components/UnissonButton";
+import { useGroupStore } from "@/utils/groupStore";
 
 type InviteInfo = {
     groupName: string,
@@ -19,6 +20,7 @@ export default function JoinScreen() {
     const { token } = useLocalSearchParams();
     const router = useRouter();
     const [inviteInfo, setInviteInfo] = useState<InviteInfo | null>(null);
+    const {fetchGroups} = useGroupStore();
 
     useEffect(() => {
         (async () => {
@@ -45,6 +47,7 @@ export default function JoinScreen() {
         try {
             const res = await ApiCall.invites.join(token as string);
             const group = res.data.data;
+            await fetchGroups();
             router.replace({pathname: `/(tabs)/tempindex/group/${group.id}/` as any});
         } catch (err) {
             console.error("cant join group " + err);

@@ -1,7 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 import {TrackData} from "@/shared/types";
 
-export const BACKEND_API_URL = "https://srv833678.hstgr.cloud:8085";
+export const BACKEND_API_URL = "https://unisson.qbert.fr";
 
 let authToken: string | null = null;
 
