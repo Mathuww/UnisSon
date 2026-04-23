@@ -19,6 +19,7 @@ const MEMBERS = [
 
 export default function Quiz() {
   const [touchID, setTouchID] = useState(-1);
+  const [playing, setPlaying] = useState(false);
 
   const router = useRouter();
 
@@ -41,10 +42,16 @@ export default function Quiz() {
 
       <Text style={styles.title}>Qui a suggéré ce morceau ?</Text>
 
+      {/*Chequer pourquoi l'autoplay ne fonctionne pas*/}
       <YoutubePlayer
         height={250}
-        play={true}
+        play={playing}
         videoId={link}
+        forceAndroidAutoplay={true}
+        webViewProps={{
+            mediaPlaybackRequiresUserAction: false,
+        }}
+        onReady={() => setPlaying(true)}
       />
 
       <FlatList

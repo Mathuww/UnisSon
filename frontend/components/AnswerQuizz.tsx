@@ -23,7 +23,7 @@ export default function QuizAnswer({ id, label, goodAnswer, touchID, OnPress}: P
     }
 
     return (
-        <Pressable style={[styles.container, { backgroundColor: color }]} onPress={OnPress}>
+        <Pressable android_disableSound={true} style={[styles.container, { backgroundColor: color }]} onPress={OnPress}>
             <Text style={styles.label}>
                 {label}
             </Text>

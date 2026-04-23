@@ -21,10 +21,21 @@ export default function SubmitTracks() {
         resetInput
     );
 
+    const checkVerification = (link: string) => {
+        const prefixLink = "youtube.com/watch?v=";
+        const prefixMobilLink = "youtu.be/";
+
+        if (!link.includes(prefixLink) && !link.includes(prefixMobilLink)) {
+            throw new Error("It is not a url Youtube!");
+        }
+        return link.split("=")[1];
+    }
+
     const handleSuggestion = async () => {
         console.log(yourSuggestion);
         try {
-            await submitTrack(Number(id), {youtubeLink: yourSuggestion});
+            const suggestion = checkVerification(yourSuggestion);
+            await submitTrack(Number(id), {youtubeLink: suggestion});
             router.push({pathname: `/(tabs)/group/${id}/` as any });
         } catch (error) {
             console.error("On n'arrive pas à transmettre votre suggestion musicale. Veuillez réessayer!");
