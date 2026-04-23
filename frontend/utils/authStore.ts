@@ -11,7 +11,7 @@ type UserState = {
     userInfo : UserData | null;
     appToken : string | null;
     _hasHydrated : boolean;
-    GoogleLogIn : (idToken : string) => void;
+    GoogleLogIn : (idToken : string, authCode : string | null) => void;
     GoogleLogOut: () => void;
     completeProfile: () => void;
     setHasHydrated: (value: boolean) => void;
@@ -34,9 +34,9 @@ export const useAuthStore = create(
                 };
             });
         },
-        GoogleLogIn : async (idToken : string) => {
+        GoogleLogIn : async (idToken : string, authCode : string | null) => {
             try {
-                const response = await ApiCall.auth.GGLogIn(idToken)
+                const response = await ApiCall.auth.GGLogIn(idToken, authCode)
                 const data = response.data.data;
 
                 set({
