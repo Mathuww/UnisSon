@@ -1,71 +1,95 @@
-import { StyleSheet, Text, View } from "react-native";
-import {useState, useCallback, useEffect} from "react";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import IconAction from "@/components/IconAction";
-import { useAuthStore } from "@/utils/authStore";
-import {useGroupStore} from "@/utils/groupStore";
+import { StyleSheet, Text, View, FlatList } from "react-native";
+import { useRouter } from "expo-router";
+import QuizAnswer from "@/components/AnswerQuizz";
+import UnissonButton from "@/components/UnissonButton";
+import YoutubePlayer from "react-native-youtube-iframe";
+import { useState } from "react";
+
+const link = "Jvv3cC6CamE";
+const MEMBERS = [
+  { id: 1, nickname: "Pablo",  isCorrect: false },
+  { id: 2, nickname: "Gaïa",   isCorrect: true  },
+  { id: 3, nickname: "Mathéo", isCorrect: false },
+  { id: 4, nickname: "Ezqui-elle",    isCorrect: false },
+  { id: 5, nickname: "Métatron",  isCorrect: false },
+  { id: 6, nickname: "Chronos", isCorrect: false },
+  { id: 7, nickname: "Tom",   isCorrect: false },
+  { id: 8, nickname: "Asyna",   isCorrect: false },
+];
 
 export default function Quiz() {
-  const { id } = useLocalSearchParams()
-  const router = useRouter()
-  const {getGroup} = useGroupStore(); /* Note : utilise ça pour récupérer les infos utilisateurs */
-  const {userInfo} = useAuthStore();
+  const [touchID, setTouchID] = useState(-1);
 
-  const [chosenOne, setChosenOne] = useState<number | null>(null);
-  const [isChosen, setIsChosen] = useState<boolean>(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const loadGroupData = async () => {
-      const group = await getGroup(Number(id));
-      if (group && group.chosenOneUserID) {
-        setChosenOne(group.chosenOneUserID);
-      }
-    };
-    loadGroupData();
-  })
-
-  useEffect(() => {
-    if (userInfo) {
-      setIsChosen(chosenOne === Number(userInfo.id));
+  const handleOneAnswerTouch = (id : number) => {
+    if(touchID < 0) {
+      setTouchID(id);
     }
-  }, [chosenOne, userInfo]);
-
-
-  const handleQuitQuiz = () => {
-    router.back()
   }
 
+  const handleNext = async () => {
+    try {
+      console.log("Next Question");
+      setTouchID(-1);
+    } catch (error) {
+      console.error("On n'arrive pas à continuer le quizz. Veuillez réessayer!");
+    }
+  }
   return (
-      <View style={styles.container}>
-        <Text style={styles.title}>C'est l'heure!!</Text>
-          {
-            ((isChosen &&
-              <Text style={styles.title}>Le quiz de l'élu</Text>
-            ) ||
-            (!isChosen &&
-              <Text style={styles.title}>Le quiz du peuple</Text>
-            ))
-          }
-          <IconAction
-            img="close"
-            OnValidation={handleQuitQuiz}
+    <View style={styles.container}>
+
+      <Text style={styles.title}>Qui a suggéré ce morceau ?</Text>
+
+      <YoutubePlayer
+        height={250}
+        play={true}
+        videoId={link}
+      />
+
+      <FlatList
+        data={MEMBERS}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={2}
+        columnWrapperStyle={{ gap: 22 }}
+        style={styles.columnAnswer}
+        renderItem={({ item }) => (
+          <QuizAnswer
+            id={item.id}
+            label={item.nickname}
+            goodAnswer={item.isCorrect}
+            touchID={touchID}
+            OnPress={() => handleOneAnswerTouch(item.id)}
           />
-      </View>
+        )}
+      />
+
+      <UnissonButton
+        label="Continuer"
+        colorText="#e76f51"
+        OnValidation={handleNext}
+      />
+
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#25292e",
     flex: 1,
-    justifyContent: "space-between",
-    paddingTop: 100,
-  }, title: {
-    padding : 5,
+    backgroundColor: "#25292e",
+    paddingTop: 80,
+    paddingBottom: 40,
+  },
+  title: {
     color: "#fff",
-    alignSelf: "center",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    paddingBottom : 20,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  columnAnswer: {
+    flex: 1,
+    paddingHorizontal: 11,
   },
 });
