@@ -24,7 +24,7 @@ export default function SubmitTracks() {
     const handleSuggestion = async () => {
         console.log(yourSuggestion);
         try {
-            //submitTrack()
+            await submitTrack(Number(id), {youtubeLink: yourSuggestion});
             router.push({pathname: `/(tabs)/group/${id}/` as any });
         } catch (error) {
             console.error("On n'arrive pas à transmettre votre suggestion musicale. Veuillez réessayer!");
@@ -42,8 +42,11 @@ export default function SubmitTracks() {
             </Text>
             <UnissonTextInput labelDefault="Le lien de votre suggestion musicale" text={yourSuggestion}
                 OnWrite={setYourSuggestion}/>
-            <UnissonButton label="Confirmer votre propagande de la nouvelle ère" colorText="#e76f51"
-                OnValidation={handleSuggestion}></UnissonButton>
+            <UnissonButton 
+                label="Confirmer votre propagande de la nouvelle ère" 
+                colorText="#e76f51"
+                OnValidation={handleSuggestion}>
+            </UnissonButton>
         </View>
     );
 }

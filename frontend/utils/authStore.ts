@@ -3,13 +3,12 @@ import {persist, createJSONStorage} from "zustand/middleware"
 import {getItem, setItem, deleteItemAsync} from "expo-secure-store"
 import {GoogleSignin} from '@react-native-google-signin/google-signin'
 import {ApiCall, setAuthToken} from "@/api/BackendApi";
+import { UserData } from "@/shared/types";
 
 type UserState = {
     isLoggedIn: boolean;
     hasCompletedProfile: boolean;
-    userInfo : {
-        id : number;
-    } | null;
+    userInfo : UserData | null;
     appToken : string | null;
     _hasHydrated : boolean;
     GoogleLogIn : (idToken : string) => void;
@@ -43,9 +42,7 @@ export const useAuthStore = create(
                 set({
                     isLoggedIn : true,
                     hasCompletedProfile: true, //change to data.hasCompletedProfile at some point
-                    userInfo : {
-                        id : data.user.id
-                    },
+                    userInfo : data.user,
                     appToken : data.token,
                 })
                 setAuthToken(data.token);
@@ -93,7 +90,7 @@ export const useAuthStore = create(
             } catch (error) {
                 console.error(error);
             }
-        }
+        },
     }),
         {
             name : "auth-store",

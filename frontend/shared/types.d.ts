@@ -21,9 +21,9 @@ export type UserData = {
   email: string;
   profileDescription?: string;
   profilePicture?: string | null;
-  provider: AuthProvider;
+  provider?: AuthProvider;
   premiumAccount?: boolean;
-  providerLoginID: string;
+  providerLoginID?: string;
 };
 
 export type GroupData = {
