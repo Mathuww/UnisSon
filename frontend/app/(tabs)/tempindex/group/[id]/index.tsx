@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import UnissonButton from "@/components/UnissonButton";
 import IconAction from "@/components/IconAction";
-import { GroupData } from "@/shared/types";
+import { GroupData, UserData } from "@/shared/types";
 import { useGroupStore } from "@/utils/groupStore";
 
 export default function Group() {
@@ -19,11 +19,20 @@ export default function Group() {
 
     const [groupData, setGroupData] = useState<GroupData | null>(null);
     
-    const [chosenOne, setChosenOne] = useState<number | null>(null);
+    const [chosenOne, setChosenOne] = useState<UserData | null>(null);
     const [isChosen, setIsChosen] = useState<boolean>(false);
 
     useEffect(() => {
         (async () => {
+            if (userInfo && chosenOne) {
+                setIsChosen(chosenOne.id === Number(userInfo.id));
+            }
+        })();
+    }, [userInfo, chosenOne]);
+
+    useEffect(() => {
+        (async () => {
+            
             console.log("welcome to group page " + id);
 
             if (!appToken) {
@@ -33,18 +42,11 @@ export default function Group() {
             console.log("fetching current group data...")
             await fetchCurrentGroup(Number(id));
             setGroupData(await getGroup(Number(id)) || null);
-            if (groupData && groupData.chosenOneUserID) {
-                setChosenOne(groupData.chosenOneUserID);
+            if (groupData?.chosenOne && groupData.chosenOne.id) {
+                setChosenOne(groupData.chosenOne);
             }
         })();
     }, [id, appToken, fetchCurrentGroup, getGroup]);
-
-    
-    useEffect(() => {
-        if (userInfo) {
-        setIsChosen(chosenOne === Number(userInfo.id));
-        }
-    }, [chosenOne, userInfo]);
 
     const handleChoosenTheme = async () => {
         try {
@@ -97,6 +99,10 @@ export default function Group() {
         await forceChangeStatus(Number(id));
         await fetchCurrentGroup(Number(id));
         const data = await getGroup(Number(id)) || null;
+        if (data?.chosenOne) {
+            setChosenOne(data.chosenOne);
+        }
+        //Ne jamais faire un set avant avoir changé tout les résultats (décallage d'état)
         setGroupData(data);
     }
 
@@ -104,11 +110,25 @@ export default function Group() {
         if (!groupData)
             return;
         switch (groupData.status) {
+            case "SUN_WAITING_THEME":
+                return (
+                    <Text style={styles.subtitle}>
+                        L'élu {chosenOne?.nickname} choisit un thème.
+                    </Text>
+                )
+
+            case "SUN_DONE_THEME":
+                return (
+                    <Text style={styles.subtitle}>
+                        L'élu {chosenOne?.nickname} a choisi un thème.
+                    </Text>
+                );
+
             case "WK_WAITING_SUB":
                 return (
                     <>
                         <Text style={styles.subtitle}>
-                            Cette semaine, ce ne sera pas vous l&#39;élu. À vous d&#39;épater musicalement  (inserer nom élu) :
+                            Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {chosenOne?.nickname} :
                         </Text>
                         <UnissonButton
                             label="À vous d'impressionner votre élu avec votre musique !"
@@ -121,39 +141,27 @@ export default function Group() {
 
             case "WK_DONE_SUB":
                 return (
-                    <Text>
+                    <Text style={styles.subtitle}>
                         Vous avez déjà ajouté un son pour cette période.
                     </Text>
-                )
+                );
 
             case "SAT_WAITING_QUIZ":
-                return (<UnissonButton
-                    label="Qui connaît mieux l'élu ?"
+                return (
+                    <UnissonButton
+                    label={`Qui connaît mieux l'élu ${chosenOne?.nickname}?`}
                     colorText="#e76f51"
                     //Pour débugger avant l'arrivée du backend
                     OnValidation={() => console.log("Sois patient")}
-                />)
+                    />
+                );
 
             case "SAT_DONE_QUIZ":
                 return (
-                    <Text>
+                    <Text style={styles.subtitle}>
                         Vous avez déjà répondu au quiz, sorry.
                     </Text>
-                )
-
-            case "SUN_WAITING_THEME":
-                return (
-                    <Text>
-                        L&#39;élu choisit un thème.
-                    </Text>
-                )
-
-            case "SUN_DONE_THEME":
-                return (
-                    <Text>
-                        L&#39;élu a choisi un thème.
-                    </Text>
-                )
+                );
 
             default:
                 return (<></>)
@@ -166,22 +174,22 @@ export default function Group() {
         switch (groupData.status) {
             case "SUN_WAITING_THEME":
                 return (
-                    <View>
+                    <>
                         <Text style={styles.subtitle}>
                             Toc Toc, Unisson vous informe que vous allez cartonner cette semaine car vous êtes maintenant élu :)
                         </Text>
                         <UnissonButton
                             label="À vous d'être à la hauteur d'un élu d'Unisson"
-                            colorText="#e76f51"
+                            colorText="#FFEE88"
                             //Pour débugger avant l'arrivée du backend
                             OnValidation={handleChoosenTheme}
                         />
-                    </View>
+                    </>
                 )
 
             case "SUN_DONE_THEME":
                 return (
-                    <Text>
+                    <Text style={styles.subtitle}>
                         Vous avez déjà choisi un thème.
                     </Text>
                 )
@@ -201,15 +209,21 @@ export default function Group() {
                 )
 
             case "SAT_WAITING_QUIZ":
-                return (<UnissonButton
-                    label="Qui connaît mieux mon moi-même ?"
-                    colorText="#e76f51"
-                    //Pour débugger avant l'arrivée du backend
-                    OnValidation={() => handleQuiz()}
-                />)
+                return (
+                    <UnissonButton
+                        label="Qui connaît mieux mon moi-même ?"
+                        colorText="#e76f51"
+                        //Pour débugger avant l'arrivée du backend
+                        OnValidation={() => handleQuiz()}
+                    />
+                )
 
             case "SAT_DONE_QUIZ":
-                return (<Text>sat-done-quiz</Text>);
+                return (
+                <Text style={styles.subtitle}>
+                    Nostalgique, et uii, je sais que le quizz était bien. C'est moi qui l'a fait =)
+                </Text>
+            );
 
             default:
                 return (<></>);
@@ -234,13 +248,14 @@ export default function Group() {
                     <FlatList
                         data={groupData.users}
                         keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => <Text style={styles.text}>{item.nickname}</Text>
+                        renderItem={({ item }) => 
+                            <Text style={styles.text}>{item.nickname}</Text>
                         }
                     />
                 </View>
                 <View style={styles.containerButton}>
-                    {(userInfo?.id === groupData.chosenOneUserID) ? renderUIForChosen() : renderUIForOthers()}
-                    <View style={styles.containerTest}>
+                    <View style={styles.containerText}>
+                        {isChosen ? renderUIForChosen() : renderUIForOthers()}
                         <UnissonButton
                             label="Passer à l'état suivant"
                             colorText="#2a9d8f"
@@ -276,14 +291,14 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
         gap: 72,
     },
+    containerText: {
+        gap:11,
+    },
     containerIcons: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         gap: 40,
-    },
-    containerTest: {
-        gap: 20,
     },
     title: {
         color: "#fff",
