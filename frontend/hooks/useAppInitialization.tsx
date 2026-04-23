@@ -16,7 +16,7 @@ export const useAppInitialization = () => {
         if (isLoggedIn && appToken) {
             //connect(appToken);
             setAuthToken(appToken);
-            await fetchGroups(appToken);
+            await fetchGroups();
         }
     };
 

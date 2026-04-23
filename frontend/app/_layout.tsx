@@ -10,6 +10,10 @@ import * as Linking from "expo-linking";
 GoogleSignin.configure({
     webClientId : '643995195692-0nf56p340fn2us9nendjv0t1v3rvp2kj.apps.googleusercontent.com',
     offlineAccess : true,
+    scopes: [
+        'https://www.googleapis.com/auth/youtube',
+        'https://www.googleapis.com/auth/youtube.force-ssl'
+    ],
 })
 
 SplashScreen.preventAutoHideAsync();
