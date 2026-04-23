@@ -16,8 +16,12 @@ export default function SignInScreen() {
 
             const userInfo = await GoogleSignin.signIn();
 
-            if (userInfo.data?.idToken) {
-                GoogleLogIn(userInfo.data.idToken);
+
+            if (userInfo.data?.serverAuthCode && userInfo.data.idToken) {
+                GoogleLogIn(userInfo.data.idToken, userInfo.data.serverAuthCode);
+            }
+            else if (userInfo.data?.idToken) {
+                GoogleLogIn(userInfo.data.idToken, null);
             } else {
                 throw new Error("Pas de IdToken reçu de Google");
             }

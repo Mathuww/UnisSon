@@ -29,8 +29,8 @@ export const setAuthToken = (token: string | null) => {
 
 export const ApiCall = {
     auth: {
-        GGLogIn: (idToken: string) =>
-            api.post("/api/auth/google", { idToken: idToken }),
+        GGLogIn: (idToken: string, authCode : string | null) =>
+            api.post("/api/auth/google", { idToken: idToken, authCode : authCode }),
     },
     users: {
         //All groups
