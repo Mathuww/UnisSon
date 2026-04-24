@@ -36,7 +36,7 @@ export default function SubmitTracks() {
         try {
             const suggestion = checkVerification(yourSuggestion);
             await submitTrack(Number(id), {youtubeLink: suggestion});
-            router.push({pathname: `/(tabs)/group/${id}/` as any });
+            router.push({pathname: `/(tabs)/tempindex/group/${id}/` as any });
         } catch (error) {
             console.error("On n'arrive pas à transmettre votre suggestion musicale. Veuillez réessayer!");
         }

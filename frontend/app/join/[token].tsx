@@ -67,7 +67,7 @@ export default function JoinScreen() {
                 {inviteInfo.inviterName} vous a invité dans {inviteInfo.groupName} !!
             </Text>
             <Text style={styles.subtitle}>
-                Voici la douce liste des membres, qui vous est proposée par le troubadour Gustave de Dupuis :
+                Pour mieux vous informer de votre future communauté, voici les membres actuels :
             </Text>
             <FlatList
                 data={inviteInfo.otherGroupMembers}
@@ -76,7 +76,7 @@ export default function JoinScreen() {
                     ({item}) => <Text style={styles.text}>{item.nickname}</Text>
                 }
             />
-            <UnissonButton label="Rejoindre le doux groupe" colorText="#fff" OnValidation={handleJoin} />
+            <UnissonButton label="Rejoindre votre future communauté" colorText="#fff" OnValidation={handleJoin} />
         </View>
     );
 }

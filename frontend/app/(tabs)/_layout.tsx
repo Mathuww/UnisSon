@@ -3,19 +3,18 @@ import { Tabs } from "expo-router";
 import { View,StyleSheet} from 'react-native';
 import UnissonButton from "@/components/UnissonButton";
 import IconAction from '@/components/IconAction';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext } from 'react';
 import { Text } from 'react-native';
 import { ApiCall } from '@/api/BackendApi';
 import { useGroupStore } from '@/utils/groupStore';
+import { useSettingsStore } from '@/utils/settingsStore';
+
+export const TimeContext = createContext<string>("...");
 
 export default function TabsLayout() {
     const [serverTime, setServerTime] = useState<string>("...");
     const {fetchGroups} = useGroupStore();
-    const [_, setRerender] = useState(0);
-
-    const forceUpdate = () => {
-        setRerender(v => v + 1);
-    };
+    const {timeDebug} = useSettingsStore();
 
     useEffect(() => {
         (async () => {
@@ -31,24 +30,26 @@ export default function TabsLayout() {
 
     const handleTimeForward = async () => {
         const HOURS_TO_FORWARD = 24;
-        const H_TO_MS = 60*60*1000;
         try {
-            const res = await ApiCall.admin.forwardTime(HOURS_TO_FORWARD * H_TO_MS);
+            const res = await ApiCall.admin.forwardTime(HOURS_TO_FORWARD);
             const { simulationTime } = res.data.meta;
             setServerTime(new Date(simulationTime).toLocaleString());
         } catch (err) {
             console.error(err);
         }
         await fetchGroups();
-        forceUpdate();
+        //*ùm
+        // :*();
     }
 
     return (
-        <>
-            <View style={styles.containerTest}>
-                <IconAction img="more-time" OnValidation={() => handleTimeForward()} />
-                <Text style={styles.textTimeTest}>{serverTime}</Text>
+        <TimeContext.Provider value={serverTime}>
+            {(timeDebug &&
+                <View style={styles.containerTest}>
+                    <IconAction img="more-time" OnValidation={() => handleTimeForward()} />
+                    <Text style={styles.textTimeTest}>{serverTime}</Text>
             </View>
+            )}
             <Tabs screenOptions={tabOptions }>
                 <Tabs.Screen
                     name="index"
@@ -82,7 +83,7 @@ export default function TabsLayout() {
                 />
 
             </Tabs>
-        </>
+        </TimeContext.Provider>
     );
 }
 

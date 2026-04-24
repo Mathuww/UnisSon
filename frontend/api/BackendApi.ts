@@ -29,8 +29,8 @@ export const setAuthToken = (token: string | null) => {
 
 export const ApiCall = {
     admin: {
-        forwardTime: (ms: number) =>
-            api.post("/api/admin/time/forward", {ms: ms}),
+        forwardTime: (hrs: number) =>
+            api.post("/api/admin/time/forward", {hrs: hrs}),
         getServerTime: () =>
             api.get("/api/admin/time")
     },
