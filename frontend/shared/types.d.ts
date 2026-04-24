@@ -38,6 +38,10 @@ export type GroupData = {
   users?: UserData[];
 };
 
+export type SettingsData = {
+  timeDebug: boolean; 
+};
+
 export type TrackData = {
   id?: number;
   title?: string;

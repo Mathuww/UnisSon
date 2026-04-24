@@ -1,24 +1,27 @@
 import { useGlobalSearchParams, useLocalSearchParams, useRouter } from "expo-router";
 import { useAuthStore } from "@/utils/authStore";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useCallback, useContext } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import UnissonButton from "@/components/UnissonButton";
 import IconAction from "@/components/IconAction";
 import { GroupData, UserData } from "@/shared/types";
 import { useGroupStore } from "@/utils/groupStore";
+import { useFocusEffect } from "expo-router";
+import { TimeContext } from "@/app/(tabs)/_layout";
 
 export default function Group() {
 
     const params = useLocalSearchParams();
     const id = params.id;
+    const serverTime = useContext(TimeContext);
 
     const router = useRouter();
 
-    const {appToken, userInfo } = useAuthStore();
-    const {fetchCurrentGroup, leaveGroup, getGroup, forceChangeStatus} = useGroupStore();
+    const { appToken, userInfo } = useAuthStore();
+    const { fetchCurrentGroup, leaveGroup, getGroup, forceChangeStatus } = useGroupStore();
 
     const [groupData, setGroupData] = useState<GroupData | null>(null);
-    
+
     const [chosenOne, setChosenOne] = useState<UserData | null>(null);
     const [isChosen, setIsChosen] = useState<boolean>(false);
 
@@ -30,26 +33,42 @@ export default function Group() {
         })();
     }, [userInfo, chosenOne]);
 
+    const updateGroup = async () => {
+        if (!appToken) {
+            console.log("no app token");
+            return;
+        }
+        console.log("fetching current group data...")
+        await fetchCurrentGroup(Number(id));
+        const data = await getGroup(Number(id));
+        if (data) {
+            if (data?.chosenOne && data.chosenOne.id) {
+                setChosenOne(data.chosenOne);
+            }
+            setGroupData(data);
+        }
+    }
+
     useEffect(() => {
         (async () => {
-            
-            console.log("welcome to group page " + id);
-
-            if (!appToken) {
-                console.log("no app token");
-                return;
-            }
-            console.log("fetching current group data...")
-            await fetchCurrentGroup(Number(id));
-            const data = await getGroup(Number(id));
-            if (data) {
-                if (data?.chosenOne && data.chosenOne.id) {
-                    setChosenOne(data.chosenOne);
-                }
-                setGroupData(data);
-            }
+            await updateGroup();
         })();
-    }, [id, appToken, fetchCurrentGroup, getGroup]);
+    }, [serverTime]);
+
+    useFocusEffect(
+        useCallback(() => {
+            let active = true;
+            console.log("updating page");
+            (async () => {
+                console.log("welcome to group page " + id);
+                if (active)
+                    await updateGroup();
+            })();
+            return () => {
+                active = false;
+            }
+        }, [id, appToken, fetchCurrentGroup, getGroup, serverTime])
+    );
 
     const handleChoosenTheme = async () => {
         try {
@@ -69,7 +88,7 @@ export default function Group() {
 
     const handleQuiz = async () => {
         try {
-            if(groupData) {
+            if (groupData) {
                 router.push(`/(tabs)/tempindex/group/${id}/quizz`);
             } else {
                 console.error("groupData is null before quizz Page");
@@ -96,18 +115,6 @@ export default function Group() {
         }
     }
 
-
-
-    const handleNextState = async () => {
-        await forceChangeStatus(Number(id));
-        await fetchCurrentGroup(Number(id));
-        const data = await getGroup(Number(id)) || null;
-        if (data?.chosenOne) {
-            setChosenOne(data.chosenOne);
-        }
-        //Ne jamais faire un set avant avoir changé tout les résultats (décallage d'état)
-        setGroupData(data);
-    }
 
     const renderUIForOthers = (): ReactNode => {
         if (!groupData)
@@ -152,10 +159,10 @@ export default function Group() {
             case "SAT_WAITING_QUIZ":
                 return (
                     <UnissonButton
-                    label={`Qui connaît mieux l'élu ${chosenOne?.nickname}?`}
-                    colorText="#e76f51"
-                    //Pour débugger avant l'arrivée du backend
-                    OnValidation={() => console.log("Sois patient")}
+                        label={`Qui connaît mieux l'élu ${chosenOne?.nickname}?`}
+                        colorText="#e76f51"
+                        //Pour débugger avant l'arrivée du backend
+                        OnValidation={() => console.log("Sois patient")}
                     />
                 );
 
@@ -223,10 +230,10 @@ export default function Group() {
 
             case "SAT_DONE_QUIZ":
                 return (
-                <Text style={styles.subtitle}>
-                    Nostalgique, et uii, je sais que le quizz était bien. C'est moi qui l'a fait =)
-                </Text>
-            );
+                    <Text style={styles.subtitle}>
+                        Nostalgique, et uii, je sais que le quizz était bien. C'est moi qui l'a fait =)
+                    </Text>
+                );
 
             default:
                 return (<></>);
@@ -251,7 +258,7 @@ export default function Group() {
                     <FlatList
                         data={groupData.users}
                         keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => 
+                        renderItem={({ item }) =>
                             <Text style={styles.text}>{item.nickname}</Text>
                         }
                     />
@@ -259,11 +266,6 @@ export default function Group() {
                 <View style={styles.containerButton}>
                     <View style={styles.containerText}>
                         {isChosen ? renderUIForChosen() : renderUIForOthers()}
-                        <UnissonButton
-                            label="Passer à l'état suivant"
-                            colorText="#2a9d8f"
-                            OnValidation={handleNextState}
-                        />
                     </View>
                     <View style={styles.containerIcons}>
                         <IconAction
@@ -287,7 +289,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: "#25292e",
         flex: 1,
-        padding:10,
+        padding: 10,
         paddingTop: 100,
     },
     containerButton: {
@@ -295,7 +297,7 @@ const styles = StyleSheet.create({
         gap: 30,
     },
     containerText: {
-        gap:11,
+        gap: 11,
     },
     containerIcons: {
         flexDirection: "row",

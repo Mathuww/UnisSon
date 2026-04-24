@@ -2,9 +2,14 @@ import { StyleSheet, Text, View } from "react-native";
 import IconAction from "@/components/IconAction";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "@/utils/authStore";
+import { useSettingsStore } from "@/utils/settingsStore";
+import UnissonOnOff from "@/components/UnissonOnOff";
+import { useEffect, useState } from "react";
 
 export default function Profile() {
+  const [time, setTime] = useState<boolean>(false);
   const {userInfo} = useAuthStore();
+  const {timeDebug, setTimeDebug} = useSettingsStore();
   
   const router = useRouter();
   const {appToken, GoogleLogOut} = useAuthStore();
@@ -31,12 +36,13 @@ export default function Profile() {
           <Text style={styles.pseudo}>@{userInfo?.nickname}</Text>
           <View style={styles.containerIcons}>
             <IconAction 
-              img="logout"
-              OnValidation={handleLogout}
-            />
-            <IconAction 
               img="notification-add"
               OnValidation={handleInvitation}
+            />
+            <UnissonOnOff value={timeDebug} OnValidation={(value:boolean) => {setTimeDebug(value)}}/>
+            <IconAction 
+              img="logout"
+              OnValidation={handleLogout}
             />
           </View>
       </View>
