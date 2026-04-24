@@ -6,6 +6,8 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 //import {useSocketStore} from "@/utils/socketStore";
 import {useAppInitialization} from "@/hooks/useAppInitialization";
 import * as Linking from "expo-linking";
+import UnissonButton from "@/components/UnissonButton";
+import {View, StyleSheet} from "react-native";
 
 GoogleSignin.configure({
     webClientId : '643995195692-0nf56p340fn2us9nendjv0t1v3rvp2kj.apps.googleusercontent.com',

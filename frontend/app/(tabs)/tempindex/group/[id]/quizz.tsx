@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import QuizAnswer from "@/components/AnswerQuizz";
 import UnissonButton from "@/components/UnissonButton";
 import YoutubePlayer from "react-native-youtube-iframe";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useGroupStore } from "@/utils/groupStore";
+import { QuizzMember } from "@/shared/types";
 
 const link = "Jvv3cC6CamE";
 const MEMBERS = [
@@ -20,6 +22,26 @@ const MEMBERS = [
 export default function Quiz() {
   const [touchID, setTouchID] = useState(-1);
   const [playing, setPlaying] = useState(false);
+  
+  const {id} = useLocalSearchParams();
+  const {getGroup} = useGroupStore();
+  const[IDQuizzMemberGoodAnswer, setIDQuizzMemberGoodAnswer] = useState<Number>(1);
+  const [members, setMembers] = useState<QuizzMember[]>([]);
+
+  useEffect(() => {
+    const loadGroupData = async () => {
+      const group = await getGroup(Number(id));
+      setMembers(
+          group?.users?.map((user) => ({
+            id: user.id,
+            nickname: user.nickname,
+            isCorrect: false,
+          })) ?? []
+        );
+    };
+    loadGroupData();
+  }, [id]);
+  
 
   const router = useRouter();
 

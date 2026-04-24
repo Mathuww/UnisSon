@@ -45,3 +45,9 @@ export type TrackData = {
   ISRC?: string;
   youtubeLink: string;
 };
+
+export type QuizzMember = { 
+  id: number; 
+  nickname: string; 
+  isCorrect: boolean 
+};

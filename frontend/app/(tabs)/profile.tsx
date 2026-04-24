@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useAuthStore } from "@/utils/authStore";
 
 export default function Profile() {
-
+  const {userInfo} = useAuthStore();
   
   const router = useRouter();
   const {appToken, GoogleLogOut} = useAuthStore();
@@ -28,7 +28,7 @@ export default function Profile() {
 
   return (
       <View style={styles.container}>
-          <Text style={styles.pseudo}>@Mathuww</Text>
+          <Text style={styles.pseudo}>@{userInfo?.nickname}</Text>
           <View style={styles.containerIcons}>
             <IconAction 
               img="logout"
