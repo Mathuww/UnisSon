@@ -49,11 +49,18 @@ export default function Group() {
         }
     }
 
-    useEffect(() => {
-        (async () => {
-            await updateGroup();
-        })();
-    }, [serverTime]);
+    useFocusEffect(
+        useCallback(() => {
+            let active = true;
+            (async () => {
+                if (active)
+                    await updateGroup();
+            })();
+            return () => {
+                active = false;
+            }
+        }, [serverTime])
+    );
 
     useFocusEffect(
         useCallback(() => {
@@ -135,19 +142,30 @@ export default function Group() {
                 );
 
             case "WK_WAITING_SUB":
-                return (
-                    <>
-                        <Text style={styles.subtitle}>
-                            Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {chosenOne?.nickname} :
-                        </Text>
-                        <UnissonButton
-                            label="À vous d'impressionner votre élu avec votre musique !"
-                            colorText="#e76f51"
-                            //Pour débugger avant l'arrivée du backend
-                            OnValidation={handleSuggestion}
-                        />
-                    </>
-                );
+                if (groupData.canUserAdd) {
+                    return (
+                        <>
+                            <Text style={styles.subtitle}>
+                                Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {chosenOne?.nickname} :
+                            </Text>
+                            <UnissonButton
+                                label="À vous d'impressionner votre élu avec votre musique !"
+                                colorText="#e76f51"
+                                //Pour débugger avant l'arrivée du backend
+                                OnValidation={handleSuggestion}
+                            />
+                        </>
+                    );
+                } else {
+                    return (
+                        <>
+                            <Text style={styles.subtitle}>
+                                Cette semaine, ce ne sera pas vous l'élu. Vous avez déjà ajouté une musique pour cette période.
+                            </Text>
+                        </>
+                    );
+                }
+
 
             case "WK_DONE_SUB":
                 return (

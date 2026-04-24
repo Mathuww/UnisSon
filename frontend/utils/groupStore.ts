@@ -2,7 +2,7 @@ import {create} from "zustand";
 import {persist, createJSONStorage} from "zustand/middleware";
 import {getItem, setItem, deleteItemAsync} from "expo-secure-store";
 import {ApiCall, BACKEND_API_URL} from "@/api/BackendApi";
-import {ActionResult, GroupData, TrackData} from "@/shared/types";
+import {ActionResult, GroupData, TrackData, QuizTrackData} from "@/shared/types";
 
 type GroupState = {
     groups: GroupData[];
@@ -15,6 +15,7 @@ type GroupState = {
     clearAllActions: () => void;
     fetchGroups: () => Promise<void>;
     fetchCurrentGroup: (id: number) => Promise<void>;
+    getQuizzData: (id: number) => Promise<ActionResult<QuizTrackData[]>>;
     createGroup: (token: string, name: string, maxUsers: number) => Promise<ActionResult<number>>;
     getGroup: (id: number) => Promise<GroupData | undefined>;
 };
@@ -80,6 +81,18 @@ export const useGroupStore = create(
                     }));
                 } catch (e) {
                     console.error(e);
+                }
+            },
+
+            getQuizzData: async (groupId: number): Promise<ActionResult<QuizTrackData[]>> => {
+                try {
+                    const res = await ApiCall.groups.getSongs(groupId);
+                    const data = res.data.data;
+                    console.log(data);
+                    return {success: true, data};
+                } catch (e) {
+                    console.error(e);
+                    return {success: false, error: e};
                 }
             },
 

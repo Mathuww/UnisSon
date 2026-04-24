@@ -1,124 +1,141 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import QuizAnswer from "@/components/AnswerQuizz";
 import UnissonButton from "@/components/UnissonButton";
 import YoutubePlayer from "react-native-youtube-iframe";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGroupStore } from "@/utils/groupStore";
-import { QuizzMember } from "@/shared/types";
+import { UserData, QuizTrackData } from "@/shared/types";
+import Group from ".";
 
-const link = "Jvv3cC6CamE";
-const MEMBERS = [
-  { id: 1, nickname: "Pablo",  isCorrect: false },
-  { id: 2, nickname: "Gaïa",   isCorrect: true  },
-  { id: 3, nickname: "Mathéo", isCorrect: false },
-  { id: 4, nickname: "Ezqui-elle",    isCorrect: false },
-  { id: 5, nickname: "Métatron",  isCorrect: false },
-  { id: 6, nickname: "Chronos", isCorrect: false },
-  { id: 7, nickname: "Tom",   isCorrect: false },
-  { id: 8, nickname: "Asyna",   isCorrect: false },
-];
 
 export default function Quiz() {
-  const [touchID, setTouchID] = useState(-1);
-  const [playing, setPlaying] = useState(false);
-  
-  const {id} = useLocalSearchParams();
-  const {getGroup} = useGroupStore();
-  const[IDQuizzMemberGoodAnswer, setIDQuizzMemberGoodAnswer] = useState<Number>(1);
-  const [members, setMembers] = useState<QuizzMember[]>([]);
+    const [touchID, setTouchID] = useState(-1);
+    const [playing, setPlaying] = useState(false);
 
-  useEffect(() => {
-    const loadGroupData = async () => {
-      const group = await getGroup(Number(id));
-      setMembers(
-          group?.users?.map((user) => ({
-            id: user.id,
-            nickname: user.nickname,
-            isCorrect: false,
-          })) ?? []
-        );
-    };
-    loadGroupData();
-  }, [id]);
-  
+    const { id } = useLocalSearchParams();
+    const { getGroup, getQuizzData } = useGroupStore();
+    const [members, setMembers] = useState<UserData[]>([]);
+    const [trackIndex, setTrackIndex] = useState<number>(0);
+    const [tracks, setTracks] = useState<QuizTrackData[]>([]);
 
-  const router = useRouter();
 
-  const handleOneAnswerTouch = (id : number) => {
-    if(touchID < 0) {
-      setTouchID(id);
+    useFocusEffect(
+        useCallback(() => {
+            let active = true;
+            setTrackIndex(0);
+            const loadGroupData = async () => {
+                const group = await getGroup(Number(id));  
+                if (!group?.users) {
+                    return console.error("cannot find user list");
+                }         
+                setMembers(group.users);     
+                const result = await getQuizzData(Number(id));
+                if (result.success && result.data) {
+                    setTracks(result.data);
+                }
+            };
+            if (active) {
+                loadGroupData();
+            }
+            return () => {active = false;}
+        }, [id])
+    );
+
+    const router = useRouter();
+
+    const handleOneAnswerTouch = (id: number) => {
+        if (touchID < 0) {
+            setTouchID(id);
+        }
     }
-  }
 
-  const handleNext = async () => {
-    try {
-      console.log("Next Question");
-      setTouchID(-1);
-    } catch (error) {
-      console.error("On n'arrive pas à continuer le quizz. Veuillez réessayer!");
+    const handleNext =  () => {
+        try {
+            if (!tracks || tracks.length === 0) return;
+
+            const nextIndex = trackIndex + 1;
+
+            setTouchID(-1);
+            if (nextIndex >= tracks.length) {
+                router.push({ pathname: `/(tabs)/tempindex/group/${id}/` as any });
+                return;
+            }
+
+            setTrackIndex(nextIndex);
+        } catch (error) {
+            console.error("On n'arrive pas de continuer le quizz. Veuillez réessayer!\n", error);
+        }
     }
-  }
-  return (
-    <View style={styles.container}>
 
-      <Text style={styles.title}>Qui a suggéré ce morceau ?</Text>
+    const currentTrack = tracks[trackIndex];
+    const IDQuizzMemberGoodAnswer = currentTrack?.addedBy?.id;
+    
+    return (
+        <View style={styles.container}>
 
-      {/*Chequer pourquoi l'autoplay ne fonctionne pas*/}
-      <YoutubePlayer
-        height={250}
-        play={playing}
-        videoId={link}
-        forceAndroidAutoplay={true}
-        webViewProps={{
-            mediaPlaybackRequiresUserAction: false,
-        }}
-        onReady={() => setPlaying(true)}
-      />
+            <Text style={styles.title}>Qui a suggéré ce morceau ?</Text>
 
-      <FlatList
-        data={MEMBERS}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 22 }}
-        style={styles.columnAnswer}
-        renderItem={({ item }) => (
-          <QuizAnswer
-            id={item.id}
-            label={item.nickname}
-            goodAnswer={item.isCorrect}
-            touchID={touchID}
-            OnPress={() => handleOneAnswerTouch(item.id)}
-          />
-        )}
-      />
+            {/*Chequer pourquoi l'autoplay ne fonctionne pas*/}
+            {currentTrack?.track?.youtubeLink && <YoutubePlayer
+                height={250}
+                play={playing}
+                videoId={currentTrack.track.youtubeLink}
+                forceAndroidAutoplay={true}
+                webViewProps={{
+                    mediaPlaybackRequiresUserAction: false,
+                }}
+                onReady={() => setPlaying(true)}
+            />}
 
-      <UnissonButton
-        label="Continuer"
-        colorText="#e76f51"
-        OnValidation={handleNext}
-      />
+            <FlatList
+                data={members}
+                keyExtractor={(item) => item.id.toString()}
+                numColumns={2}
+                columnWrapperStyle={{ gap: 22 }}
+                style={styles.columnAnswer}
+                renderItem={({ item }) => (
+                    <QuizAnswer
+                        id={item.id}
+                        label={item.nickname}
+                        goodAnswer={item.id === IDQuizzMemberGoodAnswer}
+                        touchID={touchID}
+                        OnPress={() => handleOneAnswerTouch(item.id)}
+                    />
+                )}
+            />
 
-    </View>
-  );
+            <UnissonButton
+                label={
+                    (tracks && ((trackIndex + 1) === tracks.length)) ?
+                        "Terminer votre quizz"
+                    :
+                        "Morceau suivant"
+                }
+                colorText="#e76f51"
+                OnValidation={handleNext}
+            />
+
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#25292e",
-    paddingTop: 80,
-    paddingBottom: 40,
-  },
-  title: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  columnAnswer: {
-    flex: 1,
-    paddingHorizontal: 11,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: "#25292e",
+        paddingTop: 80,
+        paddingBottom: 40,
+    },
+    title: {
+        color: "#fff",
+        fontSize: 20,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: 8,
+    },
+    columnAnswer: {
+        flex: 1,
+        paddingHorizontal: 11,
+    },
 });
