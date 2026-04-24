@@ -21,20 +21,23 @@ export default function SubmitTracks() {
         resetInput
     );
 
-    const checkVerification = (link: string) => {
+    const checkVerificationLinkYoutube = (link: string) => {
         const prefixLink = "youtube.com/watch?v=";
-        const prefixMobilLink = "youtu.be/";
+        const prefixMobileLink = "youtu.be/";
 
-        if (!link.includes(prefixLink) && !link.includes(prefixMobilLink)) {
+        if (link.includes(prefixLink)) {
+            return link.split("v=")[1].split("&")[0];
+        } else if (link.includes(prefixMobileLink)) {
+            return link.split("youtu.be/")[1].split("?")[0];
+        } else {
             throw new Error("It is not a url Youtube!");
         }
-        return link.split("=")[1];
-    }
+    };
 
     const handleSuggestion = async () => {
         console.log(yourSuggestion);
         try {
-            const suggestion = checkVerification(yourSuggestion);
+            const suggestion = checkVerificationLinkYoutube(yourSuggestion);
             await submitTrack(Number(id), {youtubeLink: suggestion});
             router.push({pathname: `/(tabs)/tempindex/group/${id}/` as any });
         } catch (error) {

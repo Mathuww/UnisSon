@@ -18,7 +18,7 @@ export type AuthProvider = "spotify" | "google";
 export type UserData = {
   id: number;
   nickname: string;
-  email: string;
+  email?: string;
   profileDescription?: string;
   profilePicture?: string | null;
   provider?: AuthProvider;
@@ -36,6 +36,7 @@ export type GroupData = {
   status: GroupStatus;
   theme: string;
   users?: UserData[];
+  canUserAdd?: boolean;
 };
 
 export type SettingsData = {
@@ -50,8 +51,7 @@ export type TrackData = {
   youtubeLink: string;
 };
 
-export type QuizzMember = { 
-  id: number; 
-  nickname: string; 
-  isCorrect: boolean 
-};
+export type QuizTrackData = {
+  track: TrackData;
+  addedBy: UserData;
+}

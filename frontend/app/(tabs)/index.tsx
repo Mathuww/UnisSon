@@ -20,9 +20,14 @@ export default function Index() {
 
   useFocusEffect(
     useCallback(() => {
+      let active = true;
       (async () => {
-        await fetchGroups();
+        if (active)
+          await fetchGroups();
       })();
+      return () => {
+        active = false;
+      }
     }, [serverTime])
   );
 
