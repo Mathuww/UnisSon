@@ -1,6 +1,7 @@
-import { BelongsToGetAssociationMixin, CreationOptional, DataTypes, HasManyGetAssociationsMixin, InferAttributes, InferCreationAttributes, Model, NonAttribute } from "sequelize";
-import Group from "../elem/Group.model.js";
+import { BelongsToGetAssociationMixin, CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, NonAttribute } from "sequelize";
 import db from "../../shared/db.js";
+import { PeriodType } from "../../shared/PeriodType.js";
+import Group from "../elem/Group.model.js";
 
 export class GroupPeriod extends Model<
     InferAttributes<GroupPeriod>,
@@ -9,6 +10,8 @@ export class GroupPeriod extends Model<
     declare id: CreationOptional<number>;
     declare groupID: number;
     declare periodStart: Date;
+    declare periodType: PeriodType;
+    declare processedAt: Date | null;
 
     declare getGroup: BelongsToGetAssociationMixin<Group>;
     declare Group?: NonAttribute<Group>;
@@ -29,6 +32,14 @@ GroupPeriod.init({
     periodStart: {
         type: DataTypes.DATE,
         allowNull: false
+    },
+    periodType: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    processedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     sequelize: db,

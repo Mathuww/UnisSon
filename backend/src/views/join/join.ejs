@@ -2,18 +2,21 @@
 <html>
 <head>
     <title>Rejoindre <%= groupName %></title>
+    <link rel="stylesheet" link="/index.css" />
 </head>
 <body>
-    <h1>Rejoindre <%= groupName %></h1>
-    <a id="download" style="display:none" href="https://marcorobo.space">
-        Télécharger l'app
-    </a>
-    <script>
-        window.location = "unisson://join/<%= token %>";
-        
-        setTimeout(() => {
-            document.getElementById('download').style.display = 'block';
-        }, 2500);
-    </script>
+    <div class="centered">
+        <h1>Rejoindre <%= groupName %></h1>
+        <a id="download" style="display:none" href="https://unisson.qbert.fr/">
+            Télécharger, installer, exécuter et apprécier l'application
+        </a>
+        <script>
+            window.location = "unisson://join/<%= token %>";
+            
+            setTimeout(() => {
+                document.getElementById('download').style.display = 'block';
+            }, 2500);
+        </script>
+    </div>
 </body>
 </html>

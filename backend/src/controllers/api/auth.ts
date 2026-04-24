@@ -42,12 +42,13 @@ export const AuthController = {
         if (!idToken)
             return res.status(400).json({error: {message: "Missing ID token"}});
 
-        const tokenResults = await AuthService.verifyGoogleToken(idToken); 
+        const tokenResults = await AuthService.verifyGoogleToken(idToken);
 
         if (!tokenResults)
             return res.status(403).json({error: {message: "Cannot verify Google token"}});
 
         const { email, name, picture, googleId } = tokenResults;
+        const nickname = name.slice(0, 16);
 
         const [user, created] = await User.findOrCreate({
                 where: {
@@ -55,7 +56,7 @@ export const AuthController = {
                 },
                 defaults: {
                     email: email,
-                    nickname: name,
+                    nickname: nickname,
                     providerLoginID: googleId
                 }
         });

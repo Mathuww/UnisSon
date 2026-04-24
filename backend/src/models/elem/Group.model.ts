@@ -5,7 +5,8 @@ import {
     NonAttribute,
     BelongsToManyGetAssociationsMixin,
     BelongsToManyRemoveAssociationMixin,
-    BelongsToManyAddAssociationMixin
+    BelongsToManyAddAssociationMixin,
+    Transaction
 } from 'sequelize';
 import db from '../../shared/db.js';
 import User from './User.model.js';
@@ -14,6 +15,8 @@ import GroupPeriod from '../logic/GroupPeriod.model.js';
 import { Op } from 'sequelize';
 import GroupPlaylist from '../link/GroupPlaylist.model.js';
 import { GroupStatus } from '../../shared/GroupStatus.js';
+import { logger } from '../../middleware/logger.js';
+import { TimeManager } from '../../shared/TimeManager.js';
 
 export class Group extends Model<InferAttributes<Group>, InferCreationAttributes<Group>> {
     declare id: CreationOptional<number>;
@@ -49,15 +52,20 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
     declare getPeriods: HasManyGetAssociationsMixin<GroupPeriod>;
 
     async getCurrentPeriod(): Promise<GroupPeriod | null> {
-        const periods = await this.getPeriods({order: ['periodStart', 'ASC']});
-        const now = new Date();
+        logger.info(`Running getcurrentperiod for group ${this.id}`);
+        const periods = await this.getPeriods({
+            order: [['periodStart', 'ASC']]
+        });
+        const now = TimeManager.now();
 
         const current: GroupPeriod | undefined = periods.find((p: GroupPeriod, i: number) => {
             const next = periods[i + 1]?.periodStart ?? new Date("9999-12-31");
             return p.periodStart <= now && now < next;
         });
 
-        return current ?? null;
+        const p = current ?? null;
+        logger.info(`currentperiod: returning ${p}`);
+        return p;
     }
     
     async canUserAdd(userID: number): Promise<boolean> {
@@ -83,6 +91,44 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
         );
 
         return canAddChecks.every(canAdd => !canAdd);
+    }
+
+    async updateChosenOne(transaction?: Transaction) {
+        console.log(`updating chosen one for group ${this.id}`);
+
+        const members = await this.getUsers({ transaction });
+
+        if (!members.length) return;
+    
+        // Là on a la liste des utilisateurs dans ce groupe.
+        // Du coup on veut choisir le suivant de celui qui était chosen one avant
+        // (ou un au hasard si le group est tout neuf)
+    
+        // Qui était le chosen one avant ?
+        const prevChosenOne: number | null = this.chosenOneUserID;
+    
+        let nextChosenOne;
+        if (prevChosenOne) {
+            // On choisit le suivant par roulement
+            const index = members.findIndex(u => u.id === prevChosenOne);
+            const nextIndex = (index + 1) % (members.length);
+            nextChosenOne = members[nextIndex].id;
+        } else { // premier élu
+            // full random
+            const randomMember = members[Math.floor(Math.random() * members.length)];
+            nextChosenOne = randomMember.id
+        }
+    
+        logger.info(`Updating chosen one for group ${this.id} to user ${nextChosenOne}`);
+    
+        // mtn on doit faire la MAJ dans la DB
+        await this.update(
+            {
+                chosenOneUserID: nextChosenOne,
+                status: GroupStatus.SUN_WAITING_THEME
+            },
+            { transaction }
+        );
     }
 }
 

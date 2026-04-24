@@ -1,5 +1,6 @@
 import { asyncHandler } from "../../middleware/error.js";
 import Invite from "../../models/logic/Invite.model.js";
+import { TimeManager } from "../../shared/TimeManager.js";
 
 export const JoinController = {
     incomplete: asyncHandler(async (req, res, next) => {
@@ -19,7 +20,7 @@ export const JoinController = {
         if (!invite)
             return res.status(400).render("join/incomplete", {error: "Invite not found" });
 
-        if (invite.expiresAt <= new Date())
+        if (invite.expiresAt <= TimeManager.now())
             return res.status(400).render("join/incomplete", {error: "Invite expired" });
 
         const group = await invite.getGroup();
