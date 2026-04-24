@@ -41,9 +41,12 @@ export default function Group() {
             }
             console.log("fetching current group data...")
             await fetchCurrentGroup(Number(id));
-            setGroupData(await getGroup(Number(id)) || null);
-            if (groupData?.chosenOne && groupData.chosenOne.id) {
-                setChosenOne(groupData.chosenOne);
+            const data = await getGroup(Number(id));
+            if (data) {
+                if (data?.chosenOne && data.chosenOne.id) {
+                    setChosenOne(data.chosenOne);
+                }
+                setGroupData(data);
             }
         })();
     }, [id, appToken, fetchCurrentGroup, getGroup]);
@@ -289,7 +292,7 @@ const styles = StyleSheet.create({
     },
     containerButton: {
         paddingBottom: 30,
-        gap: 72,
+        gap: 30,
     },
     containerText: {
         gap:11,

@@ -28,6 +28,12 @@ export const setAuthToken = (token: string | null) => {
 };
 
 export const ApiCall = {
+    admin: {
+        forwardTime: (ms: number) =>
+            api.post("/api/admin/time/forward", {ms: ms}),
+        getServerTime: () =>
+            api.get("/api/admin/time")
+    },
     auth: {
         GGLogIn: (idToken: string, authCode : string | null) =>
             api.post("/api/auth/google", { idToken: idToken, authCode : authCode }),
