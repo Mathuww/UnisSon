@@ -20,9 +20,8 @@ const groupStatusOrder: GroupStatus[] = [
 export function getNextGroupStatus(status: GroupStatus): GroupStatus {
     const index = groupStatusOrder.indexOf(status);
 
-    if (index === -1 ) {
+    if (index === -1 ) 
         return status;
-    }
 
     return groupStatusOrder[(index + 1) % groupStatusOrder.length];
 }

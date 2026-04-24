@@ -1,42 +1,39 @@
 import { Router } from "express";
-import { generalPollingTask } from "../../tasks/polling.task.js";
-import { startNewWeekCycle } from "../../tasks/newcycle.task.js";
-import { submissionMode } from "../../tasks/submissionmode.js";
-import { quiztimeMode } from "../../tasks/quiztime.task.js";
 import { logger } from "../../middleware/logger.js";
+import { generalPollingTask } from "../../tasks/polling.task.js";
+import { TimeManager } from "../../shared/TimeManager.js";
 
 const router = Router();
 
 router.post('/poll', async (req, res) => {
-    if (!process.env.DEV_MODE)
-            return res.status(403);
-
-    logger.info("[Polled by manual API call]");
-    generalPollingTask();
+    try {
+        logger.info("[Polled by manual API call]");
+        generalPollingTask();
+        return res.status(204);
+    } catch (e) {
+        logger.error("Manual poll error", { e });
+        return res.status(500);
+    }
 });
 
-router.post('/newcycle', async (req, res) => {
-    if (!process.env.DEV_MODE)
-            return res.status(403);
+router.get('/time', async (req, res) => {
+    return res.status(200).json({data: {serverTime: TimeManager.now().toISOString()}})
+});
 
-    logger.info("[New week cycle triggered by manual API call]");
-    startNewWeekCycle();
-})
+router.post('/time/forward', async (req, res) => {
+    try {
+        const { hrs } = req.body;
+        if (!hrs)
+            return res.status(400).json({ error: { message: "Missing time offset" } });
 
-router.post('/submode', async (req, res) => {
-    if (!process.env.DEV_MODE)
-            return res.status(403);
-
-    logger.info("[Submission mode triggered for all groups by manual API call]");
-    submissionMode();
-})
-
-router.post('/quiztime', async (req, res) => {
-    if (!process.env.DEV_MODE)
-            return res.status(403);
-
-    logger.info("[Quiz time mode triggered for all groups by manual API call]");
-    quiztimeMode();
+        await TimeManager.forward(hrs);
+        logger.info(`Forwarded of ${hrs} hours`);
+        generalPollingTask();
+        return res.status(200).json({message: "Time forwarded", hrs: hrs});
+    } catch (err) {
+        logger.error("Time forward error", { err });
+        return res.status(500);
+    }
 })
 
 

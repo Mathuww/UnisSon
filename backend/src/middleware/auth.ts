@@ -10,7 +10,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
     if (process.env.DEV_MODE) {
         userId = Number(req.headers['x-user-id']);
-        if (!userId)
+        if (Number.isNaN(userId))
             return res.status(401).json({error: {message: "Missing user ID from dev auth request (in auth middleware)"}});
     } else {
         const authHeader = req.headers["authorization"] as string;
