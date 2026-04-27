@@ -5,6 +5,7 @@ import {
 import db from '../../shared/db.js';
 import { Group } from '../elem/Group.model.js';
 import { User } from '../elem/User.model.js';
+import { Certificate } from 'node:crypto';
 
 export class GroupUser extends Model <
     InferAttributes<GroupUser>,
@@ -15,6 +16,7 @@ export class GroupUser extends Model <
     declare notifPending: boolean | null;
     declare weeklyScore: CreationOptional<number | null>;
     declare globalScore: CreationOptional<number | null>;
+    declare servicePlaylistID: CreationOptional<string | null>;
 }
 
 GroupUser.init({
@@ -43,6 +45,10 @@ GroupUser.init({
         defaultValue: 0,
         allowNull: true,
     },
+    servicePlaylistID: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
 }, {
     sequelize: db,
     timestamps: false,

@@ -3,7 +3,7 @@ import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import { logger } from "../middleware/logger.js";
 
 export class AuthService {
-    static client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    static client = new OAuth2Client(process.env.GOOGLE_WEB_CLIENT_ID);
 
     static signToken(payload: JwtPayload) {
         return jwt.sign(

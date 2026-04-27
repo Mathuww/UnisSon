@@ -15,7 +15,7 @@ export class Track extends Model <
     InferCreationAttributes<Track, { omit: 'createdAt' | 'updatedAt' }>
 > {
     declare id: CreationOptional<number>;
-    declare title: string;
+    declare title: string | null;
     declare artist: string | null;
     declare ISRC: string | null;
     declare youtubeLink: string | null;
@@ -38,7 +38,7 @@ Track.init({
     },
     title: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     artist: {
         type: DataTypes.STRING(32),
