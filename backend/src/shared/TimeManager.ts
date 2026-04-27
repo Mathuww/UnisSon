@@ -25,7 +25,7 @@ export class TimeManager {
             offsetHrs: hrs
         });
 
-        generalPollingTask();
+        await generalPollingTask();
     }
 
     static getNextDay(dayNb: number) {

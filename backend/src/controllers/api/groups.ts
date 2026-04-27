@@ -39,7 +39,7 @@ export const GroupController = {
         await GroupPeriod.create({
             groupID: group.id,
             periodType: PeriodType.NEW_CYCLE,
-            periodStart: TimeManager.getNextDay(7)
+            periodStart: TimeManager.getNextDay(0) // dimanche
         });
         generalPollingTask();
 
