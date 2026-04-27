@@ -16,6 +16,14 @@
     },
     "production": {
       "autoIncrement": true
+    },
+    "debugging": {
+      "distribution": "store",
+      "ios": {
+        "buildConfiguration": "Debug"
+      },
+      "channel": "staging",
+      "autoIncrement": true
     }
   },
   "submit": {
