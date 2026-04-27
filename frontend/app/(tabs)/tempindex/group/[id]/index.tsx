@@ -8,6 +8,8 @@ import { GroupData, UserData } from "@/shared/types";
 import { useGroupStore } from "@/utils/groupStore";
 import { useFocusEffect } from "expo-router";
 import { TimeContext } from "@/app/(tabs)/_layout";
+import {useSocketStore} from "@/utils/socketStore";
+import {useGroupSocket} from "@/hooks/useGroupSocket";
 
 export default function Group() {
 
@@ -18,7 +20,7 @@ export default function Group() {
     const router = useRouter();
 
     const { appToken, userInfo } = useAuthStore();
-    const { fetchCurrentGroup, leaveGroup, getGroup, forceChangeStatus } = useGroupStore();
+    const { fetchCurrentGroup, leaveGroup, getGroup } = useGroupStore();
 
     const [groupData, setGroupData] = useState<GroupData | null>(null);
 
@@ -32,6 +34,8 @@ export default function Group() {
             }
         })();
     }, [userInfo, chosenOne]);
+
+    useGroupSocket(Number(id));
 
     const updateGroup = async () => {
         if (!appToken) {
