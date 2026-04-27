@@ -7,10 +7,7 @@ const db = new Sequelize(`mariadb://${process.env.DB_USER}:${process.env.DB_PASS
         dialect: 'mariadb',
         logging: false,//(sql: string) => logger.debug(`Running SQL query ${sql}`),
         pool: {
-            max: 20,
-            min: 0,
-            acquire: 30000,
-            idle: 10000
+            max: 10
         }
     }
 );

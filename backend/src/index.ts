@@ -17,6 +17,7 @@ import http from 'http';
 import { Server } from "socket.io";
 import { timeInfoMiddleware } from './middleware/timeinfo.js';
 import { TimeManager } from './shared/TimeManager.js';
+import { initSocket } from './shared/socket.js';
 await dbConnect();
 await TimeManager.init();
 
@@ -24,19 +25,36 @@ const app = express();
 const server = http.createServer(app);
 const port = process.env.PORT || 5175;
 
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+const io = initSocket(server);
 
 io.on("connection", (socket) => {
-  logger.log("connected:", socket.id);
+  logger.info("connected:" + socket.id);
 
-  socket.on("message", (data) => {
-    logger.log("msg:", data);
+  const originalEmit = socket.emit.bind(socket);
 
-    socket.emit("message", {
-      text: "Hello client"
-    });
+  socket.emit = (event: string, ...args: any[]) => {
+    logger.info(`[socket] emit : ${event}`, args);
+    return originalEmit(event, ...args);
+  };
+
+  socket.on("join:group", ({groupId}) => {
+    socket.join(`group:${groupId}`);
+    logger.info(`socket ${socket.id} joined room for group ${groupId}`);
+  });
+
+  socket.on("leave:group", ({groupId}) => {
+    socket.leave(`group:${groupId}`);
+    logger.info(`socket ${socket.id} left room for group ${groupId}`);
+  });
+
+  socket.on("join:user", ({userId}) => {
+    socket.join(`user:${userId}`);
+    logger.info(`socket ${socket.id} joined room for user ${userId}`);
+  });
+
+  socket.on("leave:user", ({userId}) => {
+    socket.leave(`user:${userId}`);
+    logger.info(`socket ${socket.id} left room for user ${userId}`);
   });
 });
 
