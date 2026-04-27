@@ -14,6 +14,7 @@ import GroupPlaylist from "../../models/link/GroupPlaylist.model.js";
 import { Op } from "sequelize";
 import { AuthService } from "../../service/auth.service.js";
 import { YoutubeService } from "../../service/youtube.service.js";
+import { getIO } from "../../shared/socket.js";
 
 export const GroupController = {
     createGroup: asyncHandler( async (req: Request, res: Response) => {
@@ -151,6 +152,15 @@ export const GroupController = {
         if (remainingUserCount <= 0) {
             logger.info(`deleting group ${group.id}`); 
             await group.destroy();
+        } else {
+            // pour chaque utilisateur appartenant au groupe
+            const users = await group.getUsers({attributes: ['id']});
+            getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+            //getIO().emit(`group:${group.id}:refresh`);
+            for (const user of users) {
+                getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+                //getIO().emit(`groups:refresh`);
+            }
         }
 
         return res.status(204).send();
@@ -201,6 +211,15 @@ export const GroupController = {
         if (await group.allUsersAdded())
             await group.update({status: GroupStatus.WK_DONE_SUB});
 
+        // pour chaque utilisateur appartenant au groupe
+        const users = await group.getUsers({attributes: ['id']});
+        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+        //getIO().emit(`group:${group.id}:refresh`);
+        for (const user of users) {
+            getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+            //getIO().emit(`groups:refresh`);
+        }
+
         if (trackCreated) {
             logger.info("New track created and added to group : ", track);
             return res.status(201).json({data: track});
@@ -230,6 +249,15 @@ export const GroupController = {
             theme: theme,
             status: GroupStatus.SUN_DONE_THEME
         });
+
+        // pour chaque utilisateur appartenant au groupe
+        const users = await group.getUsers({attributes: ['id']});
+        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+        //getIO().emit(`group:${group.id}:refresh`);
+        for (const user of users) {
+            getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+            //getIO().emit(`groups:refresh`);
+        }
 
         return res.status(200).json({data: group});
     }),
