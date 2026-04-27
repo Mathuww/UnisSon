@@ -43,4 +43,14 @@ export class AuthService {
 
         return { email, name, picture, googleId };
     }
+
+    static async exchangeServerAuthCode(serverAuthCode : string) {
+        try {
+            return await AuthService.client.getToken(serverAuthCode);
+
+        } catch (error) {
+            logger.error(error);
+        }
+    }
+
 }
