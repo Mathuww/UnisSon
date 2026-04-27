@@ -8,12 +8,16 @@ const router = Router();
 
 // /groups/
 router.post('/', GroupController.createGroup);
+router.get('/:id', GroupController.groupUserCheck, GroupController.groupInfo);
 
 // GET /groups/:id/members (liste des membres)
 router.get('/:id/members', GroupController.groupUserCheck, GroupController.getUsers);
 
-// POST /groups/:id/members (ajt un membre)
-router.post('/:id/members', GroupController.groupUserCheck, GroupController.addUser);
+// POST /groups/:id/members/me (ajt un membre)
+router.post('/:id/members/me', GroupController.addUser);
+
+// DELETE /groups/:id/members/me (quitter un groupe)
+router.delete('/:id/members/me', GroupController.groupUserCheck, GroupController.leaveGroup);
 
 // POST /groups/:id/theme (choisir thème cette semaine)
 // Required state : SUN_WAITING_THEME
@@ -28,5 +32,8 @@ router.post('/:id/songs', GroupController.groupUserCheck, GroupController.addTra
 
 // POST /groups/:id/invite (créer un lien d'invitation)
 router.post('/:id/invite', GroupController.groupUserCheck, InviteController.invite);
+
+router.post('/:id/status', GroupController.groupUserCheck, GroupController.forceChangeStatus);
+router.post('/:id/chosen', GroupController.groupUserCheck, GroupController.forceChangeChosen);
 
 export default router;
