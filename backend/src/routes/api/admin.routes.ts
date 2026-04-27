@@ -8,7 +8,7 @@ const router = Router();
 router.post('/poll', async (req, res) => {
     try {
         logger.info("[Polled by manual API call]");
-        generalPollingTask();
+        await generalPollingTask();
         return res.status(204);
     } catch (e) {
         logger.error("Manual poll error", { e });
@@ -28,7 +28,6 @@ router.post('/time/forward', async (req, res) => {
 
         await TimeManager.forward(hrs);
         logger.info(`Forwarded of ${hrs} hours`);
-        generalPollingTask();
         return res.status(200).json({message: "Time forwarded", hrs: hrs});
     } catch (err) {
         logger.error("Time forward error", { err });

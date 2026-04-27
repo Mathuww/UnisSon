@@ -85,18 +85,28 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
     }
 
     async allUsersAdded(): Promise<boolean> {
-        const users = await this.getUsers();
-        const canAddChecks = await Promise.all(
-            users.map(user => this.canUserAdd(user.id))
-        );
+        const period = await this.getCurrentPeriod(); 
+        if (!period) return false;
 
-        return canAddChecks.every(canAdd => !canAdd);
+        const users = await this.getUsers({ attributes: ['id'] });
+        
+        const addedCount = await GroupPlaylist.count({
+            where: {
+                groupID: this.id,
+                userID: { [Op.in]: users.map(u => u.id) },
+                addedAt: { [Op.gte]: period.periodStart }
+            },
+            distinct: true,
+            col: 'userID'
+        });
+
+        return addedCount === users.length;
     }
 
     async updateChosenOne(transaction?: Transaction) {
         console.log(`updating chosen one for group ${this.id}`);
 
-        const members = await this.getUsers({ transaction });
+        const members = await this.getUsers({ transaction, attributes: ['id'] });
 
         if (!members.length) return;
     
@@ -130,6 +140,29 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
             { transaction }
         );
     }
+
+    async getEntriesSinceLastCycle(transaction?: Transaction) {
+        const playlistEntries = await GroupPlaylist.findAll({
+            where: {
+                groupID: this.id,
+                addedAt: {
+                    [Op.gte]: this.lastCycleChange || TimeManager.now()
+                }
+            },
+            include: [{model: Track, as: 'Track'}, {model: User, as: 'addedBy'}]
+        }) as (GroupPlaylist & {Track: Track, addedBy: User})[];
+
+        return playlistEntries.map((value) => {
+            const trackData = value.Track.get({ plain: true });
+            const userData = value.addedBy ? value.addedBy.get({ plain: true }) : null;
+
+            return {
+                track: trackData,
+                addedBy: userData
+            };
+        });
+    }
+
 }
 
 Group.init({

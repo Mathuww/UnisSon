@@ -38,9 +38,9 @@ export const AuthController = {
         res.json({data: user});
     }),
     googleLogin: asyncHandler( async (req: Request, res: Response) => {
-        const { idToken }  = req.body;
-        if (!idToken)
-            return res.status(400).json({error: {message: "Missing ID token"}});
+        const { idToken, authCode }  = req.body;
+        if (!idToken || !authCode)
+            return res.status(400).json({error: {message: "Missing ID token or auth code."}});
 
         const tokenResults = await AuthService.verifyGoogleToken(idToken);
 
@@ -60,6 +60,18 @@ export const AuthController = {
                     providerLoginID: googleId
                 }
         });
+
+        //if (!user.refreshToken || !user.accessToken) {
+        const response = await AuthService.exchangeServerAuthCode(authCode);
+        if (!response || !response.tokens) {
+            return res.status(500).json({error: {message: "Cannot exchange access token from auth code"}});
+        }
+        await user.update({
+            accessToken: response.tokens.access_token,
+            refreshToken: response.tokens.refresh_token,
+            tokenExpireAt: response.tokens.expiry_date ? new Date(response.tokens.expiry_date) : null
+        });
+        //}
 
         const jwt = await AuthService.signToken({sub: user.id.toString()});
 
