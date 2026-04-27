@@ -20,20 +20,20 @@ export default function Group() {
     const router = useRouter();
 
     const { appToken, userInfo } = useAuthStore();
-    const { fetchCurrentGroup, leaveGroup, getGroup } = useGroupStore();
+    const { fetchCurrentGroup, leaveGroup, groups } = useGroupStore();
+    let groupData: GroupData | null = null;         
+    const found = groups.find(g => g.id === Number(id));
+    if (found) groupData = found;
 
-    const [groupData, setGroupData] = useState<GroupData | null>(null);
+    let chosenOne: UserData | null = null;
+    if (groupData && groupData.chosenOne) {
+        chosenOne = groupData.chosenOne;
+    }
 
-    const [chosenOne, setChosenOne] = useState<UserData | null>(null);
-    const [isChosen, setIsChosen] = useState<boolean>(false);
-
-    useEffect(() => {
-        (async () => {
-            if (userInfo && chosenOne) {
-                setIsChosen(chosenOne.id === Number(userInfo.id));
-            }
-        })();
-    }, [userInfo, chosenOne]);
+    let isChosen = false;
+    if (userInfo && chosenOne) {
+        isChosen = chosenOne.id === Number(userInfo.id);
+    }
 
     useGroupSocket(Number(id));
 
@@ -44,13 +44,6 @@ export default function Group() {
         }
         console.log("fetching current group data...")
         await fetchCurrentGroup(Number(id));
-        const data = await getGroup(Number(id));
-        if (data) {
-            if (data?.chosenOne && data.chosenOne.id) {
-                setChosenOne(data.chosenOne);
-            }
-            setGroupData(data);
-        }
     }
 
     useFocusEffect(
@@ -78,7 +71,7 @@ export default function Group() {
             return () => {
                 active = false;
             }
-        }, [id, appToken, fetchCurrentGroup, getGroup, serverTime])
+        }, [id, appToken, fetchCurrentGroup, serverTime])
     );
 
     const handleChoosenTheme = async () => {
@@ -155,7 +148,6 @@ export default function Group() {
                             <UnissonButton
                                 label="À vous d'impressionner votre élu avec votre musique !"
                                 colorText="#e76f51"
-                                //Pour débugger avant l'arrivée du backend
                                 OnValidation={handleSuggestion}
                             />
                         </>
@@ -183,8 +175,7 @@ export default function Group() {
                     <UnissonButton
                         label={`Qui connaît mieux l'élu ${chosenOne?.nickname}?`}
                         colorText="#e76f51"
-                        //Pour débugger avant l'arrivée du backend
-                        OnValidation={() => console.log("Sois patient")}
+                        OnValidation={() => console.log("Sois patient pour la v1")}
                     />
                 );
 
@@ -213,7 +204,6 @@ export default function Group() {
                         <UnissonButton
                             label="À vous d'être à la hauteur d'un élu d'Unisson"
                             colorText="#FFEE88"
-                            //Pour débugger avant l'arrivée du backend
                             OnValidation={handleChoosenTheme}
                         />
                     </>
@@ -245,7 +235,6 @@ export default function Group() {
                     <UnissonButton
                         label="Qui connaît mieux mon moi-même ?"
                         colorText="#e76f51"
-                        //Pour débugger avant l'arrivée du backend
                         OnValidation={() => handleQuiz()}
                     />
                 )
