@@ -6,6 +6,7 @@ import db from "../shared/db.js";
 import { GroupStatus } from "../shared/GroupStatus.js";
 import { PeriodType } from "../shared/PeriodType.js";
 import { TimeManager } from "../shared/TimeManager.js";
+import { transcode } from "node:buffer";
 
 const DEFAULT_PERIOD_NB = 2;
 const MIN_NOTIF_HOUR = 9; // 9h00
@@ -71,7 +72,7 @@ async function updatePeriods(group: Group, transaction: Transaction) {
 
     await GroupPeriod.create({
             groupID: group.id,
-            periodStart: TimeManager.getNextDay(7),
+            periodStart: TimeManager.getNextDay(0), // dimanche
             processedAt: null,
             periodType: PeriodType.NEW_CYCLE
         }, {transaction: transaction});
@@ -87,8 +88,6 @@ export async function generalPollingTask() {
 
     polling = true;
 
-    const transaction = undefined; await db.transaction();
-
     try {
         const now = TimeManager.now();
         const nextSubPeriods = await GroupPeriod.findAll({
@@ -98,50 +97,53 @@ export async function generalPollingTask() {
             },
             include: [{
                 model: Group
-            }],
-            transaction: transaction
+            }]
         });
 
         const groupsToSet: PollingSetInfo[] = [];
 
         for (const p of nextSubPeriods) {
-            if (!p.Group) continue;
+            let transaction;
+            try {
+                if (!p.Group) continue;
+                transaction = await db.transaction();
 
-            if (p.periodType === PeriodType.NEW_CYCLE) {
-                logger.info(`Starting a new cycle for group ${p.Group?.id}`);
-                await p.Group.updateChosenOne(transaction);
-                await updatePeriods(p.Group, transaction);
-            } else {
-                const newStatus = nextStatusByPeriod[p.periodType];
-                if (newStatus)
-                    groupsToSet.push({groupId: p.Group.id, newStatus});
+                if (p.periodType === PeriodType.NEW_CYCLE) {
+                    logger.info(`Starting a new cycle for group ${p.Group?.id}`);
+                    await p.Group.updateChosenOne(transaction);
+                    await updatePeriods(p.Group, transaction);
+                } else {
+                    const newStatus = nextStatusByPeriod[p.periodType];
+                    if (newStatus)
+                        groupsToSet.push({groupId: p.Group.id, newStatus});
+                }
+
+                await GroupPeriod.update(
+                    { processedAt: now },
+                    { where: { id: p.id }, transaction }
+                );
+
+                await transaction.commit();
+            } catch (err) {
+                await transaction?.rollback();
+                logger.error(`[POLL] Processing failed for period ${p.id}:`, err);
             }
-
-            await GroupPeriod.update(
-                { processedAt: now },
-                { where: { id: p.id }, transaction }
-            );
         }
 
         if (groupsToSet.length > 0) {
             for (const item of groupsToSet) {
                 logger.info(`Updating group ${item.groupId} to status ${item.newStatus}`);
 
-                const group = await Group.findByPk(item.groupId, { transaction });
+                const group = await Group.findByPk(item.groupId);
                 if (!group) continue;
 
                 await group.update(
-                    { status: item.newStatus },
-                    { transaction }
+                    { status: item.newStatus }
                 );
             }
         }
 
-        //await transaction.commit();
         logger.info("polling task end");
-    } catch (err) {
-        logger.error("error in general poll task : ", err);
-        //await transaction.rollback();
     } finally { 
         polling = false;
     }
