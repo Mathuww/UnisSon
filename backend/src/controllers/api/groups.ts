@@ -12,6 +12,8 @@ import { TimeManager } from "../../shared/TimeManager.js";
 import { generalPollingTask } from "../../tasks/polling.task.js";
 import GroupPlaylist from "../../models/link/GroupPlaylist.model.js";
 import { Op } from "sequelize";
+import { AuthService } from "../../service/auth.service.js";
+import { YoutubeService } from "../../service/youtube.service.js";
 
 export const GroupController = {
     createGroup: asyncHandler( async (req: Request, res: Response) => {
@@ -27,21 +29,35 @@ export const GroupController = {
             status: GroupStatus.SAT_DONE_QUIZ
         });
 
-        await group.addUser(user.id, {
-            through: {
-                notifPending: false,
-                weeklyScore: 0,
-                globalScore: 0
-            }
-        });
-
         // prochain dimanche, on lance le cycle
         await GroupPeriod.create({
             groupID: group.id,
             periodType: PeriodType.NEW_CYCLE,
             periodStart: TimeManager.getNextDay(0) // dimanche
         });
-        generalPollingTask();
+
+        const client = await AuthService.getOAuthClient(user);
+        let playlistId = undefined;
+        if (client) {
+            logger.info(`Creating playlist.. for group ${group.id}`);
+            const ytResponse = await YoutubeService.addPlaylistTemp(`Suggestions de ${group.name} (UnisSon)`, client);
+            if (ytResponse && ytResponse.data) {
+                playlistId = ytResponse.data.id;
+            }
+        } else {
+            logger.error(`Error while creating playlist for group ${group.id}`);
+        }
+
+        await group.addUser(user.id, {
+            through: {
+                notifPending: false,
+                weeklyScore: 0,
+                globalScore: 0,
+                servicePlaylistID: playlistId ?? null
+            }
+        });
+
+        await generalPollingTask();
 
         return res.status(201).json({data: group});
     }),
@@ -171,7 +187,14 @@ export const GroupController = {
             userID: user.id,
             trackID: track.id,
             addedAt: TimeManager.now()
-        })
+        });
+
+        const gu = await GroupUser.findOne({
+            where: {
+                userID: user.id,
+                groupID: group.id
+            }
+        });
 
         // Si tous les membres du groupe ont ajouté pour cette période,
         // on passe en WK_DONE_SUB pour ce groupe
@@ -214,54 +237,8 @@ export const GroupController = {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
 
-        const playlistEntries = await GroupPlaylist.findAll({
-            where: {
-                groupID: group.id,
-                addedAt: {
-                    [Op.gte]: group.lastCycleChange || TimeManager.now()
-                }
-            },
-            include: [{model: Track, as: 'Track'}, {model: User, as: 'addedBy'}]
-        });
-
-        const data = playlistEntries.map((value) => {
-            const trackData = value.Track.get({ plain: true });
-            const userData = value.addedBy ? value.addedBy.get({ plain: true }) : null;
-
-            return {
-                track: trackData,
-                addedBy: userData
-            };
-        });
+        const data = await group.getEntriesSinceLastCycle();
 
         return res.status(200).json({data: data});
-    }),
-    forceChangeStatus: asyncHandler( async (req, res) => {
-        const group: Group = (req as any).group;
-        console.log("in forcechangestatus");
-
-        const nextStatus = group.status ? getNextGroupStatus(group.status) : GroupStatus.SUN_WAITING_THEME;
-
-        await group.update({
-            status: nextStatus
-        });
-
-        if (nextStatus === GroupStatus.SUN_WAITING_THEME)
-            await group.updateChosenOne();
-
-        console.log("switched to " + group.status);
-        return res.status(200).json({data: group});
-    }),
-    forceChangeChosen: asyncHandler( async (req, res) => {
-        const user : User = (req as any).user;
-        const group: Group = (req as any).group;
-
-        const chosenOneUserID = req.body.chosenOneUserID || user.id;
-
-        await group.update({
-            chosenOneUserID
-        });
-
-        return res.status(200).json({data: group});
-    }),
+    })
 }

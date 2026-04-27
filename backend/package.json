@@ -29,6 +29,7 @@
     "ejs": "^5.0.2",
     "express": "^5.2.1",
     "google-auth-library": "^10.6.2",
+    "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.3",
     "mariadb": "^3.5.1",
     "node-cron": "^4.2.1",

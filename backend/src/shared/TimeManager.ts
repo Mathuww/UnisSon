@@ -1,5 +1,6 @@
 import TimeState from "../models/elem/TimeState.model.js";
 import { generalPollingTask } from "../tasks/polling.task.js";
+import { getIO } from "./socket.js";
 
 export class TimeManager {
     private static offsetHrs = 0;
@@ -24,6 +25,8 @@ export class TimeManager {
             id: 1,
             offsetHrs: hrs
         });
+
+        getIO().emit(`simulation:timeChange`);
 
         await generalPollingTask();
     }

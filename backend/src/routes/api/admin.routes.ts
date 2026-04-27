@@ -8,7 +8,7 @@ const router = Router();
 router.post('/poll', async (req, res) => {
     try {
         logger.info("[Polled by manual API call]");
-        generalPollingTask();
+        await generalPollingTask();
         return res.status(204);
     } catch (e) {
         logger.error("Manual poll error", { e });

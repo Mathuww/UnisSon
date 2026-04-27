@@ -3,6 +3,9 @@ import { asyncHandler } from "../../middleware/error.js";
 import Invite from "../../models/logic/Invite.model.js";
 import { Op } from "sequelize";
 import { TimeManager } from "../../shared/TimeManager.js";
+import { AuthService } from "../../service/auth.service.js";
+import { YoutubeService } from "../../service/youtube.service.js";
+import { logger } from "../../middleware/logger.js";
 
 export const INVITE_EXPIRE_DELAY_HOURS = 24; // lien invite : 24 heures 
 // Si une invite existe deja pr cet user et ce groupe et date de < x mn,
@@ -108,11 +111,25 @@ export const InviteController = {
         const group = await invite.getGroup();
         console.log(group);
         console.log(user);
+
+        const client = await AuthService.getOAuthClient(user);
+        let playlistId = undefined;
+        if (client) {
+            logger.info(`Creating playlist.. for group ${group.id}`);
+            const ytResponse = await YoutubeService.addPlaylistTemp(`Suggestions de ${group.name} (UnisSon)`, client);
+            if (ytResponse && ytResponse.data) {
+                playlistId = ytResponse.data.id;
+            }
+        } else {
+            logger.error(`Error while creating playlist for group ${group.id}`);
+        }
+
         await group.addUser(user.id, {
             through: {
                 notifPending: false,
                 weeklyScore: 0,
-                globalScore: 0
+                globalScore: 0,
+                servicePlaylistID: playlistId ?? null
             }
         });
 
