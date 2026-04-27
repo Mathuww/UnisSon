@@ -2,7 +2,7 @@
   "expo": {
     "name": "UnisSon",
     "slug": "UnisSon",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "unisson",
@@ -46,7 +46,7 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps.com.googleusercontent.apps.643995195692-aeh67a1heqpat6k3shr17mpm72da6ll3"
+          "iosUrlScheme": "com.googleusercontent.apps.643995195692-aeh67a1heqpat6k3shr17mpm72da6ll3"
         }
       ],
       "expo-router",
