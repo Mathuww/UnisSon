@@ -1,4 +1,37 @@
+import { version } from "node:os";
+import { google } from "googleapis";
+import { OAuth2Client } from "google-auth-library";
+
 export class YoutubeService {
+
+    static getYoutubeClient(oclient : OAuth2Client) {
+        return google.youtube({
+            auth: oclient,
+            version: 'v3'
+        });
+    }
+
+    static async addVideoTemp(playlistId : string, videoId : string, oclient : OAuth2Client) {
+        const ytb = this.getYoutubeClient(oclient)
+
+        try {
+            const response = await ytb.playlistItems.insert({
+                part: ["snippet"],
+                requestBody: {
+                    snippet: {
+                        playlistId: playlistId,
+                        resourceId: {
+                            kind: 'youtube#video',
+                            videoId: videoId
+                        }
+                    }
+                }
+            });
+            return response;
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     static async addVideo(playlistId : string, videoId : string, access_token : string) {
         const body = {
@@ -29,6 +62,26 @@ export class YoutubeService {
         } catch (error) {
             console.error(error) 
         }
+    }
+
+    static async addPlaylistTemp(title: string, client: OAuth2Client) {
+        const tokenInfo = await client.getTokenInfo(client.credentials.access_token ?? "");
+        console.log(tokenInfo.scopes);
+        console.log('credentials:', client.credentials);
+        const yt = this.getYoutubeClient(client);
+        const response = await yt.playlists.insert({
+            part: ['snippet', 'status'],
+            requestBody: {
+                snippet: {
+                    title: title,
+                    description: 'Changer ça',
+                },
+                status: {
+                    privacyStatus: 'private' 
+                }
+            }
+        });
+        return response;
     }
 
     static async addPlaylist(title : string, access_token : string) {
