@@ -13,6 +13,7 @@ GoogleSignin.configure({
     webClientId : '643995195692-0nf56p340fn2us9nendjv0t1v3rvp2kj.apps.googleusercontent.com',
     iosClientId : "643995195692-aeh67a1heqpat6k3shr17mpm72da6ll3.apps.googleusercontent.com",
     offlineAccess : true,
+    forceCodeForRefreshToken: true,
     scopes: [
         'https://www.googleapis.com/auth/youtube',
         'https://www.googleapis.com/auth/youtube.force-ssl'

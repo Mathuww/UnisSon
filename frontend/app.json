@@ -2,12 +2,18 @@
   "expo": {
     "name": "UnisSon",
     "slug": "UnisSon",
-    "version": "1.0.0",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "unisson",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "updates": {
+      "url": "https://u.expo.dev/2b584c40-0ce1-4a6c-916d-cabc53e468a3"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.UnisSon",
@@ -40,7 +46,7 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps.com.googleusercontent.apps.643995195692-aeh67a1heqpat6k3shr17mpm72da6ll3"
+          "iosUrlScheme": "com.googleusercontent.apps.643995195692-aeh67a1heqpat6k3shr17mpm72da6ll3"
         }
       ],
       "expo-router",
@@ -77,6 +83,6 @@
         "projectId": "2b584c40-0ce1-4a6c-916d-cabc53e468a3"
       }
     },
-    "owner": "nuwu"
+    "owner": "unissonsle"
   }
 }
