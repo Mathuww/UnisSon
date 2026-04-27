@@ -148,11 +148,11 @@ export async function generalPollingTask() {
                     logger.info(`updated chosen one. updating periods for group ${p.Group.id}`);
                     await updatePeriods(p.Group, transaction);
                     logger.info(`updated periods. new cycle processing finished`);
-                } else {
-                    const newStatus = nextStatusByPeriod[p.periodType];
-                    if (newStatus)
-                        groupsToSet.push({groupId: p.Group.id, newStatus});
-                }
+                } 
+                const newStatus = nextStatusByPeriod[p.periodType];
+                if (newStatus)
+                    groupsToSet.push({groupId: p.Group.id, newStatus});
+                
 
                 await GroupPeriod.update(
                     { processedAt: now },
@@ -179,11 +179,11 @@ export async function generalPollingTask() {
 
                 // pour chaque utilisateur appartenant au groupe
                 const users = await group.getUsers({attributes: ['id']});
-                //getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
-                getIO().emit(`group:${group.id}:refresh`);
+                getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+                //getIO().emit(`group:${group.id}:refresh`);
                 for (const user of users) {
-                    //getIO().to(`user:${user.id}`).emit(`groups:refresh`);
-                    getIO().emit(`groups:refresh`);
+                    getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+                    //getIO().emit(`groups:refresh`);
                 }
             }
         }
