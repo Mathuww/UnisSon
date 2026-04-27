@@ -6,6 +6,7 @@ import { TimeManager } from "../../shared/TimeManager.js";
 import { AuthService } from "../../service/auth.service.js";
 import { YoutubeService } from "../../service/youtube.service.js";
 import { logger } from "../../middleware/logger.js";
+import { getIO } from "../../shared/socket.js";
 
 export const INVITE_EXPIRE_DELAY_HOURS = 24; // lien invite : 24 heures 
 // Si une invite existe deja pr cet user et ce groupe et date de < x mn,
@@ -132,6 +133,14 @@ export const InviteController = {
                 servicePlaylistID: playlistId ?? null
             }
         });
+
+        const users = await group.getUsers({attributes: ['id']});
+        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+        //getIO().emit(`group:${group.id}:refresh`);
+        for (const user of users) {
+            getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+            //getIO().emit(`groups:refresh`);
+        }
 
         return res.status(201).json({data: group});
     })
