@@ -8,6 +8,7 @@ import { Text } from 'react-native';
 import { ApiCall } from '@/api/BackendApi';
 import { useGroupStore } from '@/utils/groupStore';
 import { useSettingsStore } from '@/utils/settingsStore';
+import { useTimeSocket } from '@/hooks/useTimeSocket';
 
 export const TimeContext = createContext<string>("...");
 
@@ -16,30 +17,32 @@ export default function TabsLayout() {
     const {fetchGroups} = useGroupStore();
     const {timeDebug} = useSettingsStore();
 
+    const updateTime = async () => {
+        try {
+            const res = await ApiCall.admin.getServerTime();
+            const { serverTime: time } = res.data.data;
+            setServerTime(new Date(time).toLocaleString());
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     useEffect(() => {
-        (async () => {
-            try {
-                const res = await ApiCall.admin.getServerTime();
-                const { serverTime: time } = res.data.data;
-                setServerTime(new Date(time).toLocaleString());
-            } catch (err) {
-                console.error(err);
-            }
-        })();
+        (async () => await updateTime())();
     }, []);
+
+    useTimeSocket(updateTime);
 
     const handleTimeForward = async () => {
         const HOURS_TO_FORWARD = 24;
         try {
             const res = await ApiCall.admin.forwardTime(HOURS_TO_FORWARD);
             const { simulationTime } = res.data.meta;
-            setServerTime(new Date(simulationTime).toLocaleString());
+            //setServerTime(new Date(simulationTime).toLocaleString());
         } catch (err) {
             console.error(err);
         }
-        await fetchGroups();
-        //*ùm
-        // :*();
+        //await fetchGroups();
     }
 
     return (
