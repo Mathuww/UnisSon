@@ -11,9 +11,9 @@ export const useGroupSocket = (groupId: number | null) => {
 
         emit("join:group", { groupId });
 
-        const handler = () => {
+        const handler = async () => {
             console.log("Socket Group");
-            fetchCurrentGroup(groupId);
+            await fetchCurrentGroup(groupId);
         };
 
         on(`group:${groupId}:refresh`, handler);

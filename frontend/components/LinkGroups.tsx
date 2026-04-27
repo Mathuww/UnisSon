@@ -1,5 +1,5 @@
-import {useRouter } from "expo-router";
-import React, { useEffect, useState } from 'react';
+import {useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text } from "react-native";
 
 
@@ -13,12 +13,29 @@ const { width } = Dimensions.get('window');
 
 export default function LinkGroups({id, label} : Props) {
     const [bgColor, setBgColor] = useState('#4E6E5D');
+    const loading = useRef(false);
 
     const router = useRouter();
 
+    useFocusEffect(
+        useCallback(() => {
+            loading.current = false;
+        }, [])
+    );
+
     useEffect(() => {
-        console.log("Creating link group for " + id)
-    }, [id]);
+            console.log("Creating link group for " + id)
+        }, [id]);
+
+    const handleDestinationGroup = (id: number) => {
+        if (loading.current) {
+            return;
+        }
+        loading.current = true;
+        router.push({
+            pathname: `/(tabs)/tempindex/group/${id}` as any,
+        });
+    };
 
     const randomColor = () => {
         let color = "#";
@@ -33,14 +50,6 @@ export default function LinkGroups({id, label} : Props) {
     };
 
     useEffect(() => randomColor(), []);
-
-    const handleDestinationGroup = (id : number) => {
-        console.log(`getting to group/${id}`);
-        router.push({ 
-            pathname: `/(tabs)/tempindex/group/${id}` as any,
-        });
-    }
-
 
     return (
         <Pressable style={[styles.container, { backgroundColor: bgColor }]} onPress={() => handleDestinationGroup(id)}>
