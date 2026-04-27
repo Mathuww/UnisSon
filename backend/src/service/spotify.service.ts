@@ -1,11 +1,13 @@
+import { TimeManager } from "../shared/TimeManager.js";
+
 export class SpotifyAuthService {
     static token: string | null = null;
     static expiresAt: number = 0;
 
     static async getToken() {
-        const now = Date.now();
+        const now = TimeManager.now();
 
-        if (this.token && now < this.expiresAt) {
+        if (this.token && now.getTime() < this.expiresAt) {
             return this.token;
         }
 
@@ -20,7 +22,7 @@ export class SpotifyAuthService {
 
         const data = await response.json();
         this.token = data.access_token;
-        this.expiresAt = now + (data.expires_in - 60) * 1000;
+        this.expiresAt = now.getTime() + (data.expires_in - 60) * 1000;
         return this.token;
     }
 }

@@ -7,7 +7,7 @@ let authToken: string | null = null;
 
 export const api = axios.create({
     baseURL: BACKEND_API_URL,
-    timeout: 5000
+    timeout: 10000
 });
 
 axios.interceptors.response.use(
