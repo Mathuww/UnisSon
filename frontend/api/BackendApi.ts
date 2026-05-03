@@ -1,5 +1,5 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
-import {TrackData} from "@/shared/types";
+import {QuizUserAnswerData, TrackData} from "@/shared/types";
 
 export const BACKEND_API_URL = "https://unisson.qbert.fr";
 
@@ -81,6 +81,12 @@ export const ApiCall = {
 
         forceChangeChosen: (id: number, chosenOneUserID: number) =>
             api.post(`/api/groups/${id}/chosen`, { chosenOneUserID }),
+
+        submitChosenQuizAnswers: (id: number, answers: QuizUserAnswerData) =>
+            api.post(`/api/groups/${id}/chosenquiz`, { answers }),
+
+        submitChosenRank: (id: number, ranking : {userId: number, trackId: number}[]) =>
+            api.post(`/api/groups/${id}/chosenrank`, { ranking }),
     },
     invites: {
         tokenInfo: (token: string) => api.get(`/api/invites/${token}`),

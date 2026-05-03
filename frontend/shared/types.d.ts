@@ -37,6 +37,11 @@ export type GroupData = {
   theme: string;
   users?: UserData[];
   canUserAdd?: boolean;
+  canUserAnswerQuizz?: boolean;
+  quizDone?: boolean;
+  rankDone?: boolean;
+  weeklyScore?: number;
+  globalScore?: number;
 };
 
 export type SettingsData = {
@@ -55,3 +60,5 @@ export type QuizTrackData = {
   track: TrackData;
   addedBy: UserData;
 }
+
+export type QuizUserAnswerData = Record<number, number>;

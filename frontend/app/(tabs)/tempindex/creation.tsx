@@ -53,7 +53,7 @@ export default function Creation() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Heyy, à toi de créer ton propre univers avec tes musiciens, compositeurs, producteurs, podcasteurs, ainsi que nos invités d'honneurs Stephane Jeannin vs Gaïa</Text>
+            <Text style={styles.title}>Heyy, à toi de créer ton propre univers avec tes musiciens, compositeurs, producteurs, podcasteurs :</Text>
             <Text style={styles.subtitle}>Mais avant tout, je te demandes quelques tatonnements :</Text>
             <UnissonTextInput labelDefault="Nom du groupe" text={groupName} OnWrite={setGroupName}></UnissonTextInput>
             <NumberSlider numberDefault={4} min={3} max={11} numberActual={groupMaxUser} OnSlice={setGroupMaxUser}></NumberSlider>
