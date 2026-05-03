@@ -9,6 +9,7 @@ export const dbConnect = async () => {
 
         //await db.sync({alter: true});
         await db.sync();
+        logger.info("DB synced!");
     } catch (err) {
         console.error('DB connection failed:', err);
         process.exit(1);

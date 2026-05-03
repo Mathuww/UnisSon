@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, urlencoded } from "express";
 import { asyncHandler } from "../../middleware/error.js";
 import { logger, loggerMiddleware } from "../../middleware/logger.js";
 import Group from "../../models/elem/Group.model.js";
@@ -15,6 +15,8 @@ import { Op } from "sequelize";
 import { AuthService } from "../../service/auth.service.js";
 import { YoutubeService } from "../../service/youtube.service.js";
 import { getIO } from "../../shared/socket.js";
+import RealRank from "../../models/logic/RealRank.model.js";
+import PredRank from "../../models/logic/PredRank.model.js";
 
 export const GroupController = {
     createGroup: asyncHandler( async (req: Request, res: Response) => {
@@ -89,12 +91,13 @@ export const GroupController = {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
 
-        const includeUsers = req.query.includeUsers === "true";
+        const includeUsers = (req.query.includeUsers === "true");
 
         if (includeUsers) {
             const users = await group?.getUsers();
             const chosenOne = await group?.getChosenUser();
             const canUserAdd = await group?.canUserAdd(user.id);
+            const gu = await GroupUser.findOne({where: {groupID: group.id, userID: user.id}});
             const data = {
                     id: group.id,
                     name: group.name,
@@ -103,6 +106,10 @@ export const GroupController = {
                     theme: group.theme,
                     maxUsers: group.maxUsers,
                     canUserAdd,
+                    weeklyScore: gu?.weeklyScore,
+                    globalScore: gu?.globalScore,
+                    quizDone: gu?.quizDone,
+                    rankDone: gu?.rankDone,
                     users
                 };
             return res.status(200).json({
@@ -192,6 +199,14 @@ export const GroupController = {
             }
         });
 
+        if (trackCreated) {
+            const youtubeInfo = await YoutubeService.getPublicVideoInfo(youtubeLink);
+            await track.update({
+                title: youtubeInfo.title,
+                artist: youtubeInfo.artist!
+            });
+        }
+
         await GroupPlaylist.create({
             groupID: group.id,
             userID: user.id,
@@ -268,5 +283,164 @@ export const GroupController = {
         const data = await group.getEntriesSinceLastCycle();
 
         return res.status(200).json({data: data});
-    })
+    }),
+    submitChosenQuizAnswers: asyncHandler( async (req: Request, res: Response) => {
+        const user : User = (req as any).user;
+        const group: Group = (req as any).group;
+
+        const answers: Record<number, number> = req.body.answers;
+        if (!answers)
+            return res.status(400).json({error: {message: "Missing answers"}});
+
+        console.log("answers ", answers);
+
+        const gu = await GroupUser.findOne({
+            where: {
+                userID: user.id,
+                groupID: group.id
+            }
+        });
+        if (!gu) {
+            return res.status(404).json({error: {message: `user ${user.id} has never been added to group ${group.id}`}});
+        }
+
+        if (gu.quizDone) {
+            return res.status(403).json({error: {message: "user has already submitted a quiz"}});
+        }
+
+        if (group.status != GroupStatus.SAT_WAITING_QUIZ) {
+            return res.status(403).json({error: {message: `Wrong status for answering quiz (${group.status})`}});
+        }
+
+        if ((await group.getChosenUser()).id != user.id) {
+            return res.status(403).json({error: {message: `Only chosen user can answer the chosen one quiz  !`}});
+        }
+
+        const trackIds = Object.keys(answers).map(Number);
+        console.log("trackIds ", trackIds);
+
+        const tracks = await GroupPlaylist.findAll({
+            where: {
+                trackID: trackIds,
+                groupID: group.id
+            }
+        });
+        const trackMap = new Map(
+            tracks.map(t => [Number(t.trackID), t])
+        );
+
+        let scoreCount = 0;
+        for (const [trackId, userId] of Object.entries(answers)) {
+            const trackEntry = trackMap.get(Number(trackId));
+            if (!trackEntry) {
+                // C'est bizarre, ça veut dire que cette track n'a jamais été ajoutée dans ce groupe
+                return res.status(404).json({error: {message: `Track ${trackId} has never been added to group ${group.id}`}});
+            }
+            const goodAnswer = (Number(trackEntry.userID) === Number(userId));
+            console.log((goodAnswer ? "good answer" : "false answer") + `for ${user.nickname}, chose ${userId} but good answer was ${userId}`);
+            const bonus = goodAnswer ? 20 : 0;
+            scoreCount += bonus;
+        }
+
+        console.log(`new score for ${user.nickname} is ${scoreCount}`);
+
+        await gu.update({
+            tempChosenQuizScore: scoreCount,
+            quizDone: true
+        });
+
+        return res.status(204).send();
+    }),
+    submitChosenRanking: asyncHandler( async (req: Request, res: Response) => {
+        const user : User = (req as any).user;
+        const group: Group = (req as any).group;
+
+        const gu = await GroupUser.findOne({
+            where: {
+                userID: user.id,
+                groupID: group.id
+            }
+        });
+        if (!gu) {
+            return res.status(404).json({error: {message: `user ${user.id} has never been added to group ${group.id}`}});
+        }
+
+        if (gu.rankDone) {
+            return res.status(403).json({error: {message: "this chosen user has already submitted a ranking"}});
+        }
+
+        const ranking: {userId: number, trackId: number}[] = req.body.ranking;
+        if (!ranking)
+            return res.status(400).json({error: {message: "Missing ranking"}});
+
+        if (group.status != GroupStatus.SAT_WAITING_QUIZ) {
+            return res.status(403).json({error: {message: `Wrong status for submitting ranking quiz (${group.status})`}});
+        }
+
+        if ((await group.getChosenUser()).id != user.id) {
+            return res.status(403).json({error: {message: `Only chosen user can submit the real ranking ! !`}});
+        }
+
+        let ranks = [];
+        for (const [rank, {userId, trackId}] of ranking.entries()) {
+            ranks.push({
+                rank,
+                groupID: group.id,
+                trackID: trackId,
+                userID: userId,
+                oracleUserID: user.id
+            })
+        }
+        await RealRank.bulkCreate(ranks);
+
+        await gu.update({
+            rankDone: true
+        });
+
+        return res.status(204).send();
+    }),
+    submitPredRanking:  asyncHandler( async (req: Request, res: Response) => {
+        const user : User = (req as any).user;
+        const group: Group = (req as any).group;
+
+        const gu = await GroupUser.findOne({
+            where: {
+                userID: user.id,
+                groupID: group.id
+            }
+        });
+        if (!gu) {
+            return res.status(404).json({error: {message: `user ${user.id} has never been added to group ${group.id}`}});
+        }
+
+        if (gu.rankDone) {
+            return res.status(403).json({error: {message: "this chosen user has already submitted a ranking"}});
+        }
+
+        const ranking: {userId: number, trackId: number}[] = req.body.ranking;
+        if (!ranking)
+            return res.status(400).json({error: {message: "Missing ranking"}});
+
+        if (group.status != GroupStatus.SAT_WAITING_QUIZ) {
+            return res.status(403).json({error: {message: `Wrong status for submitting ranking quiz (${group.status})`}});
+        }
+
+        if ((await group.getChosenUser()).id === user.id) {
+            return res.status(403).json({error: {message: `chosen user cant sumbit a pred ranking ! !`}});
+        }
+
+        let ranks = [];
+        for (const [rank, {userId, trackId}] of ranking.entries()) {
+            ranks.push({
+                rank,
+                groupID: group.id,
+                trackID: trackId,
+                userID: userId,
+                oracleUserID: user.id
+            })
+        }
+        await PredRank.bulkCreate(ranks);
+
+        return res.status(204).send();
+    }),
 }
