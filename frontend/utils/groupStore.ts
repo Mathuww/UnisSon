@@ -2,7 +2,7 @@ import {create} from "zustand";
 import {persist, createJSONStorage} from "zustand/middleware";
 import {getItem, setItem, deleteItemAsync} from "expo-secure-store";
 import {ApiCall, BACKEND_API_URL} from "@/api/BackendApi";
-import {ActionResult, GroupData, TrackData, QuizTrackData} from "@/shared/types";
+import {ActionResult, GroupData, TrackData, QuizTrackData, QuizUserAnswerData} from "@/shared/types";
 
 type GroupState = {
     groups: GroupData[];
@@ -16,6 +16,8 @@ type GroupState = {
     fetchGroups: () => Promise<void>;
     fetchCurrentGroup: (id: number) => Promise<void>;
     getQuizzData: (id: number) => Promise<ActionResult<QuizTrackData[]>>;
+    submitChosenQuizzAnswers: (id: number, answers: QuizUserAnswerData) => Promise<void>;
+    submitChosenRanking: (id: number, ranking: {userId: number, trackId: number}[]) => Promise<void>;
     createGroup: (token: string, name: string, maxUsers: number) => Promise<ActionResult<number>>;
     getGroup: (id: number) => Promise<GroupData | undefined>;
 };
@@ -64,7 +66,18 @@ export const useGroupStore = create(
             fetchGroups: async () => {
                 try {
                     const response = await ApiCall.users.getAllGroup();
-                    set({groups: response.data.data});
+                    if (!response.data.data) {
+                        return console.error("missing groups in fetchgroups");
+                    }
+                    set((state) => ({
+                        groups: response.data.data.map((receivedGroup: GroupData) => {
+                            const currentGroup = state.groups.find(g => g.id === receivedGroup.id);
+                            return {
+                                ...currentGroup,
+                                ...receivedGroup
+                            };
+                        })
+                    }));
                 } catch (error) {
                     console.error(error)
                 }
@@ -93,6 +106,22 @@ export const useGroupStore = create(
                 } catch (e) {
                     console.error(e);
                     return {success: false, error: e};
+                }
+            },
+
+            submitChosenQuizzAnswers: async (groupId: number, answers: QuizUserAnswerData) => {
+                try {
+                    const res = await ApiCall.groups.submitChosenQuizAnswers(groupId, answers);
+                } catch (e) {
+                    console.error(e);
+                }
+            },
+
+            submitChosenRanking: async (groupId: number, ranking: {userId: number, trackId: number}[]) => {
+                try {
+                    const res = await ApiCall.groups.submitChosenRank(groupId, ranking);
+                } catch (e) {
+                    console.error(e);
                 }
             },
 

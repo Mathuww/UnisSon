@@ -7,16 +7,34 @@ import { useGroupStore } from "@/utils/groupStore";
 import IconAction from "@/components/IconAction";
 import { useRouter, useFocusEffect } from "expo-router";
 import { TimeContext } from "./_layout";
-
+import { GroupData } from "@/shared/types";
 
 export default function Index() {
   const router = useRouter();
+  const { userInfo } = useAuthStore();
   const { groups, fetchGroups } = useGroupStore();
   const serverTime = useContext(TimeContext);
 
   const handleCreation = () => {
     router.push({ pathname: '/(tabs)/tempindex/creation' });
   }
+
+  const whatNotif = (group : GroupData) => {
+    if (!group || !userInfo) return null;
+    const userId = userInfo?.id;
+    if (group.status && group.chosenOne && group.canUserAdd !== undefined && group.canUserAnswerQuizz !== undefined) {
+        if (group.status === "SUN_WAITING_THEME" && group.chosenOne.id === userId){
+            return "Choix du thème";
+        };
+        if (group.status === "SAT_WAITING_QUIZ" && group.canUserAnswerQuizz && group.chosenOne.id === userId){
+            return "Fait le quizz";
+        };
+        if (group.status === "WK_WAITING_SUB" && !(group.chosenOne.id === userId) && group.canUserAdd) {
+            return "Ajoute ta musique";
+        };
+    };
+    return null;
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -33,13 +51,19 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-
+      
       <FlatList
         data={groups}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={
-          ({ item }) => <LinkGroups id={item.id} label={item.name} ></LinkGroups>
-        }
+        keyExtractor={(item) => {console.log("voici le grand item + " + JSON.stringify(item, null, 2)); return item.id!.toString();}}
+        renderItem={({item}) => {
+          const notifText = whatNotif(item);
+          return (<LinkGroups 
+            id={item.id} 
+            label={item.name}
+            hasNotification={(notifText !== null)}
+            notifText={notifText}
+          ></LinkGroups>);
+        }}
       />
       <IconAction
         img="group-add"

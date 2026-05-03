@@ -102,6 +102,19 @@ export default function Group() {
         }
     }
 
+    const handleRank = async () => {
+        try {
+            if (groupData) {
+                router.push(`/(tabs)/tempindex/group/${id}/ranking`);
+            } else {
+                console.error("groupData is null before ranking Page");
+            }
+        } catch (error) {
+            console.error("On ne pas accèder à la page de ranking de la semaine!", error);
+        }
+    }
+
+
     const handleInviteOthersMembers = () => {
         if (groupData) {
             router.push(`/(tabs)/tempindex/group/${id}/invitation`);
@@ -119,7 +132,6 @@ export default function Group() {
         }
     }
 
-
     const renderUIForOthers = (): ReactNode => {
         if (!groupData)
             return;
@@ -134,7 +146,7 @@ export default function Group() {
             case "SUN_DONE_THEME":
                 return (
                     <Text style={styles.subtitle}>
-                        L'élu {chosenOne?.nickname} a choisi un thème.
+                        L'élu {chosenOne?.nickname} a choisi un thème{groupData.theme && `, et c'est : ${groupData.theme}`}.
                     </Text>
                 );
 
@@ -143,7 +155,7 @@ export default function Group() {
                     return (
                         <>
                             <Text style={styles.subtitle}>
-                                Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {chosenOne?.nickname} :
+                                Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {chosenOne?.nickname}{groupData.theme && `, avec son thème ${groupData.theme}`} :
                             </Text>
                             <UnissonButton
                                 label="À vous d'impressionner votre élu avec votre musique !"
@@ -153,6 +165,7 @@ export default function Group() {
                         </>
                     );
                 } else {
+                    console.log(JSON.stringify(groupData, null, 2));
                     return (
                         <>
                             <Text style={styles.subtitle}>
@@ -231,6 +244,19 @@ export default function Group() {
                 )
 
             case "SAT_WAITING_QUIZ":
+                if (groupData.quizDone && groupData.rankDone) {
+                    return (
+                        <Text style={styles.subtitle}>
+                            Vous avez déjà rempli votre quiz pour cette semaine.
+                        </Text>
+                    )
+                } else if (groupData.quizDone) {
+                    <UnissonButton
+                        label="Faire mon classement"
+                        colorText="#e76f51"
+                        OnValidation={() => handleRank()}
+                    />
+                }
                 return (
                     <UnissonButton
                         label="Qui connaît mieux mon moi-même ?"
@@ -273,6 +299,12 @@ export default function Group() {
                             <Text style={styles.text}>{item.nickname}</Text>
                         }
                     />
+                </View>
+                <View style={styles.container}>
+                    <Text style={styles.text}>{
+                        `Votre score de la semaine : ${groupData.weeklyScore ?? "ERREUR"}
+                        Votre score total : ${groupData.globalScore ?? "ERREUR"}`
+                    }</Text>
                 </View>
                 <View style={styles.containerButton}>
                     <View style={styles.containerText}>
