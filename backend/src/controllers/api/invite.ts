@@ -117,7 +117,7 @@ export const InviteController = {
         let playlistId = undefined;
         if (client) {
             logger.info(`Creating playlist.. for group ${group.id}`);
-            const ytResponse = await YoutubeService.addPlaylistTemp(`Suggestions de ${group.name} (UnisSon)`, client);
+            const ytResponse = await YoutubeService.addPlaylist(`Suggestions de ${group.name} (UnisSon)`, client);
             if (ytResponse && ytResponse.data) {
                 playlistId = ytResponse.data.id;
             }

@@ -43,7 +43,7 @@ export const GroupController = {
         let playlistId = undefined;
         if (client) {
             logger.info(`Creating playlist.. for group ${group.id}`);
-            const ytResponse = await YoutubeService.addPlaylistTemp(`Suggestions de ${group.name} (UnisSon)`, client);
+            const ytResponse = await YoutubeService.addPlaylist(`Suggestions de ${group.name} (UnisSon)`, client);
             if (ytResponse && ytResponse.data) {
                 playlistId = ytResponse.data.id;
             }
@@ -125,22 +125,6 @@ export const GroupController = {
         const users = await group?.getUsers();
 
         return res.status(200).json({data: users});
-    }),
-    addUser: asyncHandler( async (req: Request, res: Response) => {
-        const user : User = (req as any).user;
-        const group = await Group.findByPk(Number(req.params.id));
-        if (!group)
-            return res.status(404).json({error: {message: "Group not found"}});
-
-        await group.addUser(user.id, {
-            through: {
-                notifPending: false,
-                weeklyScore: 0,
-                globalScore: 0
-            }
-        });
-
-        return res.status(201).json({data: group});
     }),
     leaveGroup: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;

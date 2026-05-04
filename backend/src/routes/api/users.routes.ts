@@ -5,10 +5,10 @@ const router = Router();
 
 // /users/...
 
-// /users/me/
+// GET /users/me/ : Profil
 router.get('/me', UserController.getProfile);
 
-// /users/me/groups
+// GET /users/me/groups : Groupes auxquels l'user appartient
 router.get('/me/groups', UserController.getGroups);
 
 

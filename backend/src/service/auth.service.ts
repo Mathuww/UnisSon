@@ -4,12 +4,24 @@ import { logger } from "../middleware/logger.js";
 import { cli } from "winston/lib/winston/config/index.js";
 import User from "../models/elem/User.model.js";
 
+/**
+ * Classe de service à laquelle on délègue
+ * les interactions d'authentification avec les API
+ * et la création des JWT
+ * @class
+ */
 export class AuthService {
     static client = new OAuth2Client({
         client_id: process.env.GOOGLE_WEB_CLIENT_ID, 
         client_secret: process.env.GOOGLE_WEB_CLIENT_SECRET
     });
 
+    /**
+     * Renvoie un client OAuth2 Google,
+     * en prenant soin de refresh l'access token si expiré
+     * @param user L'user dans la DB
+     * @returns Le client oauth2
+     */
     static async getOAuthClient(user: User): Promise<OAuth2Client> {
         const client = new OAuth2Client(
             process.env.GOOGLE_WEB_CLIENT_ID,
@@ -43,6 +55,11 @@ export class AuthService {
         return client;
     }
 
+    /**
+     * Crée un token JWT pour s'authentifier au backend
+     * @param payload L'objet à incorporer dans le JWT
+     * @returns Le JWT
+     */
     static signToken(payload: JwtPayload) {
         return jwt.sign(
             payload,
@@ -51,6 +68,12 @@ export class AuthService {
         );
     }
 
+    /**
+     * Vérifie l'idToken renvoyé par le frontend,
+     * et renvoie les infos sur l'user obtenues de l'API Google
+     * @param idToken L'id token Google
+     * @returns Les données de l'user.
+     */
     static async verifyGoogleToken(idToken: string) {
         const ticket = await AuthService.client.verifyIdToken({
             idToken,
@@ -82,6 +105,11 @@ export class AuthService {
         return { email, name, picture, googleId };
     }
 
+    /**
+     * Renvoie access & refresh token depuis un authCode
+     * @param serverAuthCode l'auth code
+     * @returns les tokens
+     */
     static async exchangeServerAuthCode(serverAuthCode : string) {
         try {
             return await AuthService.client.getToken(serverAuthCode);

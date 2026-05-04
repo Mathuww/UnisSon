@@ -1,4 +1,4 @@
-import {TextInput, Text, View, StyleSheet} from "react-native";
+import {TextInput, Text, View, StyleSheet, Alert} from "react-native";
 import {useState} from "react";
 import UnissonButton from "@/components/UnissonButton";
 import {ApiCall} from "@/api/BackendApi";
@@ -6,10 +6,19 @@ import {setItemAsync} from "expo-secure-store";
 import {useAuthStore} from "@/utils/authStore";
 import {GoogleSignin} from "@react-native-google-signin/google-signin";
 
+
+/**
+ * Écran de connexion utilisateur
+ * 
+ * Permet à l'utilisateur de se connecter via Google Sign-In.
+ */
 export default function SignInScreen() {
     const [pseudo, setPseudo] = useState('');
     const {GoogleLogIn} = useAuthStore();
 
+    /**
+     * Gère la connexion via Google. Lance le processus et récupère les tokens que l'on transmet au backend
+     */
     const handleSignIn = async () => {
         try {
             await GoogleSignin.hasPlayServices();
@@ -21,6 +30,13 @@ export default function SignInScreen() {
                 GoogleLogIn(userInfo.data.idToken, userInfo.data.serverAuthCode);
             }
             else if (userInfo.data?.idToken) {
+                Alert.alert(
+                    "Permissions refusées",
+                    "Les morceaux de vos groupes ne seront pas ajoutés à votre compe YouTube.",
+                    [
+                        {text: "Continuer"}
+                    ]
+                );
                 GoogleLogIn(userInfo.data.idToken, null);
             } else {
                 throw new Error("Pas de IdToken reçu de Google");

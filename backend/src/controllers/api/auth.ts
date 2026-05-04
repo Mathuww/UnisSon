@@ -8,39 +8,10 @@ import { create } from "node:domain";
 import User from "../../models/elem/User.model.js";
 
 export const AuthController = {
-    basicLogin: asyncHandler( async (req: Request, res: Response) => {
-        if (!process.env.DEV_MODE)
-            return res.status(403).json({error: {message: "Not in dev mode"}});
-
-        const { nickname } = req.body;
-
-        if (!nickname)
-            return res.status(400).json({error: {message: "Nickname missing from login request"}});
-
-        const user = await User.findOne({ where: { nickname: nickname }});
-
-        if (user) 
-            res.status(200).json({data: user});
-        else 
-            res.status(404).json({error: {message: "User not found"}});
-    }),
-    basicSignup: asyncHandler( async (req: Request, res: Response) => {
-        if (!process.env.DEV_MODE)
-            return res.status(403).json({error: {message: "Not in dev mode"}});
-
-        const { nickname, email } = req.body;
-
-        if (!nickname || !email)
-            return res.status(400).json({error: {message: "Nickname/mail missing from signup request"}});
-
-        const user = await User.create({nickname, email});
-
-        res.json({data: user});
-    }),
     googleLogin: asyncHandler( async (req: Request, res: Response) => {
         const { idToken, authCode }  = req.body;
-        if (!idToken || !authCode)
-            return res.status(400).json({error: {message: "Missing ID token or auth code."}});
+        if (!idToken)
+            return res.status(400).json({error: {message: "Missing ID token."}});
 
         const tokenResults = await AuthService.verifyGoogleToken(idToken);
 
@@ -61,7 +32,7 @@ export const AuthController = {
                 }
         });
 
-        //if (!user.refreshToken || !user.accessToken) {
+
         const response = await AuthService.exchangeServerAuthCode(authCode);
         if (!response || !response.tokens) {
             return res.status(500).json({error: {message: "Cannot exchange access token from auth code"}});
@@ -71,7 +42,6 @@ export const AuthController = {
             refreshToken: response.tokens.refresh_token,
             tokenExpireAt: response.tokens.expiry_date ? new Date(response.tokens.expiry_date) : null
         });
-        //}
 
         const jwt = await AuthService.signToken({sub: user.id.toString()});
 

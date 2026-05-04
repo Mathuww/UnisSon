@@ -15,6 +15,11 @@ type InviteInfo = {
     otherGroupMembers: UserData[]
 }
 
+/**
+ * Ecran d'invitation à rejoindre un groupe via un lien 
+ * 
+ * Redirige si l'utilisateur est déjà membre
+ */
 export default function JoinScreen() {
     const { isReady } = useAppInitialization();
     const { token } = useLocalSearchParams();
@@ -22,14 +27,19 @@ export default function JoinScreen() {
     const [inviteInfo, setInviteInfo] = useState<InviteInfo | null>(null);
     const {fetchGroups} = useGroupStore();
 
+    /**
+     * Récupère les infos de l'invitation à partir du token du lien 
+     * 
+     * Redirige si l'user est deja dans le groupe
+     */
     useEffect(() => {
         (async () => {
             try {
                 const res = await ApiCall.invites.tokenInfo(token as string);
                 const data = res.data.data;
-                console.log(data);
+                //console.log(data);
                 if (data.isUserInGroup) {
-                    console.log("User already in group, redirecting to group homepage.");
+                    //console.log("User already in group, redirecting to group homepage.");
                     router.replace({pathname: `/(tabs)/tempindex/group/${data.group.id}/` as any});
                 }
                 setInviteInfo({
@@ -43,6 +53,9 @@ export default function JoinScreen() {
         })();
     }, [token]);
 
+    /**
+     * Permet au user de rejoindre le groupe via BackendAPI et met à jour les groupes
+     */
     const handleJoin = async () => {
         try {
             const res = await ApiCall.invites.join(token as string);

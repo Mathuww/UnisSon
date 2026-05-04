@@ -6,6 +6,11 @@ import { useSettingsStore } from "@/utils/settingsStore";
 import UnissonOnOff from "@/components/UnissonOnOff";
 import { useEffect, useState } from "react";
 
+/**
+ * Page de profil 
+ * 
+ * Permet le déconexion google 
+ */
 export default function Profile() {
   const [time, setTime] = useState<boolean>(false);
   const {userInfo} = useAuthStore();
@@ -14,6 +19,9 @@ export default function Profile() {
   const router = useRouter();
   const {appToken, GoogleLogOut} = useAuthStore();
 
+  /**
+   * S'occupe du logout Google
+   */
   const handleLogout = async () => {
     if (!appToken) {
       console.error("Not logged in");
@@ -27,18 +35,10 @@ export default function Profile() {
     }
   }
 
-  const handleInvitation = () => {
-    router.push({ pathname: '/(tabs)/joins' /*, params: {id: } */});
-  }
-
   return (
       <View style={styles.container}>
           <Text style={styles.pseudo}>@{userInfo?.nickname}</Text>
           <View style={styles.containerIcons}>
-            <IconAction 
-              img="notification-add"
-              OnValidation={handleInvitation}
-            />
             <UnissonOnOff value={timeDebug} OnValidation={(value:boolean) => {setTimeDebug(value)}}/>
             <IconAction 
               img="logout"

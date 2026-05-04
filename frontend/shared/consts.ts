@@ -1,1 +1,0 @@
-export type const1 = 0;

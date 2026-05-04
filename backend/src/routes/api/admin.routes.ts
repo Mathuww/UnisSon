@@ -5,6 +5,7 @@ import { TimeManager } from "../../shared/TimeManager.js";
 
 const router = Router();
 
+// POST /admin/poll : Appeler la tâche de polling manuellement
 router.post('/poll', async (req, res) => {
     try {
         logger.info("[Polled by manual API call]");
@@ -16,10 +17,12 @@ router.post('/poll', async (req, res) => {
     }
 });
 
+// GET /admin/time : Récupérer le temps serveur
 router.get('/time', async (req, res) => {
     return res.status(200).json({data: {serverTime: TimeManager.now().toISOString()}})
 });
 
+// POST /admin/time/forward : Faire avancer le temps serveur
 router.post('/time/forward', async (req, res) => {
     try {
         const { hrs } = req.body;

@@ -1,13 +1,16 @@
 import { Link, Stack } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
+/**
+ * Page de redirection si erreur (normalement inacessible)
+ */
 export default function NotFoundScreen() {
     return (
         <>
             <Stack.Screen/>
             <View style={styles.container}>
                 <Text style={styles.sousText}>
-                    Une Erreur 404 n'est pas si unie de votre part.
+                    Erreur 404
                 </Text>
                 <Link href="/" style={styles.button}>
                     Viens s'unir avec nous !

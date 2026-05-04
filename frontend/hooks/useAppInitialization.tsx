@@ -6,12 +6,20 @@ import { SplashScreen } from "expo-router";
 import { useGroupStore } from "@/utils/groupStore";
 import { setAuthToken } from "@/api/BackendApi";
 
+/**
+ * Hook s'occupant de l'initialization et de la sync de l'app à l'ouverture / retour sur l'app 
+ * 
+ * @return isReady - indique si l'app est prête (store hydraté)
+ */
 export const useAppInitialization = () => {
     const appState = useRef(AppState.currentState)
     const { isLoggedIn, appToken, _hasHydrated } = useAuthStore();
     const { fetchGroups } = useGroupStore();
     const {connect, disconnect} = useSocketStore();
 
+    /**
+     * Resync l'app en général (appToken, groupes et sockets)
+     */
     const syncApp = async () => {
         if (isLoggedIn && appToken) {
             connect(appToken);

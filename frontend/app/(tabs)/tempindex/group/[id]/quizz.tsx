@@ -6,6 +6,7 @@ import YoutubePlayer from "react-native-youtube-iframe";
 import { useCallback, useEffect, useState } from "react";
 import { useGroupStore } from "@/utils/groupStore";
 import { UserData, QuizTrackData, QuizUserAnswerData } from "@/shared/types";
+import { useAuthStore } from "@/utils/authStore";
 
 
 export default function Quiz() {
@@ -13,6 +14,7 @@ export default function Quiz() {
     const [playing, setPlaying] = useState(false);
 
     const { id } = useLocalSearchParams();
+    const {userInfo} = useAuthStore();
     const { getGroup, getQuizzData, submitChosenQuizzAnswers } = useGroupStore();
     const [members, setMembers] = useState<UserData[]>([]);
     const [trackIndex, setTrackIndex] = useState<number>(0);
@@ -28,7 +30,7 @@ export default function Quiz() {
                 if (!group?.users) {
                     return console.error("cannot find user list");
                 }         
-                setMembers(group.users);     
+                setMembers(group.users.filter(u => u.id != userInfo?.id && u.id != group.chosenOne?.id));     
                 const result = await getQuizzData(Number(id));
                 if (result.success && result.data) {
                     setTracks(result.data);
@@ -58,7 +60,6 @@ export default function Quiz() {
             }));
         }
     }  
-
                 
     const handleNext = async () => {
         try {

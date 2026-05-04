@@ -9,6 +9,8 @@ import {ActionResult, GroupData, TrackData, QuizTrackData, QuizUserAnswerData} f
  */
 type GroupState = {
     groups: GroupData[];
+    eventsGroupId: number | null;
+    setEventsGroupId: (id: number | null) => void;
     submitTrack: (groupId: number, track: TrackData) => Promise<void>;
     submitTheme: (groupId: number, theme: string) => Promise<void>;
     createInvite: (groupId: number) => Promise<ActionResult<string>>;
@@ -20,7 +22,7 @@ type GroupState = {
     submitChosenQuizzAnswers: (id: number, answers: QuizUserAnswerData) => Promise<void>;
     submitChosenRanking: (id: number, ranking: {userId: number, trackId: number}[]) => Promise<void>;
     submitPredRanking: (id: number, ranking: {userId: number, trackId: number}[]) => Promise<void>;
-    createGroup: (token: string, name: string, maxUsers: number) => Promise<ActionResult<number>>;
+    createGroup: (name: string, maxUsers: number) => Promise<ActionResult<number>>;
     getGroup: (id: number) => Promise<GroupData | undefined>;
 };
 
@@ -35,6 +37,17 @@ export const useGroupStore = create(
     persist<GroupState>(
         (set, get) => ({
             groups: [],
+            eventsGroupId: null,
+
+            /**
+             * Permet d'assigner l'ID du groupe que le socket store
+             * utilisera pour rejoindre la room group:{id} en cas 
+             * de coupure et reconnexion du socket
+             * @param id 
+             */
+            setEventsGroupId: (id: number | null) => {
+                set({eventsGroupId: id});
+            },
 
             /**
              * Permet d'ajouter une track via BackendAPI 
@@ -159,7 +172,7 @@ export const useGroupStore = create(
                 } catch (e) {
                     console.error(e);
                 }
-             },
+            },
 
             /**
              * Envoie la prédiction de l'utilisateur sur le classement via BackendAPI 
@@ -196,10 +209,11 @@ export const useGroupStore = create(
             /**
              * Génère un groupe via BackendAPI et renvoie l'id du groupe 
              * 
-             * @param groupdId : id du groupe
+             * @param name : nom du groupe
+             * @param maxUsers : nombre max d'user dans le grp
              * @returns {success : boolean, data? : number}
              */
-            createGroup: async (token: string, name: string, maxUsers: number): Promise<ActionResult<number>> => {
+            createGroup: async (name: string, maxUsers: number): Promise<ActionResult<number>> => {
                 try {
                     const response = await ApiCall.groups.createGroup(name, maxUsers);
                     await get().fetchGroups();

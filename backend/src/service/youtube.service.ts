@@ -2,7 +2,24 @@ import { version } from "node:os";
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 
+/**
+ * Classe de service à laquelle on délègue
+ * les calls API à YouTube 
+ * (création d'une playlist, etc.)
+ * 
+ * On appelle les méthodes de cette classe
+ * en ayant déjà en notre possession un OAuth2client,
+ * donné par AuthService.
+ *
+ * @class
+ */
 export class YoutubeService {
+    /**
+     * (N'utilise pas l'OAuth2Client, mais l'API publie)
+     * Renvoie les métadonnées de la vidéo dont l'ID est spécifié
+     * @param videoId l'ID de la vidéo
+     * @returns Titre et auteur ("artiste")
+     */
     static async getPublicVideoInfo(videoId: string): Promise<{title: string, artist?: string}> {
         const url = `https://www.youtube.com/watch?v=${videoId}`;
         try {
@@ -24,6 +41,11 @@ export class YoutubeService {
         }
     }
 
+    /**
+     * Renvoie un client d'API YouTube
+     * @param oclient Un client OAuth2
+     * @returns Un client YouTube
+     */
     static getYoutubeClient(oclient : OAuth2Client) {
         return google.youtube({
             auth: oclient,
@@ -31,7 +53,14 @@ export class YoutubeService {
         });
     }
 
-    static async addVideoTemp(playlistId : string, videoId : string, oclient : OAuth2Client) {
+    /**
+     * Ajoute une vidéo à une playlist de l'user.
+     * @param playlistId L'ID de la playlist.
+     * @param videoId L'ID de la vidéo.
+     * @param oclient Le client ouath2
+     * @returns La réponse de l'API
+     */
+    static async addVideo(playlistId : string, videoId : string, oclient : OAuth2Client) {
         const ytb = this.getYoutubeClient(oclient)
 
         try {
@@ -53,38 +82,13 @@ export class YoutubeService {
         }
     }
 
-    static async addVideo(playlistId : string, videoId : string, access_token : string) {
-        const body = {
-            snippet: {
-                playlistId: playlistId,
-                resourceId: {
-                    kind: 'youtube#video',
-                    videoId: videoId
-                }
-            }
-        };
-        try {
-            const response = await fetch('https://www.googleapis.com/youtube/v3/playlistItems', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${access_token}`,
-                    'Content-Type': 'application/json',
-                },
-                body : JSON.stringify(body)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(`Erreur addVideo : ${data.error.message}`);
-            }
-            return data;
-        } catch (error) {
-            console.error(error) 
-        }
-    }
-
-    static async addPlaylistTemp(title: string, client: OAuth2Client) {
+    /**
+     * Crée une playlist.
+     * @param title Le nom de la playlist
+     * @param client Le client oauth2
+     * @returns La réponse de l'API
+     */
+    static async addPlaylist(title: string, client: OAuth2Client) {
         const tokenInfo = await client.getTokenInfo(client.credentials.access_token ?? "");
         console.log(tokenInfo.scopes);
         console.log('credentials:', client.credentials);
@@ -104,33 +108,4 @@ export class YoutubeService {
         return response;
     }
 
-    static async addPlaylist(title : string, access_token : string) {
-        const body = {
-            snippet : {
-                title : title,
-                description : "UnisSon playlist",
-                status : {
-                    privacyStatus : "private"
-                }
-            }
-        };
-        try {
-            const response = await fetch('https://www.googleapis.com/youtube/v3/playlists', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${access_token}`,
-                    'Content-Type': 'application/json',
-                },
-                body : JSON.stringify(body)
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(`Erreur addPlaylists : ${data.error.message}`);
-            }
-            return data;
-        } catch (error) {
-            console.error(error)
-        }
-    }
 }

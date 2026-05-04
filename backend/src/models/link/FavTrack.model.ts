@@ -6,6 +6,11 @@ import db from '../../shared/db.js';
 import { Track } from '../elem/Track.model.js';
 import { User } from '../elem/User.model.js';
 
+/**
+ * Représente l'association d'un user à ses tracks préférées,
+ * dont l'ordre de préférence est spécifié par "rank".
+ * @class
+ */
 export class FavTrack extends Model <
     InferAttributes<FavTrack>,
     InferCreationAttributes<FavTrack>

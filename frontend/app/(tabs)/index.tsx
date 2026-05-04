@@ -9,16 +9,32 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { TimeContext } from "./_layout";
 import { GroupData } from "@/shared/types";
 
+/**
+ * Home page
+ * 
+ * Affiche la liste des groupes l'user et propose la création de groupe 
+ * 
+ * Affiche dynamiquement si l'user doit effectuer des actions dans certains groupes
+ */
 export default function Index() {
   const router = useRouter();
   const { userInfo } = useAuthStore();
   const { groups, fetchGroups } = useGroupStore();
   const serverTime = useContext(TimeContext);
 
+  /**
+   * Renvoie vers la page de création de groupe
+   */
   const handleCreation = () => {
     router.push({ pathname: '/(tabs)/tempindex/creation' });
   }
 
+  /**
+   * Determine quelle notif afficher si il le faut et la renvoie
+   * 
+   * @param group : un groupe en particulier 
+   * @returns {notifText : string}
+   */
   const whatNotif = (group : GroupData) => {
     if (!group || !userInfo) return null;
     const userId = userInfo?.id;
@@ -39,6 +55,9 @@ export default function Index() {
     return null;
   };
 
+  /**
+   * Pour le debug (refresh les groupes lorsqu'on "avance" le temps)
+   */
   useFocusEffect(
     useCallback(() => {
       let active = true;
@@ -57,7 +76,7 @@ export default function Index() {
       
       <FlatList
         data={groups}
-        keyExtractor={(item) => {console.log("voici le grand item + " + JSON.stringify(item, null, 2)); return item.id!.toString();}}
+        keyExtractor={(item) => item.id!.toString()}
         renderItem={({item}) => {
           const notifText = whatNotif(item);
           return (<LinkGroups 

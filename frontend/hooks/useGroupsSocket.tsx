@@ -4,6 +4,9 @@ import { useGroupStore } from "@/utils/groupStore";
 import { useAuthStore } from "@/utils/authStore";
 import { useFocusEffect } from "expo-router";
 
+/**
+ * Hook s'occupant des sockets pour les groups (home page) 
+ */
 export const useGroupsSocket = () => {
     const { on, off, emit } = useSocketStore();
     const { userInfo } = useAuthStore()

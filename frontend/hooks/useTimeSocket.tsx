@@ -4,6 +4,9 @@ import {useGroupStore} from "@/utils/groupStore";
 import {useAuthStore} from "@/utils/authStore";
 import { useFocusEffect } from "expo-router";
 
+/**
+ * Hook s'occupant des sockets pour le temps 
+ */
 export const useTimeSocket = (onTimeChange: () => Promise<void>) => {
     const { on, off } = useSocketStore();
 

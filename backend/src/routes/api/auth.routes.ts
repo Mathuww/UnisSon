@@ -4,15 +4,10 @@ import { authMiddleware } from "../../middleware/auth.js";
 
 const router = Router();
 
-// /auth/login
-router.post('/login', AuthController.basicLogin);
-// /auth/signup
-router.post('/signup', AuthController.basicSignup);
-
-// /auth/google
+// POST /auth/google : Auth. GOOGLE
 router.post('/google', AuthController.googleLogin);
 
-// /auth/checktoken
+// POST /auth/checktoken : Vérifier un token
 router.post('/checktoken', authMiddleware, AuthController.checkToken);
 
 export default router;

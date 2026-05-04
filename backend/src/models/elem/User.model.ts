@@ -12,6 +12,11 @@ import PredRank from '../logic/PredRank.model.js';
 import Track from './Track.model.js';
 import Notif from '../logic/Notif.model.js';
 
+/**
+ * Représente un utilisateur dans la DB.
+ * Structure élémentaire
+ * @class
+ */
 export class User extends Model<
     InferAttributes<User, { omit: 'createdAt' | 'updatedAt' }>,
     InferCreationAttributes<User, { omit: 'createdAt' | 'updatedAt' }>

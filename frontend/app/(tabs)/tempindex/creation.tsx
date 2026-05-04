@@ -39,7 +39,7 @@ export default function Creation() {
                 throw new Error("Nom du groupe incorrect (vide)");
             }
 
-            const result: ActionResult<number> = await createGroup(appToken, groupName, groupMaxUser);
+            const result: ActionResult<number> = await createGroup(groupName, groupMaxUser);
 
             if (result.success) {
                 router.push({ pathname: `/(tabs)/tempindex/group/${result.data}` as any});

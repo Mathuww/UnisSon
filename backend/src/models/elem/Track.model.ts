@@ -10,6 +10,11 @@ import PredRank from '../logic/PredRank.model.js';
 import RealRank from '../logic/RealRank.model.js';
 import GroupPlaylist from '../link/GroupPlaylist.model.js';
 
+/**
+ * Représente un morceau dans la DB.
+ * Structure élémentaire.
+ * @class
+ */
 export class Track extends Model <
     InferAttributes<Track, { omit: 'createdAt' | 'updatedAt' }>,
     InferCreationAttributes<Track, { omit: 'createdAt' | 'updatedAt' }>
@@ -18,7 +23,7 @@ export class Track extends Model <
     declare title: string | null;
     declare artist: string | null;
     declare ISRC: string | null;
-    declare youtubeLink: string | null;
+    declare youtubeLink: string | null; // ID YouTube (partie après le ?v=...)
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 

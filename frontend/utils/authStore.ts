@@ -18,7 +18,6 @@ type UserState = {
     GoogleLogOut: () => void;
     completeProfile: () => void;
     setHasHydrated: (value: boolean) => void;
-    refreshSession: () => Promise<void>;
 }
 
 /**
@@ -52,7 +51,10 @@ export const useAuthStore = create(
         },
 
         /**
-         * Permet 
+         * Permet la transmission du token et du authCode au backend qui rend les infos utilisateur ainsi que l'app token qu'on stocke
+         *
+         * @param idToken : token pour Google
+         * @param authCode : code pour récuperer l'acces et le refresh token de Google
          */
         GoogleLogIn : async (idToken : string, authCode : string | null) => {
             try {
@@ -70,6 +72,10 @@ export const useAuthStore = create(
                 console.error(error)
             }
         },
+
+        /**
+         * Permet de logout de google
+         */
         GoogleLogOut: async () => {
             try {
                 await  GoogleSignin.signOut()
@@ -84,32 +90,15 @@ export const useAuthStore = create(
                 throw error;
             }
         },
+
+        /**
+         * Change le statut pour se mettre en mode complété (pour une future version) 
+         */
         completeProfile : () => {
             set((state) => ({
                 ...state,
                 hasCompletedProfile : true,
             }))
-        },
-        refreshSession: async () => {
-            const currentToken = get().appToken;
-
-            if (!currentToken) return;
-
-            try {
-                const response = await ApiCall.users.getProfile();
-                const freshData = response.data;
-
-                set((state) => ({
-                    ...state,
-                    hasCompletedProfile: freshData.hasCompletedProfile,
-                    userInfo: {
-                        ...state.userInfo,
-                        ...freshData.userInfo
-                    }
-                }));
-            } catch (error) {
-                console.error(error);
-            }
         },
     }),
         {

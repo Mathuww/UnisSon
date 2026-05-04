@@ -6,6 +6,12 @@ import {
 } from 'sequelize';
 import db from '../../shared/db.js';
 
+/**
+ * Représente le stockage l'offset de temps qui sert de base de calcul au temps fictif
+ * Structure élémentaire.
+ * Table à ligne unique (on utilise toujours le premier id).
+ * @class
+ */
 export class TimeState extends Model<
     InferAttributes<TimeState>,
     InferCreationAttributes<TimeState>

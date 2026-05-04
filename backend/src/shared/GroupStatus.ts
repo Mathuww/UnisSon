@@ -1,3 +1,4 @@
+// Différents états possible pour un rgoupe
 export enum GroupStatus {
     SUN_WAITING_THEME = "SUN_WAITING_THEME",
     SUN_DONE_THEME = "SUN_DONE_THEME",
@@ -7,7 +8,8 @@ export enum GroupStatus {
     SAT_DONE_QUIZ = "SAT_DONE_QUIZ",
 }
 
-// ordre FIXE
+// ordre FIXE pour l'énumération, 
+// pour pouvoir déduire un état suivant d'un état actuel
 const groupStatusOrder: GroupStatus[] = [
     GroupStatus.SUN_WAITING_THEME,
     GroupStatus.SUN_DONE_THEME,
@@ -17,6 +19,7 @@ const groupStatusOrder: GroupStatus[] = [
     GroupStatus.SAT_DONE_QUIZ,
 ];
 
+// Renvoie l'état suivant à partir de l'état actueel
 export function getNextGroupStatus(status: GroupStatus): GroupStatus {
     const index = groupStatusOrder.indexOf(status);
 

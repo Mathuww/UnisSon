@@ -18,18 +18,26 @@ import { Server } from "socket.io";
 import { timeInfoMiddleware } from './middleware/timeinfo.js';
 import { TimeManager } from './shared/TimeManager.js';
 import { initSocket } from './shared/socket.js';
+import nodeCron from 'node-cron';
+import { generalPollingTask } from './tasks/polling.task.js';
+
+// Se connecter et synchroniser la DB
 await dbConnect();
+// Récupérer le dernier temps serveur dans la DB
 await TimeManager.init();
 
+// Création du serveur HTTP
 const app = express();
 const server = http.createServer(app);
 const port = process.env.PORT || 5175;
 
+// Création du serveur WebSocket
 const io = initSocket(server);
 
 io.on("connection", (socket) => {
   logger.info("connected:" + socket.id);
 
+  // Ajouter du logging au socket.emit
   const originalEmit = socket.emit.bind(socket);
 
   socket.emit = (event: string, ...args: any[]) => {
@@ -37,6 +45,8 @@ io.on("connection", (socket) => {
     return originalEmit(event, ...args);
   };
 
+  // Gérer les rooms
+  // Rooms par groupe
   socket.on("join:group", ({groupId}) => {
     socket.join(`group:${groupId}`);
     logger.info(`socket ${socket.id} joined room for group ${groupId}`);
@@ -47,6 +57,7 @@ io.on("connection", (socket) => {
     logger.info(`socket ${socket.id} left room for group ${groupId}`);
   });
 
+  // Rooms par use
   socket.on("join:user", ({userId}) => {
     socket.join(`user:${userId}`);
     logger.info(`socket ${socket.id} joined room for user ${userId}`);
@@ -82,12 +93,11 @@ app.use('/', express.static('static/'));
 // Error handler
 app.use(errorHandler);
 
-// Setup CRON
-/*
+// Setup CRON 
 nodeCron.schedule('* * * * *', async () => { 
   await generalPollingTask();
+  io.emit(`simulation:timeChange`);
 });
-*/
 
 // On écoute
 server.listen(port, () => {

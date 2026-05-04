@@ -51,6 +51,7 @@ PredRank.init({
     oracleUserID: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
         references: { model: User, key: 'id' },
     },
     rank: {

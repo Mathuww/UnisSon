@@ -7,6 +7,7 @@ export const dbConnect = async () => {
         await db.authenticate();
         logger.info("DB connetced !");
 
+        // Remplacer par la ligne avec alter: true pour MAJ la DB
         //await db.sync({alter: true});
         await db.sync();
         logger.info("DB synced!");

@@ -10,13 +10,26 @@ import { useGroupStore } from '@/utils/groupStore';
 import { useSettingsStore } from '@/utils/settingsStore';
 import { useTimeSocket } from '@/hooks/useTimeSocket';
 
+/**
+ * Context global fournissant l'heure serveur (dans le cas du test)
+ */
 export const TimeContext = createContext<string>("...");
 
+/**
+ * Layout de (tabs)
+ * 
+ * Syncronise l'heure avec le backend
+ *
+ * Gère le mode debug pour "avancer" dans le temps 
+ */
 export default function TabsLayout() {
     const [serverTime, setServerTime] = useState<string>("...");
     const {fetchGroups} = useGroupStore();
     const {timeDebug} = useSettingsStore();
 
+    /**
+     * Récupère l'heure actuelle du server depuis le backend et met à jour
+     */
     const updateTime = async () => {
         try {
             const res = await ApiCall.admin.getServerTime();
@@ -33,6 +46,9 @@ export default function TabsLayout() {
 
     useTimeSocket(updateTime);
 
+    /**
+     * Avance artificielement le temps coté server 
+     */
     const handleTimeForward = async () => {
         const HOURS_TO_FORWARD = 24;
         try {
@@ -42,7 +58,6 @@ export default function TabsLayout() {
         } catch (err) {
             console.error(err);
         }
-        //await fetchGroups();
     }
 
     return (
@@ -71,12 +86,6 @@ export default function TabsLayout() {
                             <Ionicons name={focused ? "information-circle": "information-circle-outline"} color={color} size={24} />
                         )
                     }}
-                />
-                <Tabs.Screen 
-                    name="joins"
-                    options={{ 
-                        href: null
-                    }} 
                 />
                 <Tabs.Screen 
                     name="tempindex"

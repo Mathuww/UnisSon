@@ -60,7 +60,7 @@ export default function Discover() {
     return (
         <View style={styles.container}>
 
-            <Text style={styles.title}>{currentTrack.addedBy.nickname} a ajouté :</Text>
+            <Text style={styles.title}>{currentTrack?.addedBy?.nickname && `${currentTrack.addedBy.nickname} a ajouté :`}</Text>
 
             {currentTrack?.track?.youtubeLink && <YoutubePlayer
                 height={250}

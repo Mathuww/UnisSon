@@ -10,14 +10,6 @@ import UnissonButton from "@/components/UnissonButton";
 import { useAuthStore } from "@/utils/authStore";
 
 
-/* 
-1: track x1, user y1
-2: x2, y2
-3: x3, y3
-
-stocker : [{trackId: x1, userId: y1}, {trackId: x2, userId: y2}]
-*/
-
 export default function Ranking() {
     const { id } = useLocalSearchParams();
     const { userInfo } = useAuthStore();
@@ -77,7 +69,7 @@ export default function Ranking() {
             <View style={styles.container}>
                 <Text style={styles.title}>{isChosen ? "Classez vos titres préférés" : "Quels sont les titres préférés de l'élu ?"}</Text>
 
-                <DraggableFlatList
+                <DraggableFlatList style={styles.flatlist}
                     data={tracks}
                     onDragEnd={({ data }) => {
                         setTracks(data);
@@ -110,5 +102,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         paddingBottom : 20,
-    },
+    }, flatlist: {
+        height: 400
+    }
 });
