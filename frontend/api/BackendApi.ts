@@ -87,6 +87,9 @@ export const ApiCall = {
 
         submitChosenRank: (id: number, ranking : {userId: number, trackId: number}[]) =>
             api.post(`/api/groups/${id}/chosenrank`, { ranking }),
+
+        submitPredRank: (id: number, ranking : {userId: number, trackId: number}[]) =>
+            api.post(`/api/groups/${id}/predrank`, { ranking }),
     },
     invites: {
         tokenInfo: (token: string) => api.get(`/api/invites/${token}`),

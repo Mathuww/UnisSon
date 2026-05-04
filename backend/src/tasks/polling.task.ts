@@ -103,7 +103,7 @@ async function updateServicePlaylists(group: Group) {
                 for (const entry of entriesSinceLastCycle) {
                     const ytResponse = await YoutubeService.addVideoTemp(user.GroupUser.servicePlaylistID, entry.track.youtubeLink || "", client);
                     if (ytResponse && ytResponse.data) {
-                        logger.info(`Added video ${entry.track.youtubeLink}`);
+                        logger.info(`POLL] Added video ${entry.track.youtubeLink}`);
                     }
                 }
             }
@@ -129,14 +129,31 @@ async function updateScores(group: Group) {
         realRanks.map(r => [r.userID, r])
     );
 
+    const predRanks = await PredRank.findAll({
+        where: {
+            groupID: group.id
+        }
+    });
+
+
     for (const user of users) {
         let thisWeekScore = user.GroupUser.tempChosenQuizScore ?? 0;
         console.log(`for ${user.nickname}: reusing temp quiz score of ${thisWeekScore}`);
         const rank = realRanksByUserId.get(user.id);
-        if (rank) { // Pas élu
+        if (rank && group.chosenOneUserID != user.id) { // Pas élu
             // Le dernier prend 20, le premier prend 20 * (tracks classées - 1)
             thisWeekScore += 20 * (tracksRanked - rank.rank);
         }
+
+        // prédictions effectuée par l'utilisateur
+        const userPredRanks = predRanks.filter(p => p.oracleUserID === user.id);
+        userPredRanks.forEach((userPredRank: PredRank) => {
+            const realRankForTrack = predRanks.find(p => p.trackID === userPredRank.trackID);
+            if (userPredRank.rank === realRankForTrack?.rank) {
+                // 20 points par prédiction correcte !
+                thisWeekScore += 20;
+            }
+        });
 
         toUpdate.push({userId: user.id, weeklyScore: thisWeekScore});
     }
@@ -189,20 +206,20 @@ export async function generalPollingTask() {
                 transaction = await db.transaction();
 
                 if (p.periodType === PeriodType.NEW_CYCLE) {
-                    logger.info(`Starting a new cycle for group ${p.Group?.id}`);
-                    logger.info(`updating youtube playlists for group ${p.Group.id}`);
+                    logger.info(`POLL] Starting a new cycle for group ${p.Group?.id}`);
+                    logger.info(`POLL] updating youtube playlists for group ${p.Group.id}`);
                     await updateServicePlaylists(p.Group);
-                    logger.info('updated playlists. updating chosen one.');
-                    await p.Group.updateChosenOne(transaction);
-                    logger.info('updated chosen one. updating scores.');
+                    logger.info('[POLL] [NEWCYCLE] updating scores.');
                     await updateScores(p.Group);
                     await GroupUser.resetDoneBooleans(p.Group.id);
-                    logger.info('scores updated. resetting rankings');
+                    logger.info('[POLL] [NEWCYCLE] esetting rankings');
                     await RealRank.destroyRankingFor(p.Group.id);
                     await PredRank.destroyRankingFor(p.Group.id);
-                    logger.info(`rankings reset. updating periods for group ${p.Group.id}`);
+                    logger.info('[POLL] [NEWCYCLE] updating chosen one.');
+                    await p.Group.updateChosenOne(transaction);
+                    logger.info(`POLL] [NEWCYCLE] updating periods for group ${p.Group.id}`);
                     await updatePeriods(p.Group, transaction);
-                    logger.info(`updated periods. new cycle processing finished`);
+                    logger.info(`POLL] [NEWCYCLE] updated periods. new cycle processing finished`);
                 } 
                 const newStatus = nextStatusByPeriod[p.periodType];
                 if (newStatus)
@@ -223,7 +240,7 @@ export async function generalPollingTask() {
 
         if (groupsToSet.length > 0) {
             for (const item of groupsToSet) {
-                logger.info(`Updating group ${item.groupId} to status ${item.newStatus}`);
+                logger.info(`POLL] Updating group ${item.groupId} to status ${item.newStatus}`);
 
                 const group = await Group.findByPk(item.groupId);
                 if (!group) continue;
@@ -243,7 +260,7 @@ export async function generalPollingTask() {
             }
         }
 
-        logger.info("polling task end");
+        logger.info("[POLL] polling task end");
     } finally { 
         polling = false;
     }

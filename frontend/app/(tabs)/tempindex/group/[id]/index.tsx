@@ -102,6 +102,18 @@ export default function Group() {
         }
     }
 
+    const handleDiscover = async () => {
+        try {
+            if (groupData) {
+                router.push(`/(tabs)/tempindex/group/${id}/discover`);
+            } else {
+                console.error("groupData is null before discover Page");
+            }
+        } catch (error) {
+            console.error("On ne pas accèder à la page de discover de la semaine!", error);
+        }
+    }
+
     const handleRank = async () => {
         try {
             if (groupData) {
@@ -184,13 +196,26 @@ export default function Group() {
                 );
 
             case "SAT_WAITING_QUIZ":
+                if (groupData.quizDone && groupData.rankDone) {
+                    return (
+                        <Text style={styles.subtitle}>
+                            Vous avez déjà rempli votre quiz pour cette semaine.
+                        </Text>
+                    )
+                } else if (groupData.quizDone) {
+                    <UnissonButton
+                        label="Faire mon classement prédictif"
+                        colorText="#e76f51"
+                        OnValidation={() => handleRank()}
+                    />
+                }
                 return (
                     <UnissonButton
-                        label={`Qui connaît mieux l'élu ${chosenOne?.nickname}?`}
+                        label="Qui connaît le mieux l'élu?"
                         colorText="#e76f51"
-                        OnValidation={() => console.log("Sois patient pour la v1")}
+                        OnValidation={() => handleDiscover()}
                     />
-                );
+                )
 
             case "SAT_DONE_QUIZ":
                 return (

@@ -37,4 +37,6 @@ router.post('/:id/chosenquiz', GroupController.groupUserCheck, GroupController.s
 
 router.post('/:id/chosenrank', GroupController.groupUserCheck, GroupController.submitChosenRanking);
 
+router.post('/:id/predrank', GroupController.groupUserCheck, GroupController.submitPredRanking);
+
 export default router;

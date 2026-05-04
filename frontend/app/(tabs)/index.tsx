@@ -22,12 +22,15 @@ export default function Index() {
   const whatNotif = (group : GroupData) => {
     if (!group || !userInfo) return null;
     const userId = userInfo?.id;
-    if (group.status && group.chosenOne && group.canUserAdd !== undefined && group.canUserAnswerQuizz !== undefined) {
+    if (group.status && group.chosenOne && group.canUserAdd !== undefined && group.quizDone !== undefined && group.rankDone !== undefined) {
         if (group.status === "SUN_WAITING_THEME" && group.chosenOne.id === userId){
             return "Choix du thème";
         };
-        if (group.status === "SAT_WAITING_QUIZ" && group.canUserAnswerQuizz && group.chosenOne.id === userId){
+        if (group.status === "SAT_WAITING_QUIZ" && !group.quizDone){
             return "Fait le quizz";
+        };
+        if (group.status === "SAT_WAITING_QUIZ" && group.quizDone && !group.rankDone) {
+            return "Fait le classement"
         };
         if (group.status === "WK_WAITING_SUB" && !(group.chosenOne.id === userId) && group.canUserAdd) {
             return "Ajoute ta musique";

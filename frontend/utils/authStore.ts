@@ -5,6 +5,9 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin'
 import {ApiCall, setAuthToken} from "@/api/BackendApi";
 import { UserData } from "@/shared/types";
 
+/**
+ * Représente les données et les méthodes que propose le store  
+ */
 type UserState = {
     isLoggedIn: boolean;
     hasCompletedProfile: boolean;
@@ -18,6 +21,13 @@ type UserState = {
     refreshSession: () => Promise<void>;
 }
 
+/**
+ * Store de gestion de l'authentification 
+ * 
+ * S'occupe de stocker l'appToken ainsi que les infos liées à l'utilisateur et les actions liées à ces dernières
+ * 
+ * Les données sont persistées via secure storage  
+ */
 export const useAuthStore = create(
     persist<UserState>(
     (set, get) => ({
@@ -26,6 +36,12 @@ export const useAuthStore = create(
         userInfo : null,
         appToken : null,
         _hasHydrated : false,
+
+        /**
+         * Setter pour l'hydratation du store 
+         * 
+         * @param value : boolean pour la valeur de _hasHydrated
+         */
         setHasHydrated: (value: boolean) => {
             set((state) => {
                 return {
@@ -34,6 +50,10 @@ export const useAuthStore = create(
                 };
             });
         },
+
+        /**
+         * Permet 
+         */
         GoogleLogIn : async (idToken : string, authCode : string | null) => {
             try {
                 const response = await ApiCall.auth.GGLogIn(idToken, authCode)

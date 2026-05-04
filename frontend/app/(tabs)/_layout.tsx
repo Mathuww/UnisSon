@@ -38,7 +38,7 @@ export default function TabsLayout() {
         try {
             const res = await ApiCall.admin.forwardTime(HOURS_TO_FORWARD);
             const { simulationTime } = res.data.meta;
-            //setServerTime(new Date(simulationTime).toLocaleString());
+            setServerTime(new Date(simulationTime).toLocaleString());
         } catch (err) {
             console.error(err);
         }

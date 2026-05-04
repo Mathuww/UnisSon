@@ -1,5 +1,5 @@
 import UnissonCompetitionDragnDrop from "@/components/UnissonCompetitionDragnDrop";
-import { QuizTrackData, UserData } from "@/shared/types";
+import { GroupData, QuizTrackData, UserData } from "@/shared/types";
 import { useGroupStore } from "@/utils/groupStore";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import DraggableFlatList, { ScaleDecorator, RenderItemParams } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import UnissonButton from "@/components/UnissonButton";
+import { useAuthStore } from "@/utils/authStore";
 
 
 /* 
@@ -19,10 +20,18 @@ stocker : [{trackId: x1, userId: y1}, {trackId: x2, userId: y2}]
 
 export default function Ranking() {
     const { id } = useLocalSearchParams();
-    const { getGroup, getQuizzData, submitChosenRanking } = useGroupStore();
-    const [members, setMembers] = useState<UserData[]>([]);
+    const { userInfo } = useAuthStore();
+    const { groups, fetchCurrentGroup, getQuizzData, submitChosenRanking, submitPredRanking } = useGroupStore();
     const [tracks, setTracks] = useState<QuizTrackData[]>([]);
-    const [ranking, setRanking] = useState<{userId: number, trackId: number}[]>([]);
+
+    let groupData: GroupData | null = null;         
+    const found = groups.find(g => g.id === Number(id));
+    if (found) groupData = found;
+
+    let isChosen = false;
+    if (userInfo && groupData) {
+        isChosen = groupData.chosenOne?.id === Number(userInfo.id);
+    }
 
     const router = useRouter();
 
@@ -30,11 +39,7 @@ export default function Ranking() {
         useCallback(() => {
             let active = true;
             const loadGroupData = async () => {
-                const group = await getGroup(Number(id));  
-                if (!group?.users) {
-                    return console.error("cannot find user list");
-                }         
-                setMembers(group.users);     
+                await fetchCurrentGroup(Number(id));
                 const result = await getQuizzData(Number(id));
                 if (result.success && result.data) {
                     setTracks(result.data);
@@ -60,14 +65,17 @@ export default function Ranking() {
 
     const handleRanking = async () => {
         const ranking = tracks.map(d => ({trackId: d.track.id!, userId: d.addedBy.id}));
-        await submitChosenRanking(Number(id), ranking);
+        if (isChosen)
+            await submitChosenRanking(Number(id), ranking);
+        else 
+            await submitPredRanking(Number(id), ranking);
         router.replace({ pathname: `/(tabs)/tempindex/group/${id}/` as any });
     }
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container}>
-                <Text style={styles.title}>Votre classement</Text>
+                <Text style={styles.title}>{isChosen ? "Classez vos titres préférés" : "Quels sont les titres préférés de l'élu ?"}</Text>
 
                 <DraggableFlatList
                     data={tracks}

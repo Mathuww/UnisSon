@@ -4,10 +4,11 @@ import {getItem, setItem, deleteItemAsync} from "expo-secure-store";
 import {ApiCall, BACKEND_API_URL} from "@/api/BackendApi";
 import {ActionResult, GroupData, TrackData, QuizTrackData, QuizUserAnswerData} from "@/shared/types";
 
+/**
+ * Représente les données et les méthodes que propose le store  
+ */
 type GroupState = {
     groups: GroupData[];
-    setGroups: (groups: GroupData[]) => void;
-    forceChangeStatus: (groupId: number) => Promise<void>;
     submitTrack: (groupId: number, track: TrackData) => Promise<void>;
     submitTheme: (groupId: number, theme: string) => Promise<void>;
     createInvite: (groupId: number) => Promise<ActionResult<string>>;
@@ -18,25 +19,29 @@ type GroupState = {
     getQuizzData: (id: number) => Promise<ActionResult<QuizTrackData[]>>;
     submitChosenQuizzAnswers: (id: number, answers: QuizUserAnswerData) => Promise<void>;
     submitChosenRanking: (id: number, ranking: {userId: number, trackId: number}[]) => Promise<void>;
+    submitPredRanking: (id: number, ranking: {userId: number, trackId: number}[]) => Promise<void>;
     createGroup: (token: string, name: string, maxUsers: number) => Promise<ActionResult<number>>;
     getGroup: (id: number) => Promise<GroupData | undefined>;
 };
 
+/**
+ * Store global de gestion des groupes 
+ * 
+ * S'occupe de stocker la liste des groupes de l'user et de toutes les actions liées aux groupes 
+ * 
+ * Les données sont persistées via secure storage 
+ */
 export const useGroupStore = create(
     persist<GroupState>(
         (set, get) => ({
             groups: [],
 
-            setGroups: (groups) => set({groups}),
-
-            forceChangeStatus: async (groupId: number) => {
-                try {
-                    const response = await ApiCall.groups.forceChangeStatus(groupId);
-                } catch (error) {
-                    console.error(error)
-                }
-            },
-
+            /**
+             * Permet d'ajouter une track via BackendAPI 
+             * 
+             * @param groupId : id du group 
+             * @param track : données de la track à ajouter
+             */
             submitTrack: async (groupId: number, track: TrackData) => {
                 try {
                     const response = await ApiCall.groups.addSong(
@@ -48,7 +53,12 @@ export const useGroupStore = create(
                 }
             },
 
-
+            /**
+             * Permet d'ajouter un theme via BackendAPI 
+             * 
+             * @param groupId : id du group 
+             * @param theme : le thème à transmettre 
+             */
             submitTheme: async (groupId: number, theme: string) => {
                 try {
                     const response = await ApiCall.groups.setTheme(
@@ -63,6 +73,9 @@ export const useGroupStore = create(
             clearAllActions: () => {
             },
 
+            /**
+             * Récupère l'essemble des groupes via BackendAPI et stocke
+             */
             fetchGroups: async () => {
                 try {
                     const response = await ApiCall.users.getAllGroup();
@@ -83,6 +96,11 @@ export const useGroupStore = create(
                 }
             },
 
+            /**
+             * Récupère un groupe en particulier 
+             * 
+             * @param id : id du group 
+             */
             fetchCurrentGroup: async (id: number) => {
                 try {
                     const response = await ApiCall.groups.getGroupData(id);
@@ -97,6 +115,12 @@ export const useGroupStore = create(
                 }
             },
 
+            /**
+             * Récupère les données pour le quizz via BackendAPI 
+             * 
+             * @param groupId : id du groupe concerné par le quizz 
+             * @returns {success : boolean, data? : QuizTrackData[]}
+             */
             getQuizzData: async (groupId: number): Promise<ActionResult<QuizTrackData[]>> => {
                 try {
                     const res = await ApiCall.groups.getSongs(groupId);
@@ -109,6 +133,12 @@ export const useGroupStore = create(
                 }
             },
 
+            /**
+             * Envoie les réponses au quizz via BackendAPI 
+             * 
+             * @param groupId : id du group 
+             * @param answers : liste de paire de trackId et userId
+             */
             submitChosenQuizzAnswers: async (groupId: number, answers: QuizUserAnswerData) => {
                 try {
                     const res = await ApiCall.groups.submitChosenQuizAnswers(groupId, answers);
@@ -117,18 +147,43 @@ export const useGroupStore = create(
                 }
             },
 
+            /**
+             * Envoie le classement de l'élu via BackendAPI 
+             * 
+             * @param groupId : id du group 
+             * @param ranking : liste de paire de userId et trackId 
+             */
             submitChosenRanking: async (groupId: number, ranking: {userId: number, trackId: number}[]) => {
                 try {
                     const res = await ApiCall.groups.submitChosenRank(groupId, ranking);
                 } catch (e) {
                     console.error(e);
                 }
+             },
+
+            /**
+             * Envoie la prédiction de l'utilisateur sur le classement via BackendAPI 
+             * 
+             * @param groupId : id du groupe
+             * @param ranking : liste de paire de userId et trackId
+             */           
+            submitPredRanking: async (groupId: number, ranking: {userId: number, trackId: number}[]) => {
+                try {
+                    const res = await ApiCall.groups.submitPredRank(groupId, ranking);
+                } catch (e) {
+                    console.error(e);
+                }
             },
 
+            /**
+             * Génère un lien d'invitation via BackendAPI et renvoie le lien 
+             * 
+             * @param groupId : id du group 
+             * @returns {success : boolean, data? : string } 
+             */
             createInvite: async (groupId: number): Promise<ActionResult<string>> => {
                 try {
                     const res = await ApiCall.groups.createInvite(groupId);
-                    console.log("I JUST RECEIVED SOMETHING !!! ", res.data);
                     const token = res.data.data.token;
                     const inviteLink = `${BACKEND_API_URL}/join/${token}`
                     return {success: true, data: inviteLink};
@@ -138,6 +193,12 @@ export const useGroupStore = create(
                 }
             },
 
+            /**
+             * Génère un groupe via BackendAPI et renvoie l'id du groupe 
+             * 
+             * @param groupdId : id du groupe
+             * @returns {success : boolean, data? : number}
+             */
             createGroup: async (token: string, name: string, maxUsers: number): Promise<ActionResult<number>> => {
                 try {
                     const response = await ApiCall.groups.createGroup(name, maxUsers);
@@ -149,6 +210,11 @@ export const useGroupStore = create(
                 }
             },
 
+            /**
+             * Quitte un groupe et notifie le backend via BackendAPI 
+             * 
+             * @param id : id du groupe 
+             */
             leaveGroup: async (id: number) => {
                 try {
                     const response = await ApiCall.groups.leaveGroup(id);
@@ -158,6 +224,12 @@ export const useGroupStore = create(
                 }
             },
 
+            /**
+             * Renvoie la data d'un groupe en particulier 
+             * 
+             * @param id : id du groupe
+             * @returns {data? : GroupData}
+             */
             getGroup: async (id: number) => {
                 return get().groups.find((g) => g.id === id);
             },

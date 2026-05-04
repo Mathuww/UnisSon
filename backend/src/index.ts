@@ -69,7 +69,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/groups', authMiddleware, groupsRoutes);
 app.use('/api/invites/', inviteRoutes);
 app.use('/api/users', authMiddleware, usersRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/admin', authMiddleware, adminRoutes);
 
 // Templates (EJS)
 app.set('view engine', 'ejs');
