@@ -7,20 +7,36 @@ import { Group } from '../elem/Group.model.js';
 import { User } from '../elem/User.model.js';
 import { Certificate } from 'node:crypto';
 
+/**
+ * Lien utilisateur-groupe,
+ * apportant des informations supplémentaires.
+ */
 export class GroupUser extends Model <
     InferAttributes<GroupUser>,
     InferCreationAttributes<GroupUser>
 > {
     declare groupID: number;
     declare userID: number;
+    // Censé indiquer si l'user a répondu à la notif ou pas,
+    // inutilisé pour l'instant.
     declare notifPending: CreationOptional<boolean | null>;
+    // Score obtenu lors du quiz,
+    // qui sera ajouté au score hebdomadaire lors de la tâche de 
+    // mise à jour des scores
     declare tempChosenQuizScore: CreationOptional<number | null>;
     declare weeklyScore: CreationOptional<number | null>;
     declare globalScore: CreationOptional<number | null>;
+    // ID de playlist YouTube
     declare servicePlaylistID: CreationOptional<string | null>;
+    // Quiz déjà effectué ?
     declare quizDone: CreationOptional<boolean | null>;
+    // Classement déjà effectué ?
     declare rankDone: CreationOptional<boolean | null>;
 
+    /**
+     * Remet à zéro les propriétés représentant un état hebdomadaire
+     * @param groupId l'id du groupe
+     */
     static async resetDoneBooleans(groupId: number) {
         await this.update({
             quizDone: false,

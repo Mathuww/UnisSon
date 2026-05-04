@@ -3,6 +3,10 @@ import db from "../../shared/db.js";
 import { PeriodType } from "../../shared/PeriodType.js";
 import Group from "../elem/Group.model.js";
 
+/**
+ * Représente les jobs à effectuer pour chaque groupe,
+ * puisque chaque job correspond à une nouvelle période pour le groupe.
+ */
 export class GroupPeriod extends Model<
     InferAttributes<GroupPeriod>,
     InferCreationAttributes<GroupPeriod>
@@ -11,6 +15,7 @@ export class GroupPeriod extends Model<
     declare groupID: number;
     declare periodStart: Date;
     declare periodType: PeriodType;
+    // Pour ne jamais process un job deux fois
     declare processedAt: Date | null;
 
     declare getGroup: BelongsToGetAssociationMixin<Group>;

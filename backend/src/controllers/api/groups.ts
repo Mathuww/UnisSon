@@ -18,7 +18,13 @@ import { getIO } from "../../shared/socket.js";
 import RealRank from "../../models/logic/RealRank.model.js";
 import PredRank from "../../models/logic/PredRank.model.js";
 
+/**
+ * Contrôleurs associés aux routes /api/groups/...
+ */
 export const GroupController = {
+    /**
+     * Crée un groupe.
+     */
     createGroup: asyncHandler( async (req: Request, res: Response) => {
         const { name, maxUsers } = req.body;
         if (!name || !maxUsers)
@@ -32,13 +38,15 @@ export const GroupController = {
             status: GroupStatus.SAT_DONE_QUIZ
         });
 
-        // prochain dimanche, on lance le cycle
+        // Prochain dimanche, on lance le cycle
         await GroupPeriod.create({
             groupID: group.id,
             periodType: PeriodType.NEW_CYCLE,
             periodStart: TimeManager.getNextDay(0) // dimanche
         });
 
+        // Crée la playlist associé au groupe dans 
+        // le compte YT de l'utilisateur qui crée le groupe
         const client = await AuthService.getOAuthClient(user);
         let playlistId = undefined;
         if (client) {
@@ -60,10 +68,21 @@ export const GroupController = {
             }
         });
 
+        // Lance une tâche de polling
         await generalPollingTask();
 
         return res.status(201).json({data: group});
     }),
+    /**
+     * Middleware utilisé pour vérifier que
+     * l'user qui fait une requête dans /api/groups/{id}/... 
+     * appartient bien au groupe {id}
+     * (sauf pour POST /api/groups/ qui crée un groupe)  
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     groupUserCheck: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const user = (req as any).user;
@@ -87,6 +106,9 @@ export const GroupController = {
             return res.status(500).json({error: {message: "Internal server error"}});
         }
     },
+    /**
+     * Renvoie les infos sur un groupe.
+     */
     groupInfo: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
@@ -94,7 +116,10 @@ export const GroupController = {
         const includeUsers = (req.query.includeUsers === "true");
 
         if (includeUsers) {
-            const users = await group?.getUsers();
+            const users = await group.getUsers({
+                // On en profite pour récupérer les scores
+                joinTableAttributes: ['weeklyScore', 'globalScore']
+            }) as (User & { GroupUser: GroupUser })[];
             const chosenOne = await group?.getChosenUser();
             const canUserAdd = await group?.canUserAdd(user.id);
             const gu = await GroupUser.findOne({where: {groupID: group.id, userID: user.id}});
@@ -110,7 +135,15 @@ export const GroupController = {
                     globalScore: gu?.globalScore,
                     quizDone: gu?.quizDone,
                     rankDone: gu?.rankDone,
-                    users
+                    // On ajout le score à chaque utilisateur,
+                    // et on trie par score hebdomadaire décroissant
+                    users: users.map(u => ({
+                        id: u.id,
+                        nickname: u.nickname,
+                        email: u.email,
+                        weeklyScore: u.GroupUser.weeklyScore,
+                        globalScore: u.GroupUser.globalScore,
+                    })).sort((a, b) => (b.weeklyScore ?? 0) - (a.weeklyScore ?? 0))
                 };
             return res.status(200).json({
                 data: data
@@ -118,6 +151,9 @@ export const GroupController = {
         } else
             return res.status(200).json({data: group});
     }),
+    /**
+     * Renvoie la liste des membres d'un groupe.
+     */
     getUsers: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
@@ -126,6 +162,9 @@ export const GroupController = {
 
         return res.status(200).json({data: users});
     }),
+    /**
+     * Quitte un groupe.
+     */
     leaveGroup: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group = await Group.findByPk(Number(req.params.id));
@@ -144,18 +183,19 @@ export const GroupController = {
             logger.info(`deleting group ${group.id}`); 
             await group.destroy();
         } else {
+            getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
             // pour chaque utilisateur appartenant au groupe
             const users = await group.getUsers({attributes: ['id']});
-            getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
-            //getIO().emit(`group:${group.id}:refresh`);
             for (const user of users) {
                 getIO().to(`user:${user.id}`).emit(`groups:refresh`);
-                //getIO().emit(`groups:refresh`);
             }
         }
 
         return res.status(204).send();
     }),
+    /**
+     * Ajoute un morceau.
+     */
     addTrack: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
@@ -210,13 +250,11 @@ export const GroupController = {
         if (await group.allUsersAdded())
             await group.update({status: GroupStatus.WK_DONE_SUB});
 
+        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
         // pour chaque utilisateur appartenant au groupe
         const users = await group.getUsers({attributes: ['id']});
-        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
-        //getIO().emit(`group:${group.id}:refresh`);
         for (const user of users) {
             getIO().to(`user:${user.id}`).emit(`groups:refresh`);
-            //getIO().emit(`groups:refresh`);
         }
 
         if (trackCreated) {
@@ -227,6 +265,9 @@ export const GroupController = {
             return res.status(200).json({data: track});
         }
     }),
+    /**
+     * Stocke le nouveau thème pour ce cycle.
+     */
     setTheme: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
@@ -260,6 +301,9 @@ export const GroupController = {
 
         return res.status(200).json({data: group});
     }),
+    /**
+     * Renvoie les morceaux ajoutés pour ce cycle.
+     */
     getTracks: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
@@ -268,6 +312,10 @@ export const GroupController = {
 
         return res.status(200).json({data: data});
     }),
+    /**
+     * Stocke le score temporaire de l'élu.e,
+     * basé sur ces réponses au quiz
+     */
     submitChosenQuizAnswers: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
@@ -335,6 +383,9 @@ export const GroupController = {
 
         return res.status(204).send();
     }),
+    /**
+     * Stocke le classement de l'élu.e
+     */
     submitChosenRanking: asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;
@@ -381,8 +432,12 @@ export const GroupController = {
             rankDone: true
         });
 
+        // No Content
         return res.status(204).send();
     }),
+    /**
+     * Stocke les prédictions de l'élu.e
+     */
     submitPredRanking:  asyncHandler( async (req: Request, res: Response) => {
         const user : User = (req as any).user;
         const group: Group = (req as any).group;

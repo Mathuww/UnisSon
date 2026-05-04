@@ -76,6 +76,16 @@ S'il y a une erreur l'API renvoie :
 }
 ```
 
+## Données `meta`
+Toutes les routes sans exception renvoie non seulement l'objet data qui comprend les données demandées, mais également un objet meta :
+```json
+meta: {
+  timestamp: (temps réel en ISO string),
+  simulationTime: (temps fictif en ISO string),
+  path: (chemin accédé initialement)
+}
+```
+
 ## /api/auth : Routes d'authentification
 ### /auth/google (POST)
 Fonction : S'inscrire/se connecter avec un token Google.

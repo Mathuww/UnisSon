@@ -3,6 +3,9 @@ import Group from "../elem/Group.model.js";
 import db from "../../shared/db.js";
 import User from "../elem/User.model.js";
 
+/**
+ * Représente une invitation émise par un user dans un groupe.
+ */
 export class Invite extends Model<
     InferAttributes<Invite>,
     InferCreationAttributes<Invite>

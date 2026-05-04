@@ -8,6 +8,10 @@ import { Track } from '../elem/Track.model.js';
 import { User } from '../elem/User.model.js';
 import Group from '../elem/Group.model.js';
 
+/**
+ * Association des groupes, utilisateurs et morceaux,
+ * représentant les morceaux ajoutés dans un groupe.
+ */
 export class GroupPlaylist extends Model <
     InferAttributes<GroupPlaylist>,
     InferCreationAttributes<GroupPlaylist>

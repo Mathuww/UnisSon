@@ -24,6 +24,8 @@ export type UserData = {
   provider?: AuthProvider;
   premiumAccount?: boolean;
   providerLoginID?: string;
+  weeklyScore?: number;
+  globalScore?: number;
 };
 
 export type GroupData = {

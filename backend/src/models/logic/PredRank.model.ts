@@ -8,13 +8,19 @@ import { Group } from '../elem/Group.model.js';
 import { User } from '../elem/User.model.js';
 import { Track } from '../elem/Track.model.js';
 
+/**
+ * Représente les prédictions du classement des titres de l'élu.e,
+ * par les autre membres, qui doivent tenter de deviner ses préférénces.
+ */
 export class PredRank extends Model <
     InferAttributes<PredRank>,
     InferCreationAttributes<PredRank>
 > {
+    // Ces trois identifient une entrée dans GroupPlaylist
     declare groupID: number;
     declare trackID: number;
     declare userID: number;
+    // ID de l'user qui effectue la prédiction
     declare oracleUserID: number;
     declare rank: number;
 
@@ -23,6 +29,10 @@ export class PredRank extends Model <
     declare getSubject: BelongsToGetAssociationMixin<User>;
     declare getPredictor: BelongsToGetAssociationMixin<User>;
     
+    /**
+     * Supprime les prédictions pour un groupe.
+     * @param groupId 
+     */
     static async destroyRankingFor(groupId: number) {
         await this.destroy({
             where: {

@@ -23,7 +23,11 @@ import PredRank from './logic/PredRank.model.js';
 import RealRank from './logic/RealRank.model.js';
 import Invite from './logic/Invite.model.js';
 
-// Group
+/**
+ * Représente les associations entre structures de la DB,
+ * toutes centralisées dans un fichier pour éviter les imports circulaires.
+ */
+
 Group.belongsTo(User, {
     foreignKey: 'chosenOneUserID',
     as: 'chosenUser'

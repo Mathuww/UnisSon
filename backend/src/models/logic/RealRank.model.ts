@@ -8,13 +8,19 @@ import { Group } from '../elem/Group.model.js';
 import { User } from '../elem/User.model.js';
 import { Track } from '../elem/Track.model.js';
 
+/**
+ * Représente le classement des préférences de l'élu.e.
+ */
 export class RealRank extends Model <
     InferAttributes<RealRank>,
     InferCreationAttributes<RealRank>
 > {
+    // Ces trois identifient une entrée dans GroupPlaylist
     declare groupID: number;
     declare trackID: number;
     declare userID: number;
+    // ID de celui qui fait le classement,
+    // qui sera donc toujours l'élu.e
     declare oracleUserID: number;
     declare rank: number;
 
@@ -23,6 +29,10 @@ export class RealRank extends Model <
     declare getSubject: BelongsToGetAssociationMixin<User>;
     declare getPredictor: BelongsToGetAssociationMixin<User>;
 
+    /**
+     * Supprime les classements pour un groupe
+     * @param groupId 
+     */
     static async destroyRankingFor(groupId: number) {
         await this.destroy({
             where: {

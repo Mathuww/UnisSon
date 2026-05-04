@@ -9,13 +9,19 @@ import { logger } from "../../middleware/logger.js";
 import { getIO } from "../../shared/socket.js";
 
 export const INVITE_EXPIRE_DELAY_HOURS = 24; // lien invite : 24 heures 
-// Si une invite existe deja pr cet user et ce groupe et date de < x mn,
-// on renvoie le meme token, sinon on fait un nv token
+// Si une invite existe deja pr cet user et ce groupe et date de < 30 mn,
+// on renvoie le meme token, sinon on fait un nouveau token
 export const INVITE_DELAY_BEFORE_NEW_TOKEN = 30; 
 
+/**
+ * Contrôleur gérant les routes liées aux invitations.
+ */
 export const InviteController = {
-    // Sécurisé par les middleware d'auth et groupCheck
-    // (Seule route de groupe qui est pas dans groups)
+    /**
+     * Crée un token d'invitation pour un groupe.
+     * (Sécurisé par les middleware d'auth et 
+     * groupUserCheck dans le contrôleur groups)
+    */
     invite: asyncHandler(async (req: Request, res: Response) => {
         const user = (req as any).user;
         const group = (req as any).group;
@@ -50,6 +56,9 @@ export const InviteController = {
             return res.status(201).json({data: {token: newInvite.token}});
         }
     }),
+    /**
+     * Renvoie les infos sur un token d'invitation.
+     */
     tokenInfo: asyncHandler(async (req: Request, res: Response) => {
         const user = (req as any).user;
 
@@ -90,6 +99,9 @@ export const InviteController = {
         console.log(data);
         return res.status(200).json({data: data});
     }),
+    /**
+     * Accepte une invitation.
+     */
     join: asyncHandler(async (req: Request, res: Response) => {
         const user = (req as any).user;
 
@@ -110,8 +122,8 @@ export const InviteController = {
             return res.status(410).json({error: {message: "Invite expired"}});
 
         const group = await invite.getGroup();
-        console.log(group);
-        console.log(user);
+        //console.log(group);
+        //console.log(user);
 
         const client = await AuthService.getOAuthClient(user);
         let playlistId = undefined;
@@ -134,12 +146,11 @@ export const InviteController = {
             }
         });
 
-        const users = await group.getUsers({attributes: ['id']});
+        
         getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
-        //getIO().emit(`group:${group.id}:refresh`);
+        const users = await group.getUsers({attributes: ['id']});
         for (const user of users) {
             getIO().to(`user:${user.id}`).emit(`groups:refresh`);
-            //getIO().emit(`groups:refresh`);
         }
 
         return res.status(201).json({data: group});

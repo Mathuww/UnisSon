@@ -2,7 +2,7 @@ import {create} from "zustand";
 import {persist, createJSONStorage} from "zustand/middleware";
 import {getItem, setItem, deleteItemAsync} from "expo-secure-store";
 import {ApiCall, BACKEND_API_URL} from "@/api/BackendApi";
-import {ActionResult, GroupData, TrackData, QuizTrackData, QuizUserAnswerData} from "@/shared/types";
+import {ActionResult, GroupData, TrackData, QuizTrackData, QuizUserAnswerData, UserData} from "@/shared/types";
 
 /**
  * Représente les données et les méthodes que propose le store  
@@ -24,6 +24,8 @@ type GroupState = {
     submitPredRanking: (id: number, ranking: {userId: number, trackId: number}[]) => Promise<void>;
     createGroup: (name: string, maxUsers: number) => Promise<ActionResult<number>>;
     getGroup: (id: number) => Promise<GroupData | undefined>;
+    getMembersOrderedByWeeklyScore: (id: number) => Promise<UserData[] | undefined>;
+    getMembersOrderedByGlobalScore: (id: number) => Promise<UserData[] | undefined>;
 };
 
 /**
@@ -246,6 +248,22 @@ export const useGroupStore = create(
              */
             getGroup: async (id: number) => {
                 return get().groups.find((g) => g.id === id);
+            },
+
+            /**
+             * Renvoie les users d'un group triés par weeklyScore décroissant
+             */
+            getMembersOrderedByWeeklyScore: async (id: number) => {
+                // Le backend trie déjà par weeklyScore décroissant
+                return get().groups.find((g) => g.id === id)?.users!;
+            },
+
+            /**
+             * Renvoie les users d'un group triés par globalScore décroissant
+             */
+            getMembersOrderedByGlobalScore: async (id: number) => {
+                // Le backend trie déjà par globalScore décroissant
+                return get().groups.find((g) => g.id === id)?.users?.sort((a,b) => (b.globalScore ?? 0) - (a.globalScore ?? 0));
             },
         }),
         {

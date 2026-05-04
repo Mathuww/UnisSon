@@ -7,7 +7,13 @@ import { asyncHandler } from "../../middleware/error.js";
 import { create } from "node:domain";
 import User from "../../models/elem/User.model.js";
 
+/**
+ * Contrôleurs associés aux routes d'authentification.
+ */
 export const AuthController = {
+    /**
+     * 
+     */
     googleLogin: asyncHandler( async (req: Request, res: Response) => {
         const { idToken, authCode }  = req.body;
         if (!idToken)

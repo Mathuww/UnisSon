@@ -3,6 +3,10 @@ import User from "../elem/User.model.js";
 import Group from "../elem/Group.model.js";
 import db from "../../shared/db.js";
 
+/**
+ * Utile pour la planifications des notifs,
+ * inutilisé pour l'instant.
+ */
 export class Notif extends Model<
     InferAttributes<Notif>,
     InferCreationAttributes<Notif>

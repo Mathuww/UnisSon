@@ -1,10 +1,15 @@
 import { NextFunction, RequestHandler } from "express";
 import winston from "winston";
 
+/**
+ * Logger,
+ * utilisé dans toute l'app pour log dans logs/ et dans la console.
+ */
 export const logger = winston.createLogger({
-    level: 'debug', // niveau minimal : 'info', 'warn', 'error', 'debug'
+    level: 'debug', // niveau minimal d'écriture
     format: winston.format.combine(
         winston.format.timestamp(),
+        // Pretty printing du JSON
         winston.format.prettyPrint({
             colorize: true,
             depth: 3
@@ -17,6 +22,13 @@ export const logger = winston.createLogger({
     ]
 });
 
+/**
+ * Middleware de logging,
+ * utilisé partout.
+ * @param req 
+ * @param res 
+ * @param next 
+ */
 export const loggerMiddleware: RequestHandler = (req, res, next) => {
     logger.info(`[REQ] Visited : ${req.method} ${req.url}`);
     logger.info('Request params : ', req.params);
@@ -24,6 +36,10 @@ export const loggerMiddleware: RequestHandler = (req, res, next) => {
     if (req.body) {
         logger.info('Body : ', req.body);
     }
+
+    // Réécriture de la fonction .json(...),
+    // pour logger les réponses dans les logs.
+    // (utile pour debug)
     const oldJson = res.json;
 
     const logResponse = (body: any) => {
