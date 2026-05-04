@@ -147,10 +147,10 @@ export const InviteController = {
         });
 
         
-        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+        getIO()?.to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
         const users = await group.getUsers({attributes: ['id']});
         for (const user of users) {
-            getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+            getIO()?.to(`user:${user.id}`).emit(`groups:refresh`);
         }
 
         return res.status(201).json({data: group});

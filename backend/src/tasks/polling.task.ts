@@ -117,13 +117,13 @@ export async function generalPollingTask() {
                 // Pour tous les users qui sont abonnés au groupe group:{id},
                 // donc qui sont sur la page de l'app group/{id},
                 // on envoie que le groupe a été MAJ
-                getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+                getIO()?.to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
 
                 // Pour chaque utilisateur appartenant au groupe,
                 // on envoie également qu'un de ses groupes a été MAJ
                 const users = await group.getUsers({attributes: ['id']});
                 for (const user of users) {
-                    getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+                    getIO()?.to(`user:${user.id}`).emit(`groups:refresh`);
                 }
             }
         }

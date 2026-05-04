@@ -34,7 +34,7 @@ export class TimeManager {
             offsetHrs: hrs
         });
 
-        getIO().emit(`simulation:timeChange`);
+        getIO()?.emit(`simulation:timeChange`);
 
         await generalPollingTask();
     }

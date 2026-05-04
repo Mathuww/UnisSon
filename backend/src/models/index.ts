@@ -43,13 +43,13 @@ Track.belongsToMany(User, { through: FavTrack, foreignKey: 'trackID', otherKey: 
 
 // GroupPlaylist
 Group.belongsToMany(Track, { through: GroupPlaylist, foreignKey: 'groupID', otherKey: 'trackID', onDelete: 'CASCADE' });
-Track.belongsToMany(Group, { through: GroupPlaylist, foreignKey: 'trackID', otherKey: 'groupID' });
+Track.belongsToMany(Group, { through: GroupPlaylist, foreignKey: 'trackID', otherKey: 'groupID', onDelete: 'CASCADE' });
 
 User.hasMany(GroupPlaylist, { foreignKey: 'userID', as: 'addedTracks' });
 GroupPlaylist.belongsTo(User, { foreignKey: 'userID', as: 'addedBy' });
 
 Group.hasMany(GroupPlaylist, { foreignKey: 'groupID', onDelete: 'CASCADE' });
-GroupPlaylist.belongsTo(Group, { foreignKey: 'groupID' });
+GroupPlaylist.belongsTo(Group, { foreignKey: 'groupID', onDelete: 'CASCADE'});
 
 Track.hasMany(GroupPlaylist, { foreignKey: 'trackID' });
 GroupPlaylist.belongsTo(Track, { foreignKey: 'trackID' });
@@ -64,14 +64,14 @@ GroupPeriod.belongsTo(Group, { foreignKey: 'groupID' });
 
 // Notif
 Group.hasMany(Notif, { foreignKey: 'groupID', as: 'notifs', onDelete: 'CASCADE' });
-Notif.belongsTo(Group, { foreignKey: 'groupID' });
+Notif.belongsTo(Group, { foreignKey: 'groupID', onDelete: 'CASCADE'  });
 
 User.hasMany(Notif, { foreignKey: 'userID', as: 'notifs' });
 Notif.belongsTo(User, { foreignKey: 'userID' });
 
 // PredRank
 Group.hasMany(PredRank, { foreignKey: 'groupID', onDelete: 'CASCADE' });
-PredRank.belongsTo(Group, { foreignKey: 'groupID' });
+PredRank.belongsTo(Group, { foreignKey: 'groupID', onDelete: 'CASCADE'  });
 
 Track.hasMany(PredRank, { foreignKey: 'trackID' });
 PredRank.belongsTo(Track, { foreignKey: 'trackID' });
@@ -84,7 +84,7 @@ PredRank.belongsTo(User, { foreignKey: 'oracleUserID', as: 'predictor' });
 
 // RealRank
 Group.hasMany(RealRank, { foreignKey: 'groupID', onDelete: 'CASCADE' });
-RealRank.belongsTo(Group, { foreignKey: 'groupID' });
+RealRank.belongsTo(Group, { foreignKey: 'groupID', onDelete: 'CASCADE' });
 
 Track.hasMany(RealRank, { foreignKey: 'trackID' });
 RealRank.belongsTo(Track, { foreignKey: 'trackID' });
@@ -97,7 +97,7 @@ RealRank.belongsTo(User, { foreignKey: 'oracleUserID', as: 'realPredictor' });
 
 // Invite
 Group.hasMany(Invite, { foreignKey: 'groupID', as: 'invites', onDelete: 'CASCADE' });
-Invite.belongsTo(Group, { foreignKey: 'groupID' });
+Invite.belongsTo(Group, { foreignKey: 'groupID', onDelete: 'CASCADE'  });
 
 User.hasMany(Invite, { foreignKey: 'inviterUserID', as: 'sentInvites' });
 Invite.belongsTo(User, { foreignKey: 'inviterUserID', as: 'inviterUser' });

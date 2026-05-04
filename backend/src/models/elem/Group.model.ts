@@ -92,8 +92,10 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
      */
     async canUserAdd(userID: number): Promise<boolean> {
         const currentPeriod = await this.getCurrentPeriod();
-        if (!currentPeriod)
+        if (!currentPeriod) {
+            logger.warn("period not found");
             return false;
+        }
 
         const currentUserTracks = await GroupPlaylist.findOne({
             where: {

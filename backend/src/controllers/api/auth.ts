@@ -12,7 +12,7 @@ import User from "../../models/elem/User.model.js";
  */
 export const AuthController = {
     /**
-     * 
+     * Auth. Google
      */
     googleLogin: asyncHandler( async (req: Request, res: Response) => {
         const { idToken, authCode }  = req.body;

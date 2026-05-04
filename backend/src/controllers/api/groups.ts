@@ -181,13 +181,15 @@ export const GroupController = {
         });
         if (remainingUserCount <= 0) {
             logger.info(`deleting group ${group.id}`); 
+            await PredRank.destroyRankingFor(group.id);
+            await RealRank.destroyRankingFor(group.id);
             await group.destroy();
         } else {
-            getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+            getIO()?.to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
             // pour chaque utilisateur appartenant au groupe
             const users = await group.getUsers({attributes: ['id']});
             for (const user of users) {
-                getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+                getIO()?.to(`user:${user.id}`).emit(`groups:refresh`);
             }
         }
 
@@ -250,11 +252,11 @@ export const GroupController = {
         if (await group.allUsersAdded())
             await group.update({status: GroupStatus.WK_DONE_SUB});
 
-        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+        getIO()?.to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
         // pour chaque utilisateur appartenant au groupe
         const users = await group.getUsers({attributes: ['id']});
         for (const user of users) {
-            getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+            getIO()?.to(`user:${user.id}`).emit(`groups:refresh`);
         }
 
         if (trackCreated) {
@@ -292,10 +294,10 @@ export const GroupController = {
 
         // pour chaque utilisateur appartenant au groupe
         const users = await group.getUsers({attributes: ['id']});
-        getIO().to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
+        getIO()?.to(`group:${group.id}`).emit(`group:${group.id}:refresh`);
         //getIO().emit(`group:${group.id}:refresh`);
         for (const user of users) {
-            getIO().to(`user:${user.id}`).emit(`groups:refresh`);
+            getIO()?.to(`user:${user.id}`).emit(`groups:refresh`);
             //getIO().emit(`groups:refresh`);
         }
 

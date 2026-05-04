@@ -11,6 +11,6 @@ export function initSocket(server: http.Server) {
 }
 
 export function getIO(): Server {
-    if (!io) throw new Error("socket is not initialized");
+    if (!io) return null;
     return io;
 }
