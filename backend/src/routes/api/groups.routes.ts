@@ -33,4 +33,8 @@ router.post('/:id/songs', GroupController.groupUserCheck, GroupController.addTra
 // POST /groups/:id/invite (créer un lien d'invitation)
 router.post('/:id/invite', GroupController.groupUserCheck, InviteController.invite);
 
+router.post('/:id/chosenquiz', GroupController.groupUserCheck, GroupController.submitChosenQuizAnswers);
+
+router.post('/:id/chosenrank', GroupController.groupUserCheck, GroupController.submitChosenRanking);
+
 export default router;

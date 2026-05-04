@@ -162,7 +162,6 @@ export class Group extends Model<InferAttributes<Group>, InferCreationAttributes
             };
         });
     }
-
 }
 
 Group.init({

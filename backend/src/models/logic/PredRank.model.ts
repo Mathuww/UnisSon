@@ -22,6 +22,14 @@ export class PredRank extends Model <
     declare getTrack: BelongsToGetAssociationMixin<Track>;
     declare getSubject: BelongsToGetAssociationMixin<User>;
     declare getPredictor: BelongsToGetAssociationMixin<User>;
+    
+    static async destroyRankingFor(groupId: number) {
+        await this.destroy({
+            where: {
+                groupID: groupId
+            }
+        });
+    }
 }
 
 PredRank.init({

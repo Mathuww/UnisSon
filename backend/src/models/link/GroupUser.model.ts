@@ -13,10 +13,25 @@ export class GroupUser extends Model <
 > {
     declare groupID: number;
     declare userID: number;
-    declare notifPending: boolean | null;
+    declare notifPending: CreationOptional<boolean | null>;
+    declare tempChosenQuizScore: CreationOptional<number | null>;
     declare weeklyScore: CreationOptional<number | null>;
     declare globalScore: CreationOptional<number | null>;
     declare servicePlaylistID: CreationOptional<string | null>;
+    declare quizDone: CreationOptional<boolean | null>;
+    declare rankDone: CreationOptional<boolean | null>;
+
+    static async resetDoneBooleans(groupId: number) {
+        await this.update({
+            quizDone: false,
+            rankDone: false,
+            tempChosenQuizScore: 0
+        }, {
+            where: {
+                groupID: groupId
+            }
+        });
+    }
 }
 
 GroupUser.init({
@@ -35,6 +50,10 @@ GroupUser.init({
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
+    tempChosenQuizScore: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     weeklyScore: {
         type: DataTypes.INTEGER.UNSIGNED,
         defaultValue: 0,
@@ -47,6 +66,14 @@ GroupUser.init({
     },
     servicePlaylistID: {
         type: DataTypes.STRING,
+        allowNull: true,
+    },
+    quizDone: {
+        type: DataTypes.BOOLEAN, 
+        allowNull: true
+    },
+    rankDone: {
+        type: DataTypes.BOOLEAN,
         allowNull: true
     }
 }, {
