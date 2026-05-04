@@ -5,8 +5,7 @@ import UnissonButton from "@/components/UnissonButton";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { useCallback, useEffect, useState } from "react";
 import { useGroupStore } from "@/utils/groupStore";
-import { UserData, QuizTrackData } from "@/shared/types";
-import Group from ".";
+import { UserData, QuizTrackData, QuizUserAnswerData } from "@/shared/types";
 
 
 export default function Quiz() {
@@ -14,11 +13,11 @@ export default function Quiz() {
     const [playing, setPlaying] = useState(false);
 
     const { id } = useLocalSearchParams();
-    const { getGroup, getQuizzData } = useGroupStore();
+    const { getGroup, getQuizzData, submitChosenQuizzAnswers } = useGroupStore();
     const [members, setMembers] = useState<UserData[]>([]);
     const [trackIndex, setTrackIndex] = useState<number>(0);
     const [tracks, setTracks] = useState<QuizTrackData[]>([]);
-
+    const [userAnswers, setUserAnswers] = useState<QuizUserAnswerData>({});
 
     useFocusEffect(
         useCallback(() => {
@@ -44,13 +43,24 @@ export default function Quiz() {
 
     const router = useRouter();
 
-    const handleOneAnswerTouch = (id: number) => {
-        if (touchID < 0) {
-            setTouchID(id);
-        }
-    }
 
-    const handleNext =  () => {
+    const currentTrack = tracks[trackIndex];
+    const IDQuizzMemberGoodAnswer = currentTrack?.addedBy?.id;
+
+    
+    const handleOneAnswerTouch = (userId: number) => {
+        if (touchID < 0) {
+            setTouchID(userId);
+            const trackId : number = currentTrack.track.id!;
+            setUserAnswers(prev => ({
+                ...prev,
+                [trackId]: userId
+            }));
+        }
+    }  
+
+                
+    const handleNext = async () => {
         try {
             if (!tracks || tracks.length === 0) return;
 
@@ -58,7 +68,8 @@ export default function Quiz() {
 
             setTouchID(-1);
             if (nextIndex >= tracks.length) {
-                router.push({ pathname: `/(tabs)/tempindex/group/${id}/` as any });
+                await submitChosenQuizzAnswers(Number(id), userAnswers);
+                router.replace({ pathname: `/(tabs)/tempindex/group/${id}/ranking` as any });
                 return;
             }
 
@@ -67,16 +78,12 @@ export default function Quiz() {
             console.error("On n'arrive pas de continuer le quizz. Veuillez réessayer!\n", error);
         }
     }
-
-    const currentTrack = tracks[trackIndex];
-    const IDQuizzMemberGoodAnswer = currentTrack?.addedBy?.id;
     
     return (
         <View style={styles.container}>
 
             <Text style={styles.title}>Qui a suggéré ce morceau ?</Text>
 
-            {/*Chequer pourquoi l'autoplay ne fonctionne pas*/}
             {currentTrack?.track?.youtubeLink && <YoutubePlayer
                 height={250}
                 play={playing}

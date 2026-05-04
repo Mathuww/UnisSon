@@ -1,17 +1,18 @@
 import {useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text } from "react-native";
-
+import { Badge } from "@react-navigation/elements";
 
 type Props = {
     label: string;
     id:number;
-
+    hasNotification:boolean;
+    notifText:string | null;
 };
 
 const { width } = Dimensions.get('window');
 
-export default function LinkGroups({id, label} : Props) {
+export default function LinkGroups({id, label, hasNotification, notifText} : Props) {
     const [bgColor, setBgColor] = useState('#4E6E5D');
     const loading = useRef(false);
 
@@ -56,6 +57,8 @@ export default function LinkGroups({id, label} : Props) {
             <Text style={styles.linkLabel}>
                 {label}
             </Text>
+            {notifText && <Text>{notifText}</Text>}
+            {hasNotification && (<Badge style={styles.badge} size={50} visible={true}></Badge>)}
         </Pressable>
     )
 }
@@ -77,5 +80,12 @@ const styles = StyleSheet.create({
         fontSize: width > 800 ? 44 : 32,
         textAlign: "center"
     },
+    badge : {
+        position: 'absolute',
+        top : 20,
+        right : 20,
+        borderWidth: 2,
+        backgroundColor: '#f32f24',
+    }
 });
 
