@@ -11,7 +11,7 @@ type Props = {
 
 }
 
-export default function NumberSlider({numberDefault, min, max, numberActual, OnSlice}:Props) {
+export default function UnissonSlider({numberDefault, min, max, numberActual, OnSlice}:Props) {
     return (
         <View style={styles.input}>
                 <Slider

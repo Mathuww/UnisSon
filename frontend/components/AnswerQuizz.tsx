@@ -12,13 +12,13 @@ type Props = {
 const { width } = Dimensions.get('window');
 
 export default function QuizAnswer({ id, label, goodAnswer, touchID, OnPress}: Props) {
-    let color = "#2C4251";
+    let color = "#56606B";
 
     if (touchID > -1 ) {
         if(goodAnswer) {
             color = "#e76f51"
         } else if (touchID == id) {
-            color = "#c62828";
+            color = "#9F0606";
         }
     }
 

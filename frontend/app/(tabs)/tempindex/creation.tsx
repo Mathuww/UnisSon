@@ -2,7 +2,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import {useCallback, useState } from "react";
 import {StyleSheet, View, Text, TextInput, Alert} from "react-native";
 import UnissonTextInput from "@/components/UnissonTextInput";
-import NumberSlider from "@/components/NumberSlider";
+import UnissonSlider from "@/components/UnissonSlider";
 import UnissonButton from "@/components/UnissonButton";
 import { useGroupStore } from "@/utils/groupStore";
 import { ActionResult } from "@/shared/types";
@@ -63,7 +63,7 @@ export default function Creation() {
             <Text style={styles.title}>Heyy, à toi de créer ton propre univers avec tes musiciens, compositeurs, producteurs, podcasteurs :</Text>
             <Text style={styles.subtitle}>Mais avant tout, je te demandes quelques tatonnements :</Text>
             <UnissonTextInput labelDefault="Nom du groupe" text={groupName} OnWrite={setGroupName}></UnissonTextInput>
-            <NumberSlider numberDefault={4} min={3} max={11} numberActual={groupMaxUser} OnSlice={setGroupMaxUser}></NumberSlider>
+            <UnissonSlider numberDefault={4} min={3} max={11} numberActual={groupMaxUser} OnSlice={setGroupMaxUser}></NumberSlider>
             <UnissonButton label="Explosion d'un nouveau univers" color="#e76f51" OnValidation={handleCreateGroup}></UnissonButton>
         </View>
     );

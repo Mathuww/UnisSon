@@ -269,6 +269,7 @@ export default function Group() {
                         <UnissonButton
                             label="À vous d'être à la hauteur d'un élu d'Unisson"
                             color="#F2C14E"
+                            colorText="#000"
                             OnValidation={handleChoosenTheme}
                         />
                     </>
@@ -306,7 +307,8 @@ export default function Group() {
                     return (
                         <UnissonButton
                             label="Faire mon classement"
-                            color="#e76f51"
+                            color="#F2C14E"
+                            colorText="#000"
                             OnValidation={() => handleRank()}
                         />
                     )
@@ -314,7 +316,8 @@ export default function Group() {
                 return (
                     <UnissonButton
                         label="Qui connaît mieux mon moi-même ?"
-                        color="#e76f51"
+                        color="#F2C14E"
+                        colorText="#000"
                         OnValidation={() => handleQuiz()}
                     />
                 )

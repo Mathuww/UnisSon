@@ -35,7 +35,7 @@ const srcBadge: Record<NonNullable<NotifType>, any> = {
 export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = "brown", style }: Props) {
     const router = useRouter();
     const anim = useRef(new Animated.Value(0)).current;
-    const { loading, setIsLoading } = useGroupStore();
+    const { loading } = useGroupStore();
 
     useFocusEffect(useCallback(() => {
         console.log("odid");
@@ -43,9 +43,15 @@ export default function UnissonLinkGroups({ id, label, notifText, notifType = nu
     }, [anim]));
 
     const handlePress = () => {
-        setIsLoading(true);
-        Animated.timing(anim, { toValue: SLIDE_TO, duration: 700, useNativeDriver: true }).start();
-        setTimeout(() => router.push({ pathname: `/(tabs)/tempindex/group/${id}` as any }), 1000);
+        Animated.timing(anim, {
+            toValue: SLIDE_TO,
+            duration: 700,
+            useNativeDriver: false,
+        }).start();
+
+        setTimeout(() => {
+            router.push({ pathname: `/(tabs)/tempindex/group/${id}` as any });
+        }, 800);
     };
 
     return (
