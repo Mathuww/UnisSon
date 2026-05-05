@@ -1,7 +1,8 @@
 import UnissonLinkGroups, { NotifType, PochetteType } from "@/components/UnissonLinkGroups";
 import UnissonIconAction from "@/components/UnissonIconAction";
+import UnissonButton from "@/components/UnissonButton";
 import { useContext, useCallback, useRef } from "react";
-import { Dimensions, ScrollView, StyleSheet } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text } from "react-native";
 import { useAuthStore } from "@/utils/authStore";
 import { useGroupStore } from "@/utils/groupStore";
 import { useRouter, useFocusEffect } from "expo-router";
@@ -69,6 +70,35 @@ export default function Index() {
         return () => { active = false; };
     }, [serverTime]));
 
+    const GroupsContainer = () => {
+        if (groups.length === 0) {
+            return (
+                <>
+                    <Text>
+                        Bienvenue dans Unisson !
+                        Vous n'avez pas encore de groupe. Vous pouvez demander à des amis de vous inviter, ou créer votre premier groupe.
+                    </Text>
+                    <UnissonButton label="Créer votre premier groupe" color="#E76F51" OnValidation={handleCreation} />
+                </>
+            );
+        } else {
+            return groups.map((item, i) => {
+                const { text, type } = getNotif(item, userInfo?.id);
+                return (
+                    <UnissonLinkGroups
+                        key={item.id}
+                        id={item.id}
+                        label={item.name}
+                        notifText={text}
+                        notifType={type}
+                        pochette={getPochette(i)}
+                        style={[styles.linkGroup, { zIndex: i + 1 }]}
+                    />
+                );
+            });
+        }
+    }
+
     return (
         <ScrollView
             //Eviter de montrer les parties cachées hors scroll comme les disques
@@ -85,20 +115,7 @@ export default function Index() {
                 OnValidation={handleCreation}
             />
 
-            {groups.map((item, i) => {
-                const { text, type } = getNotif(item, userInfo?.id);
-                return (
-                    <UnissonLinkGroups
-                        key={item.id}
-                        id={item.id}
-                        label={item.name}
-                        notifText={text}
-                        notifType={type}
-                        pochette={getPochette(i)}
-                        style={[styles.linkGroup, { zIndex: i + 1 }]}
-                    />
-                );
-            })}
+            <GroupsContainer />
         </ScrollView>
     );
 }
