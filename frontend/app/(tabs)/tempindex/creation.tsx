@@ -64,7 +64,7 @@ export default function Creation() {
             <Text style={styles.subtitle}>Mais avant tout, je te demandes quelques tatonnements :</Text>
             <UnissonTextInput labelDefault="Nom du groupe" text={groupName} OnWrite={setGroupName}/>
             <UnissonSlider numberDefault={4} min={3} max={11} numberActual={groupMaxUser} OnSlice={setGroupMaxUser}/>
-            <UnissonButton label="Explosion d'un nouveau univers" color="#e76f51" OnValidation={handleCreateGroup}/>
+            <UnissonButton label="Créer un nouveau groupe" color="#e76f51" OnValidation={handleCreateGroup}/>
         </View>
     );
 }

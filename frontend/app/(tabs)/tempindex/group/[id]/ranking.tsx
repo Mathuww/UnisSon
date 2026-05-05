@@ -83,7 +83,7 @@ export default function Ranking() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container}>
-                <Text style={styles.title}>{isChosen ? "Classez vos titres préférés" : "Quels sont les titres préférés de l'élu ?"}</Text>
+                <Text style={styles.title}>{isChosen ? "Classez selon vos titres préférés" : "Quels seront les titres préférés de l'élu ?"}</Text>
 
                 <DraggableFlatList style={styles.flatlist}
                     data={tracks}
@@ -95,7 +95,7 @@ export default function Ranking() {
                 />
                 <UnissonButton
                     label={
-                        "Récompenser le peuple!"
+                        "Valider votre classement"
                     }
                     color="#e76f51"
                     OnValidation={handleRanking}

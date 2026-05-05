@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
 
     },
     text: {
-        color: "#fff"
+        color: "#fff",
+        textAlign: "center",
     },
     textInput: {
         color: "#fff"

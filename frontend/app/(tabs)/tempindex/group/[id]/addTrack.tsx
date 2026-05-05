@@ -74,15 +74,15 @@ export default function SubmitTracks() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
-                À vous de tenir tête à vos camarades en ayant la meilleure suggestion musicale de votre groupe.
+                À vous de tenir tête à vos camarades en proposant le meilleur morceau !
             </Text>
             <Text style={styles.subtitle}>
-                Par ailleurs, n'oubliez pas que la suggestion doit être personnalisée à l'élu et à son thème :)
+                Mais n'oubliez pas que la suggestion doit être personnalisée pour l'élu et doit respecter son thème !
             </Text>
-            <UnissonTextInput labelDefault="Le lien de votre suggestion musicale" text={yourSuggestion}
+            <UnissonTextInput labelDefault="Le lien de votre morceau" text={yourSuggestion}
                 OnWrite={setYourSuggestion}/>
             <UnissonButton 
-                label="Confirmer votre propagande de la nouvelle ère" 
+                label="Valider la suggestion" 
                 color="#e76f51"
                 OnValidation={handleSuggestion}>
             </UnissonButton>

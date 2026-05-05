@@ -113,7 +113,7 @@ export default function Index() {
             showsVerticalScrollIndicator={false}
         >
             <UnissonIconAction
-                img="group-add"
+                source={require("@/assets/images/iconCreation.png")}
                 OnValidation={handleCreation}
             />
 

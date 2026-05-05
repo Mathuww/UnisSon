@@ -12,6 +12,7 @@ import {useSocketStore} from "@/utils/socketStore";
 import {useGroupSocket} from "@/hooks/useGroupSocket";
 import { errorDialog } from "@/shared/errorDialog";
 import MembersScore from "@/components/MembersScore";
+import UnissonIconAction from "@/components/UnissonIconAction";
 
 /**
  * Page pour un groupe particulier
@@ -148,7 +149,7 @@ export default function Group() {
      * - SUN_WAITING_THEME : l’élu doit choisir un thème
      * - SUN_DONE_THEME : thème choisi
      * - WK_WAITING_SUB : les membres proposent une musique
-     * - WK_DONE_SUB : toutes les propositions sont faites
+     * - WK_DONE_SUB : toutes les propositions sont faites pour cette période
      * - SAT_WAITING_QUIZ : phase de quiz
      * - SAT_DONE_QUIZ : quiz terminé
      */
@@ -173,7 +174,7 @@ export default function Group() {
             case "SUN_WAITING_THEME":
                 return (
                     <Text style={styles.subtitle}>
-                        L'élu {chosenOne?.nickname} choisit un thème.
+                        L'élu {chosenOne?.nickname} est en train de choisir un thème...
                     </Text>
                 )
 
@@ -189,10 +190,11 @@ export default function Group() {
                     return (
                         <>
                             <Text style={styles.subtitle}>
-                                Cette semaine, ce ne sera pas vous l'élu. À vous d'épater musicalement {chosenOne?.nickname}{groupData.theme && `, avec son thème ${groupData.theme}`} :
+                                Cette semaine, ce ne sera pas vous l'élu.e. 
+                                À vous d'épater musicalement {chosenOne?.nickname}{groupData.theme && `, avec son thème ${groupData.theme}`} :
                             </Text>
                             <UnissonButton
-                                label="À vous d'impressionner votre élu avec votre musique !"
+                                label="Choisir un thème"
                                 color="#e76f51"
                                 OnValidation={handleSuggestion}
                             />
@@ -203,7 +205,7 @@ export default function Group() {
                     return (
                         <>
                             <Text style={styles.subtitle}>
-                                Cette semaine, ce ne sera pas vous l'élu. Vous avez déjà ajouté une musique pour cette période.
+                                Vous avez déjà ajouté une musique pour cette période.
                             </Text>
                         </>
                     );
@@ -213,7 +215,7 @@ export default function Group() {
             case "WK_DONE_SUB":
                 return (
                     <Text style={styles.subtitle}>
-                        Vous avez déjà ajouté un son pour cette période.
+                        Tous les membres du groupe ont ajouté un morceau pour cette période.
                     </Text>
                 );
 
@@ -226,19 +228,29 @@ export default function Group() {
                     )
                 } else if (groupData.quizDone) {
                     return (
-                        <UnissonButton
-                            label="Faire mon classement prédictif"
-                            color="#e76f51"
-                            OnValidation={() => handleRank()}
-                        />
+                        <>
+                            <Text style={styles.subtitle}>
+                                Vous avez déjà rempli votre quiz pour cette semaine, mais vous n'avez pas encore tenté de deviner les morceaux favoris de l'élu.e ! 
+                            </Text>
+                            <UnissonButton
+                                label="Essayer de deviner"
+                                color="#e76f51"
+                                OnValidation={() => handleRank()}
+                            />
+                        </>
                     )
                 }
                 return (
+                   <>
+                    <Text style={styles.subtitle}>
+                        C'est l'heure du jeu ! Tentez de deviner quels sont les morceaux préférés de l'élu :
+                    </Text>
                     <UnissonButton
-                        label="Qui connaît le mieux l'élu?"
+                        label="Essayer de deviner"
                         color="#e76f51"
-                        OnValidation={() => handleDiscover()}
+                        OnValidation={() => handleRank()}
                     />
+                    </>
                 )
 
             case "SAT_DONE_QUIZ":
@@ -265,10 +277,11 @@ export default function Group() {
                 return (
                     <>
                         <Text style={styles.subtitle}>
-                            Toc Toc, Unisson vous informe que vous allez cartonner cette semaine car vous êtes maintenant élu :)
+                            Vous êtes l'élu de la semaine.
+                            A vous d'être à la hauteur de ce rôle :                 
                         </Text>
                         <UnissonButton
-                            label="À vous d'être à la hauteur d'un élu d'Unisson"
+                            label="Choisir un thème"
                             color="#F2C14E"
                             colorText="#000"
                             OnValidation={handleChoosenTheme}
@@ -284,18 +297,13 @@ export default function Group() {
                 )
 
             case "WK_WAITING_SUB":
-                return (
-                    <Text style={styles.subtitle}>
-                        Attendez tranquillement que vos amis choisissent bien leurs chansons :)
-                    </Text>
-                )
-
             case "WK_DONE_SUB":
                 return (
                     <Text style={styles.subtitle}>
-                        Vos amis ont choisi leur chanson, bientôt l'heure du quiz ^^ :)
+                        Attendez tranquillement que vos amis choisissent bien leurs chansons.
                     </Text>
                 )
+
 
             case "SAT_WAITING_QUIZ":
                 if (groupData.quizDone && groupData.rankDone) {
@@ -316,7 +324,7 @@ export default function Group() {
                 }
                 return (
                     <UnissonButton
-                        label="Qui connaît mieux mon moi-même ?"
+                        label="Remplir le quizz du Week End"
                         color="#F2C14E"
                         colorText="#000"
                         OnValidation={() => handleQuiz()}
@@ -326,7 +334,7 @@ export default function Group() {
             case "SAT_DONE_QUIZ":
                 return (
                     <Text style={styles.subtitle}>
-                        Nostalgique, et uii, je sais que le quizz était bien. C'est moi qui l'a fait =)
+                        Quizz complété
                     </Text>
                 );
 
@@ -358,14 +366,14 @@ export default function Group() {
                 <View style={styles.containerButton}>
                     <View style={styles.containerText}>
                         {isChosen ? renderUIForChosen() : renderUIForOthers()}
-                    </View>
+                    </View> 
                     <View style={styles.containerIcons}>
-                        <IconAction
-                            img="person-add-alt-1"
+                        <UnissonIconAction
+                            source={require("@/assets/images/iconAddGroup.png")}
                             OnValidation={handleInviteOthersMembers}
                         />
-                        <IconAction
-                            img="group-off"
+                        <UnissonIconAction
+                            source={require("@/assets/images/iconQuitGroup.png")}
                             OnValidation={handleLeaveGroup}
                         />
                     </View>

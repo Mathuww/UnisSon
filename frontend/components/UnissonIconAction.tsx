@@ -5,7 +5,7 @@ import { Image, Pressable, StyleSheet } from "react-native";
 
 type Props = {
   img?: keyof typeof MaterialIcons.glyphMap;
-  source?:{uri : string};
+  source?:ReturnType<typeof require>;
   OnValidation: () => void;
 }
 
@@ -14,7 +14,7 @@ export default function UnissonIconAction({ img, source, OnValidation }: Props) 
   return (
     <Pressable style={styles.iconButton} onPress={OnValidation}>
       {(isAsset && (
-          <Image source={source}/>
+          <Image source={source} style={styles.img}/>
         )) || (
           <MaterialIcons name={img} size={30} color="white" />
       )}
@@ -29,4 +29,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  img: {
+    width: 50, 
+    height: 50
+  }
 });

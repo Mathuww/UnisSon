@@ -1,28 +1,19 @@
 import { Tabs } from "expo-router";
 import { View, StyleSheet, Image, Text, Dimensions } from 'react-native';
-import UnissonButton from "@/components/UnissonButton";
 import IconAction from '@/components/UnissonIconAction';
 import { useState, useEffect, createContext } from 'react';
-import { api, ApiCall } from '@/api/BackendApi';
-import { useGroupStore } from '@/utils/groupStore';
+import { ApiCall } from '@/api/BackendApi';
 import { useSettingsStore } from '@/utils/settingsStore';
 import { useTimeSocket } from '@/hooks/useTimeSocket';
 import { errorDialog } from '@/shared/errorDialog';
 import { useAuthStore } from "@/utils/authStore";
 import { setAuthToken } from "@/api/BackendApi";
+import { useFonts } from 'expo-font';
+import { AlfaSlabOne_400Regular } from '@expo-google-fonts/alfa-slab-one';
+import { Quicksand_500Medium } from '@expo-google-fonts/quicksand';
 
-/**
- * Context global fournissant l'heure serveur (dans le cas du test)
- */
 export const TimeContext = createContext<string>("...");
 
-/**
- * Layout de (tabs)
- * 
- * Syncronise l'heure avec le backend
- *
- * Gère le mode debug pour "avancer" dans le temps 
- */
 const { width, height } = Dimensions.get('window');
 
 export default function TabsLayout() {
@@ -31,6 +22,11 @@ export default function TabsLayout() {
     const { appToken, userInfo } = useAuthStore();
     const [apiReady, setApiReady] = useState(false);
 
+    const [fontsLoaded] = useFonts({
+        AlfaSlabOne_400Regular,
+        Quicksand_500Medium,
+    });
+
     useEffect(() => {
         if (appToken) {
             setAuthToken(appToken);
@@ -38,9 +34,6 @@ export default function TabsLayout() {
         }
     }, [appToken]);
 
-    /**
-     * Récupère l'heure actuelle du server depuis le backend et met à jour
-     */
     const updateTime = async () => {
         try {
             const res = await ApiCall.admin.getServerTime();
@@ -53,17 +46,12 @@ export default function TabsLayout() {
     };
 
     useEffect(() => {
-        if (!appToken || !userInfo || !apiReady) {
-            return;
-        }
+        if (!appToken || !userInfo || !apiReady) return;
         (async () => await updateTime())();
     }, [apiReady, userInfo]);
 
     useTimeSocket(updateTime);
 
-    /**
-     * Avance artificielement le temps coté server 
-     */
     const handleTimeForward = async () => {
         const HOURS_TO_FORWARD = 24;
         try {
@@ -75,6 +63,8 @@ export default function TabsLayout() {
             console.error(err);
         }
     };
+
+    if (!fontsLoaded) return null;
 
     return (
         <TimeContext.Provider value={serverTime}>
@@ -139,12 +129,14 @@ const tabOptions = {
         shadowOpacity: 0,
     },
 };
- 
+
 const styles = StyleSheet.create({
+
     tabIcon: {
         width: width * 0.133,
         height: width * 0.133,
     },
+
     containerTest: {
         backgroundColor: '#25292e',
         paddingTop: '2%',
@@ -152,7 +144,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
     },
+
     textTimeTest: {
         color: '#fff',
     },
+
 });

@@ -51,8 +51,8 @@ export default function Invitation() {
 
   return (
       <View style={styles.container}>
-        <Text style={styles.title}>Hey, c'est bientôt l'heure d'avoir une communauté à toi :)</Text>
-        <Text style={styles.subtitle}>Pour rappel, les membres de {groupName} sont :</Text>
+        <Text style={styles.title}>Hey, c'est bientôt l'heure d'unir une communauté autour de toi !</Text>
+        <Text style={styles.subtitle}>Pour rappel, les membres actuels de {groupName} sont :</Text>
         <FlatList
           data={usersGroup}
           keyExtractor={(item) => item.id.toString()}

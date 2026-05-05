@@ -133,7 +133,7 @@ export default function Quiz() {
             <UnissonButton
                 label={
                     (tracks && ((trackIndex + 1) === tracks.length)) ?
-                        "Terminer votre quizz"
+                        "Terminer votre quiz"
                     :
                         "Morceau suivant"
                 }

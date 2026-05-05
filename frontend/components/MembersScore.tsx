@@ -13,7 +13,7 @@ export default function MembersScore({groupId}: Props) {
     let groupData: GroupData | null = null;         
     const found = groups.find(g => g.id === Number(groupId));
     if (found) groupData = found;
-    const users = groupData?.users!;
+    const users = groupData?.users ?? [];
     const [globalTab, setGlobalTab] = useState<boolean>(false);
 
     type ScoreRowProps = {
@@ -51,26 +51,27 @@ export default function MembersScore({groupId}: Props) {
 
     type ScoreTabProps = {global?: boolean};
     const ScoreTab = ({global}: ScoreTabProps) => {
-        let scores;
-        if (global)
-            scores = [...users].sort((a, b) => (b.globalScore ?? 0) - (a.globalScore ?? 0));
-        else
-            scores = [...users].sort((a, b) => (b.weeklyScore ?? 0) - (a.weeklyScore ?? 0));
+        const scores = global
+            ? [...users].sort((a, b) => (b.globalScore ?? 0) - (a.globalScore ?? 0))
+            : [...users].sort((a, b) => (b.weeklyScore ?? 0) - (a.weeklyScore ?? 0));
 
         return (
             <FlatList
-                data={scores}
-                keyExtractor={(item) => item.id.toString()}
+                data={scores ?? []}
+                keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
                 renderItem={({ item, index }) => (
                     <ScoreRow
                         rank={index + 1}
-                        name={item.nickname}
+                        name={item.nickname ?? "inconnu"}
                         score={(globalTab ? item.globalScore : item.weeklyScore) ?? 0}
-                        maxScore={(global ? users[0]!.globalScore : users[0]!.weeklyScore) ?? 1} 
+                        maxScore={
+                            scores[0]
+                                ? (globalTab ? scores[0].globalScore : scores[0].weeklyScore) ?? 1
+                                : 1
+                        }
                     />
                 )}
                 showsVerticalScrollIndicator={true}
-                stickyHeaderIndices={[0]}
             />
         );
     }

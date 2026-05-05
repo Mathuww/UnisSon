@@ -6,6 +6,7 @@ import { useSettingsStore } from "@/utils/settingsStore";
 import UnissonOnOff from "@/components/UnissonOnOff";
 import { useEffect, useState } from "react";
 import { errorDialog } from "@/shared/errorDialog";
+import UnissonIconAction from "@/components/UnissonIconAction";
 
 /**
  * Page de profil 
@@ -43,7 +44,7 @@ export default function Profile() {
           <Text style={styles.pseudo}>@{userInfo?.nickname}</Text>
           <View style={styles.containerIcons}>
             <UnissonOnOff value={timeDebug} OnValidation={(value:boolean) => {setTimeDebug(value)}}/>
-            <IconAction 
+            <UnissonIconAction 
               img="logout"
               OnValidation={handleLogout}
             />
