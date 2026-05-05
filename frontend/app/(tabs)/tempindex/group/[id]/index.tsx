@@ -194,7 +194,7 @@ export default function Group() {
                                 À vous d'épater musicalement {chosenOne?.nickname}{groupData.theme && `, avec son thème ${groupData.theme}`} :
                             </Text>
                             <UnissonButton
-                                label="Choisir un thème"
+                                label="Suggérer une track"
                                 color="#e76f51"
                                 OnValidation={handleSuggestion}
                             />
