@@ -5,6 +5,7 @@ import { useAuthStore } from "@/utils/authStore";
 import { useSettingsStore } from "@/utils/settingsStore";
 import UnissonOnOff from "@/components/UnissonOnOff";
 import { useEffect, useState } from "react";
+import { errorDialog } from "@/shared/errorDialog";
 
 /**
  * Page de profil 
@@ -24,6 +25,7 @@ export default function Profile() {
    */
   const handleLogout = async () => {
     if (!appToken) {
+      errorDialog("Vous n'êtes pas connecté.");
       console.error("Not logged in");
       return;
     }
@@ -31,6 +33,7 @@ export default function Profile() {
     try {
       await GoogleLogOut();
     } catch (error) {
+      errorDialog("Erreur de déconnexion.");
       console.error("On ne peut pas se déconnecter. Veuillez réessayer! \n" + error);
     }
   }

@@ -1,14 +1,17 @@
-import { ApiCall } from "@/api/BackendApi";
 import { useRouter, useFocusEffect } from 'expo-router';
 import {useCallback, useState } from "react";
-import {StyleSheet, View, Text, TextInput} from "react-native";
+import {StyleSheet, View, Text, TextInput, Alert} from "react-native";
 import UnissonTextInput from "@/components/UnissonTextInput";
 import NumberSlider from "@/components/NumberSlider";
 import UnissonButton from "@/components/UnissonButton";
 import { useGroupStore } from "@/utils/groupStore";
 import { ActionResult } from "@/shared/types";
 import { useAuthStore } from "@/utils/authStore";
+import { errorDialog } from '@/shared/errorDialog';
 
+/**
+ * Page de création de groupe
+ */
 export default function Creation() {
     const [groupName, setGroupName] = useState('');
     const [groupMaxUser, setGroupMaxUser] = useState(4);
@@ -28,15 +31,18 @@ export default function Creation() {
         resetInput
     );
 
+    /**
+     * Gère la création de groupe et redirige vers la bonne page
+     */
     const handleCreateGroup = async () => {
         if (!appToken) {
             console.error("Not logged in");
             return;
         }
-        console.log(groupName, groupMaxUser);
+        //console.log(groupName, groupMaxUser);
         try {
             if(groupName == "") {
-                throw new Error("Nom du groupe incorrect (vide)");
+                return errorDialog("Le nom du groupe est vide");
             }
 
             const result: ActionResult<number> = await createGroup(groupName, groupMaxUser);
@@ -47,6 +53,7 @@ export default function Creation() {
                 throw new Error(String(result.error));
             }
         } catch (error) {
+            errorDialog("Erreur de création du groupe");
             console.error("On ne peut pas créer ce groupe. Veuillez réessayer! \n" + error);
         }
     }

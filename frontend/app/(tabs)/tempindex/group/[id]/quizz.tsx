@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useGroupStore } from "@/utils/groupStore";
 import { UserData, QuizTrackData, QuizUserAnswerData } from "@/shared/types";
 import { useAuthStore } from "@/utils/authStore";
+import { errorDialog } from "@/shared/errorDialog";
 
 
 export default function Quiz() {
@@ -76,6 +77,7 @@ export default function Quiz() {
 
             setTrackIndex(nextIndex);
         } catch (error) {
+            errorDialog("Impossible de transmettre vos réponses.");
             console.error("On n'arrive pas de continuer le quizz. Veuillez réessayer!\n", error);
         }
     }

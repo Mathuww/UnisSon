@@ -6,6 +6,9 @@ import IconAction from "@/components/IconAction";
 import {useEffect, useState} from "react";
 import {useGroupStore} from "@/utils/groupStore";
 
+/**
+ * Page de création d'un lien d'invitation pour un groupe
+ */
 export default function Invitation() {
   const {id} = useLocalSearchParams();
   const router = useRouter();
@@ -14,6 +17,9 @@ export default function Invitation() {
   const [groupName, setGroupName] = useState<string>("");
   const [usersGroup, setUsersGroup] = useState<UserData[]>([]);
 
+  /**
+   * Load les données du groupe pour préparer le lien d'invitation 
+   */
   useEffect(() => {
       const loadGroupData = async () => {
           const group = await getGroup(Number(id));
@@ -25,6 +31,9 @@ export default function Invitation() {
         loadGroupData();
     })
 
+  /**
+   *    
+   */ 
   useEffect(() => {
     (async () => {
         const result = await createInvite(Number(id));

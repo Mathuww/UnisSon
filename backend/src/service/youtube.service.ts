@@ -20,7 +20,7 @@ export class YoutubeService {
      * @param videoId l'ID de la vidéo
      * @returns Titre et auteur ("artiste")
      */
-    static async getPublicVideoInfo(videoId: string): Promise<{title: string, artist?: string}> {
+    static async getPublicVideoInfo(videoId: string): Promise<{success: boolean, title?: string, artist?: string}> {
         const url = `https://www.youtube.com/watch?v=${videoId}`;
         try {
             const response = await fetch(`
@@ -28,16 +28,17 @@ export class YoutubeService {
             `);
 
             if (!response.ok) {
-                return {title: "Titre inconnu"};
+                return {success: false};
             }
             const data = await response.json();
             //console.log(data);
             return {
+                success: true,
                 title: data.title,
                 artist: data.author_name
             };
         } catch {
-            return {title: "Titre inconnu"};
+            return {success: true};
         }
     }
 

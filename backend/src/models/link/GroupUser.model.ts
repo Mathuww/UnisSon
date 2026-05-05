@@ -5,7 +5,6 @@ import {
 import db from '../../shared/db.js';
 import { Group } from '../elem/Group.model.js';
 import { User } from '../elem/User.model.js';
-import { Certificate } from 'node:crypto';
 
 /**
  * Lien utilisateur-groupe,
@@ -54,7 +53,7 @@ GroupUser.init({
     groupID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        references: { model: Group, key: 'id' }
+        references: { model: 'Groups', key: 'id' }
     },
     userID: {
         type: DataTypes.INTEGER,

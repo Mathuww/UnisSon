@@ -1,11 +1,17 @@
-import {StyleSheet, Text, View} from "react-native";
+import {Alert, StyleSheet, Text, View} from "react-native";
 import {useState, useCallback} from "react";
 import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import UnissonTextInput from "@/components/UnissonTextInput";
 import UnissonButton from "@/components/UnissonButton";
 import {useGroupStore} from "@/utils/groupStore";
+import { makeShareable } from "react-native-worklets";
+import { errorDialog } from "@/shared/errorDialog";
 
-
+/**
+ * Page d'ajout d'une track pour les non élus
+ *
+ * Gère la verification des liens fournis
+ */
 export default function SubmitTracks() {
     const [yourSuggestion, setYourSuggestion] = useState('');
     const {id} = useLocalSearchParams();
@@ -21,6 +27,10 @@ export default function SubmitTracks() {
         resetInput
     );
 
+    /**
+     * Verification de la validité de l'url fourni (que ça soit un lien youtube)
+     * @param link : lien en entrée
+     */
     const checkVerificationLinkYoutube = (link: string) => {
         const prefixLink = "youtube.com/watch?v=";
         const prefixMobileLink = "youtu.be/";
@@ -34,13 +44,28 @@ export default function SubmitTracks() {
         }
     };
 
+    /**
+     * Gère la suggestion d'une nouvelle track et redirige vers le bon path
+     */
     const handleSuggestion = async () => {
         console.log(yourSuggestion);
         try {
             const suggestion = checkVerificationLinkYoutube(yourSuggestion);
             await submitTrack(Number(id), {youtubeLink: suggestion});
             router.push({pathname: `/(tabs)/tempindex/group/${id}/` as any });
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response) {
+                const status = error.response.status;
+                if (status == 403) {
+                    errorDialog("Vous ne pouvez pas ajouter de musique à ce groupe.");
+                } else if (status == 404) {
+                    errorDialog("Le lien de votre vidéo semble invalide");
+                } else if (status === 409) {
+                    errorDialog("Cette vidéo a déja été ajoutée à ce groupe par le passé.");
+                } else {
+                    errorDialog("Erreur inconnue");
+                }
+            }
             console.error("On n'arrive pas à transmettre votre suggestion musicale. Veuillez réessayer!");
         }
     }

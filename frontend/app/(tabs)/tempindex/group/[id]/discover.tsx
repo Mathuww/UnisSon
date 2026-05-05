@@ -1,13 +1,15 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import QuizAnswer from "@/components/AnswerQuizz";
 import UnissonButton from "@/components/UnissonButton";
 import YoutubePlayer from "react-native-youtube-iframe";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useGroupStore } from "@/utils/groupStore";
-import { UserData, QuizTrackData, QuizUserAnswerData } from "@/shared/types";
+import { QuizTrackData } from "@/shared/types";
+import { errorDialog } from "@/shared/errorDialog";
 
-
+/**
+ * Page de découverte des musiques pour les non élus
+ */
 export default function Discover() {
     const [playing, setPlaying] = useState(false);
 
@@ -16,6 +18,9 @@ export default function Discover() {
     const [trackIndex, setTrackIndex] = useState<number>(0);
     const [tracks, setTracks] = useState<QuizTrackData[]>([]);
 
+    /**
+     * Maj des différents états et fetch des données de Quizz
+     */
     useFocusEffect(
         useCallback(() => {
             let active = true;
@@ -23,7 +28,8 @@ export default function Discover() {
             const loadGroupData = async () => {
                 const group = await getGroup(Number(id));  
                 if (!group?.users) {
-                    return console.error("cannot find user list");
+                    console.error("cannot find user list");
+                    return errorDialog("Erreur de chargement de la liste des membres");
                 } 
                 const result = await getQuizzData(Number(id));
                 if (result.success && result.data) {
@@ -39,7 +45,10 @@ export default function Discover() {
 
     const router = useRouter();
     const currentTrack = tracks[trackIndex];
-                
+
+    /**
+     * Gère le passage à la track suivante
+     */
     const handleNext = async () => {
         try {
             if (!tracks || tracks.length === 0) return;
@@ -53,6 +62,7 @@ export default function Discover() {
 
             setTrackIndex(nextIndex);
         } catch (error) {
+            errorDialog("Erreur de chargement de la vidéo suivante.");
             console.error("On n'arrive pas à continuer. Veuillez réessayer!\n", error);
         }
     }

@@ -10,7 +10,13 @@ import { useFocusEffect } from "expo-router";
 import { TimeContext } from "@/app/(tabs)/_layout";
 import {useSocketStore} from "@/utils/socketStore";
 import {useGroupSocket} from "@/hooks/useGroupSocket";
+import { errorDialog } from "@/shared/errorDialog";
 
+/**
+ * Page pour un groupe particulier
+ *
+ * Gère l'update du groupe
+ */
 export default function Group() {
 
     const params = useLocalSearchParams();
@@ -35,44 +41,32 @@ export default function Group() {
         isChosen = chosenOne.id === Number(userInfo.id);
     }
 
+    /**
+     * Se connecte à la room dédiée via socket pour écouter les potentiels changements
+     */
     useGroupSocket(Number(id));
 
-    const updateGroup = async () => {
-        if (!appToken) {
-            console.log("no app token");
-            return;
-        }
-        console.log("fetching current group data...")
+    const updateGroup = useCallback(async () => {
+        if (!appToken) return;
         await fetchCurrentGroup(Number(id));
-    }
+    }, [appToken, fetchCurrentGroup, id]);
 
+
+    /**
+     * Update lorsqu'on "ouvre" la page
+     */
     useFocusEffect(
         useCallback(() => {
-            let active = true;
-            (async () => {
-                if (active)
-                    await updateGroup();
-            })();
-            return () => {
-                active = false;
-            }
-        }, [serverTime])
+            updateGroup();
+        }, [updateGroup])
     );
 
-    useFocusEffect(
-        useCallback(() => {
-            let active = true;
-            console.log("updating page");
-            (async () => {
-                console.log("welcome to group page " + id);
-                if (active)
-                    await updateGroup();
-            })();
-            return () => {
-                active = false;
-            }
-        }, [id, appToken, fetchCurrentGroup, serverTime])
-    );
+    /**
+     * Update sur changement de serverTime (pour le debug)
+     */
+    useEffect(() => {
+        updateGroup();
+    }, [serverTime, updateGroup])
 
     const handleChoosenTheme = async () => {
         try {
@@ -126,7 +120,6 @@ export default function Group() {
         }
     }
 
-
     const handleInviteOthersMembers = () => {
         if (groupData) {
             router.push(`/(tabs)/tempindex/group/${id}/invitation`);
@@ -140,10 +133,22 @@ export default function Group() {
             await leaveGroup(Number(id));
             router.push("/");
         } catch (error) {
+            errorDialog("Impossible de quitter ce groupe");
             console.error("you can't leave your group");
         }
     }
 
+    /**
+     * UI pour les non élus. 
+     * On utilise un switch case en fonction de l'état actuel du groupe et de données spécifique à l'utilisateur pour décider quoi afficher
+     * États possibles du groupe :
+     * - SUN_WAITING_THEME : l’élu doit choisir un thème
+     * - SUN_DONE_THEME : thème choisi
+     * - WK_WAITING_SUB : les membres proposent une musique
+     * - WK_DONE_SUB : toutes les propositions sont faites
+     * - SAT_WAITING_QUIZ : phase de quiz
+     * - SAT_DONE_QUIZ : quiz terminé
+     */
     const renderUIForOthers = (): ReactNode => {
         if (!groupData)
             return;
@@ -203,11 +208,13 @@ export default function Group() {
                         </Text>
                     )
                 } else if (groupData.quizDone) {
-                    <UnissonButton
-                        label="Faire mon classement prédictif"
-                        colorText="#e76f51"
-                        OnValidation={() => handleRank()}
-                    />
+                    return (
+                        <UnissonButton
+                            label="Faire mon classement prédictif"
+                            colorText="#e76f51"
+                            OnValidation={() => handleRank()}
+                        />
+                    )
                 }
                 return (
                     <UnissonButton
@@ -229,6 +236,10 @@ export default function Group() {
         }
     }
 
+    /**
+     * UI pour les élus 
+     * On utilise un switch case en fonction de l'état actuel du groupe et de données spécifique à l'utilisateur pour décider quoi afficher
+     */
     const renderUIForChosen = (): ReactNode => {
         if (!groupData)
             return;
@@ -276,11 +287,13 @@ export default function Group() {
                         </Text>
                     )
                 } else if (groupData.quizDone) {
-                    <UnissonButton
-                        label="Faire mon classement"
-                        colorText="#e76f51"
-                        OnValidation={() => handleRank()}
-                    />
+                    return (
+                        <UnissonButton
+                            label="Faire mon classement"
+                            colorText="#e76f51"
+                            OnValidation={() => handleRank()}
+                        />
+                    )
                 }
                 return (
                     <UnissonButton

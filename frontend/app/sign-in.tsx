@@ -5,6 +5,7 @@ import {ApiCall} from "@/api/BackendApi";
 import {setItemAsync} from "expo-secure-store";
 import {useAuthStore} from "@/utils/authStore";
 import {GoogleSignin} from "@react-native-google-signin/google-signin";
+import { errorDialog } from "@/shared/errorDialog";
 
 
 /**
@@ -42,6 +43,7 @@ export default function SignInScreen() {
                 throw new Error("Pas de IdToken reçu de Google");
             }
         } catch (error : any) {
+            errorDialog("Erreur de connexion");
             console.error(error.message);
         }
     }

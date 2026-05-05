@@ -65,6 +65,7 @@ GroupStatus {
 - 401 Unauthorized : la ressource est sécurisée mais il manque les données d'authentification dans la requête (JWT)
 - 403 Forbidden : l'authentification n'a pas fonctionné (soit le JWT a expiré, est invalide...) ou alors l'utilisateur n'est pas autorisé à faire cette requête (user en dehors du group, etc.)
 - 404 Not Found : la requête a entraîné la recherche d'une ressource inexistante.
+- 409 Conflict : la requête a tente la création d'une ressource censée être unique, mais qui existait déjà.
 - 500 Internal Server Error : erreur interne (souvent avec la DB).
 
 S'il y a une erreur l'API renvoie :
@@ -193,6 +194,11 @@ Corps :
 
 Renvoie :
 - data : Track
+
+Types d'erreur :
+- 403 : Le groupe n'est pas en état d'accepter un morceau, ou l'utilisateur ne peut pas ajouté un morceau.
+- 404 : Le video ID référence une vidéo qui n'existe pas.
+- 409 : Le morceau a déjà été ajouté dans ce groupe.
 
 ### /api/groups/:id/invite (POST)
 Fonction : Crée un token d'invitation pour ce groupe

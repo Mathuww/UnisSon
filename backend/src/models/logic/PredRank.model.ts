@@ -46,7 +46,7 @@ PredRank.init({
     groupID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        references: { model: Group, key: 'id' }
+        references: { model: 'Groups', key: 'id' }
     },
     trackID: {
         type: DataTypes.INTEGER,

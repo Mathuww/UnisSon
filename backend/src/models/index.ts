@@ -1,16 +1,3 @@
-import './elem/Group.model.js';
-import './elem/User.model.js';
-import './elem/Track.model.js';
-import './elem/TimeState.model.js';
-
-import './link/GroupPlaylist.model.js';
-import './link/FavTrack.model.js';
-import './link/GroupUser.model.js';
-
-import './logic/GroupPeriod.model.js';
-import './logic/Notif.model.js';
-import './logic/RealRank.model.js';
-import './logic/PredRank.model.js';
 import Group from './elem/Group.model.js';
 import User from './elem/User.model.js';
 import Track from './elem/Track.model.js';

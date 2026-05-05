@@ -4,35 +4,40 @@ import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import UnissonTextInput from "@/components/UnissonTextInput";
 import UnissonButton from "@/components/UnissonButton";
 import { useGroupStore } from "@/utils/groupStore";
+import { errorDialog } from "@/shared/errorDialog";
 
-
+/**
+ * Page d'ajout de thème pour un élu
+ */
 export default function SubmitTheme() {
-  const [groupTheme, setGroupTheme] = useState('');
-  const { id } = useLocalSearchParams();
-  const {submitTheme} = useGroupStore();
+    const [groupTheme, setGroupTheme] = useState('');
+    const { id } = useLocalSearchParams();
+    const {submitTheme} = useGroupStore();
 
-  const router = useRouter();
+    const router = useRouter();
 
-  const resetInput = useCallback(() => {
-      setGroupTheme("");
-    }, []);
+    const resetInput = useCallback(() => {
+        setGroupTheme("");
+        }, []);
 
     useFocusEffect(
-      resetInput
+        resetInput
     );
 
+    /**
+     * Gère l'ajout d'un thème et redirige vers la bonne page
+     */
     const handleTheme = async () => {
-      console.log(groupTheme);
-      try {
-        await submitTheme(Number(id), groupTheme);
+        console.log(groupTheme);
+        try {
+            await submitTheme(Number(id), groupTheme);
 
-        //En attendant
-        router.push({ pathname: `/(tabs)/tempindex/group/${id}/` as any});
-      } catch (error) {
-        console.error("On n'arrive pas à transmettre votre thème. Veuillez réessayer!");
-      }
+            router.push({ pathname: `/(tabs)/tempindex/group/${id}/` as any});
+        } catch (error) {
+            errorDialog("Impossible de transmettre votre thème");
+            console.error("On n'arrive pas à transmettre votre thème. Veuillez réessayer!");
+        }
    }
-
 
     return (
         <View style={styles.container}>

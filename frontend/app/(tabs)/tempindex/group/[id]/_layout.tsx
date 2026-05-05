@@ -1,6 +1,9 @@
 import {Stack, Tabs} from "expo-router";
 import React from "react";
 
+/**
+ * Layout simple des pages intra-groupes
+ */
 export default function GroupStackLayout() {
     return (
         <React.Fragment>

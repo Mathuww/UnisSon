@@ -227,18 +227,33 @@ export const GroupController = {
 
         if (trackCreated) {
             const youtubeInfo = await YoutubeService.getPublicVideoInfo(youtubeLink);
+            if (!youtubeInfo.success) {
+                return res.status(404).json({error: {message: "Video ID invalid"}});
+            }
             await track.update({
                 title: youtubeInfo.title,
                 artist: youtubeInfo.artist!
             });
         }
 
-        await GroupPlaylist.create({
-            groupID: group.id,
-            userID: user.id,
-            trackID: track.id,
-            addedAt: TimeManager.now()
+        // Si la track a déjà été ajoutée à ce groupe par le passé,
+        // on renvoie une erreur
+        const [existingEntry, created] = await GroupPlaylist.findOrCreate({
+            where: {
+                groupID: group.id,
+                userID: user.id,
+                trackID: track.id,
+            }, defaults: {
+                groupID: group.id,
+                userID: user.id,
+                trackID: track.id,
+                addedAt: TimeManager.now()
+            }
         });
+
+        if (!created) { // Existe déjà
+            return res.status(409).json({error: {message: "Track already added to group in the past."}});
+        }
 
         const gu = await GroupUser.findOne({
             where: {

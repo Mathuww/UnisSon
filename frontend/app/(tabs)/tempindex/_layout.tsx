@@ -1,6 +1,9 @@
 import {Stack} from "expo-router";
 import React from "react";
 
+/**
+ * Layout simple du sous-dossier "group"
+ */
 export default function GroupStackLayout() {
     return (
         <React.Fragment>

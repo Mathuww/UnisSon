@@ -8,6 +8,7 @@ import {useAppInitialization} from "@/hooks/useAppInitialization";
 
 import UnissonButton from "@/components/UnissonButton";
 import { useGroupStore } from "@/utils/groupStore";
+import { errorDialog } from "@/shared/errorDialog";
 
 type InviteInfo = {
     groupName: string,
@@ -48,6 +49,7 @@ export default function JoinScreen() {
                     otherGroupMembers: data.group.users
                 });
             } catch (err) {
+                errorDialog("Impossible de récupérer les infos de l'invitation.");
                 console.error("cant retrieve invite info ", err);
             }
         })();
@@ -63,6 +65,7 @@ export default function JoinScreen() {
             await fetchGroups();
             router.replace({pathname: `/(tabs)/tempindex/group/${group.id}/` as any});
         } catch (err) {
+            errorDialog("Impossible de rejoindre le groupe.");
             console.error("cant join group " + err);
         }
     }

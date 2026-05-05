@@ -9,6 +9,7 @@ import { ApiCall } from '@/api/BackendApi';
 import { useGroupStore } from '@/utils/groupStore';
 import { useSettingsStore } from '@/utils/settingsStore';
 import { useTimeSocket } from '@/hooks/useTimeSocket';
+import { errorDialog } from '@/shared/errorDialog';
 
 /**
  * Context global fournissant l'heure serveur (dans le cas du test)
@@ -36,6 +37,7 @@ export default function TabsLayout() {
             const { serverTime: time } = res.data.data;
             setServerTime(new Date(time).toLocaleString());
         } catch (err) {
+            errorDialog("Erreur de récupération du temps serveur.");
             console.error(err);
         }
     }
@@ -56,6 +58,7 @@ export default function TabsLayout() {
             const { simulationTime } = res.data.meta;
             setServerTime(new Date(simulationTime).toLocaleString());
         } catch (err) {
+            errorDialog("Impossible d'avancer le temps.");
             console.error(err);
         }
     }
