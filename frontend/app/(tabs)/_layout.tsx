@@ -3,11 +3,13 @@ import { View, StyleSheet, Image, Text, Dimensions } from 'react-native';
 import UnissonButton from "@/components/UnissonButton";
 import IconAction from '@/components/UnissonIconAction';
 import { useState, useEffect, createContext } from 'react';
-import { ApiCall } from '@/api/BackendApi';
+import { api, ApiCall } from '@/api/BackendApi';
 import { useGroupStore } from '@/utils/groupStore';
 import { useSettingsStore } from '@/utils/settingsStore';
 import { useTimeSocket } from '@/hooks/useTimeSocket';
 import { errorDialog } from '@/shared/errorDialog';
+import { useAuthStore } from "@/utils/authStore";
+import { setAuthToken } from "@/api/BackendApi";
 
 /**
  * Context global fournissant l'heure serveur (dans le cas du test)
@@ -26,6 +28,15 @@ const { width, height } = Dimensions.get('window');
 export default function TabsLayout() {
     const [serverTime, setServerTime] = useState<string>("...");
     const { timeDebug } = useSettingsStore();
+    const { appToken, userInfo } = useAuthStore();
+    const [apiReady, setApiReady] = useState(false);
+
+    useEffect(() => {
+        if (appToken) {
+            setAuthToken(appToken);
+            setApiReady(true);
+        }
+    }, [appToken]);
 
     /**
      * Récupère l'heure actuelle du server depuis le backend et met à jour
@@ -42,8 +53,11 @@ export default function TabsLayout() {
     };
 
     useEffect(() => {
+        if (!appToken || !userInfo || !apiReady) {
+            return;
+        }
         (async () => await updateTime())();
-    }, []);
+    }, [apiReady, userInfo]);
 
     useTimeSocket(updateTime);
 
