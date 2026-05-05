@@ -1,38 +1,50 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Dimensions, Pressable, StyleSheet, Text } from "react-native";
 
 type Props = {
     label: string;
-    colorText : string;
     OnValidation: () => void;
 }
 
-export default function Button({label, colorText, OnValidation}: Props) {    
+export default function UnissonButton({ label, OnValidation }: Props) {
     const [loading, setLoading] = useState(false);
 
     const handleTouch = async () => {
-        if (loading) {
-            return;
-        }
+        if (loading) return;
         setLoading(true);
         await OnValidation();
         setLoading(false);
     };
-    
+
     return (
         <Pressable style={styles.button} onPress={handleTouch}>
-            <Text style={[styles.buttonLabel, {color: colorText}]}>{label}</Text>
+            <Text style={styles.label}>{label}</Text>
         </Pressable>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
+
     button: {
-        justifyContent: "center",
-        alignItems: "center",
+        backgroundColor: '#E76F51',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 30,
+        borderRadius: 18,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 4,
+        marginTop : 20,
+        marginHorizontal : 22,
     },
-    buttonLabel: {
-        color: '#5df',
-        marginTop: 12,
+
+    label: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
     },
+
 });
