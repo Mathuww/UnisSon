@@ -20,32 +20,42 @@ export const useAppInitialization = () => {
     /**
      * Resync l'app en général (appToken, groupes et sockets)
      */
-    const syncApp = async () => {
+    const syncApp = useCallback(async () => {
         if (isLoggedIn && appToken) {
-            connect(appToken);
             setAuthToken(appToken);
-            await fetchGroups();
+            connect(appToken);
+            try {
+                await fetchGroups();
+            } catch (error) {
+                console.error("Erreur lors du fetchGroups au démarrage:", error);
+            }
         } else {
             disconnect();
         }
-    };
+    }, [isLoggedIn, appToken, fetchGroups, connect, disconnect]);
 
     useEffect(() => {
-        if (_hasHydrated) {
-            SplashScreen.hideAsync();
-            syncApp();
-        }
-    }, [isLoggedIn, _hasHydrated, syncApp]);
+        const prepareApp = async () => {
+            if (_hasHydrated) {
+                await syncApp();
+                await SplashScreen.hideAsync();
+            }
+        };
+        prepareApp();
+    }, [_hasHydrated, syncApp]);
 
     useEffect(() => {
-        const subscription = AppState.addEventListener("change", (next) => {
-            if (appState.current.match(/inactive|background/) && next === "active") {
+        const subscription = AppState.addEventListener("change", (nextAppState) => {
+            if (
+                appState.current.match(/inactive|background/) && 
+                nextAppState === "active"
+            ) {
                 syncApp();
             }
-            appState.current = next;
+            appState.current = nextAppState;
         });
         return () => subscription.remove();
-    }, [isLoggedIn, appToken, syncApp]);
+    }, [syncApp]);
 
     return { isReady: _hasHydrated}
 }

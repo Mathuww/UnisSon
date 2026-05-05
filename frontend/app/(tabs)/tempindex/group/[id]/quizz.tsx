@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#25292e",
-        paddingTop: 80,
+        paddingTop: 20,
         paddingBottom: 40,
     },
     title: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         textAlign: "center",
-        marginBottom: 8,
+        marginBottom: 80,
     },
     columnAnswer: {
         flex: 1,
