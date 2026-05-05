@@ -2,7 +2,7 @@
   "expo": {
     "name": "UnisSon",
     "slug": "UnisSon",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/iconSketch.png",
     "scheme": "unisson",
@@ -24,7 +24,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#dddddd",
-        "foregroundImage": "./assets/images/iconSketch.png",
+        "foregroundImage": "./assets/images/iconSketch.png"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -64,7 +64,8 @@
             "photo"
           ]
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

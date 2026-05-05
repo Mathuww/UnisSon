@@ -43,7 +43,7 @@ export default function SubmitTheme() {
         <View style={styles.container}>
             <Text style={styles.title}>L'élu de cette semaine est vous !!</Text>
             <UnissonTextInput labelDefault="Votre thème musicale" text={groupTheme} OnWrite={setGroupTheme}/>
-            <UnissonButton label="Définition d'une nouvelle ère" colorText="#e76f51" OnValidation={handleTheme}></UnissonButton>
+            <UnissonButton label="Définition d'une nouvelle ère" color="#F2C14E" OnValidation={handleTheme}></UnissonButton>
         </View>
     );
 }

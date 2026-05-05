@@ -92,7 +92,7 @@ export default function JoinScreen() {
                     ({item}) => <Text style={styles.text}>{item.nickname}</Text>
                 }
             />
-            <UnissonButton label="Rejoindre votre future communauté" colorText="#fff" OnValidation={handleJoin} />
+            <UnissonButton label="Rejoindre votre future communauté" color="#E76F51" OnValidation={handleJoin} />
         </View>
     );
 }

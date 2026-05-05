@@ -192,7 +192,7 @@ export default function Group() {
                             </Text>
                             <UnissonButton
                                 label="À vous d'impressionner votre élu avec votre musique !"
-                                colorText="#e76f51"
+                                color="#e76f51"
                                 OnValidation={handleSuggestion}
                             />
                         </>
@@ -227,7 +227,7 @@ export default function Group() {
                     return (
                         <UnissonButton
                             label="Faire mon classement prédictif"
-                            colorText="#e76f51"
+                            color="#e76f51"
                             OnValidation={() => handleRank()}
                         />
                     )
@@ -235,7 +235,7 @@ export default function Group() {
                 return (
                     <UnissonButton
                         label="Qui connaît le mieux l'élu?"
-                        colorText="#e76f51"
+                        color="#e76f51"
                         OnValidation={() => handleDiscover()}
                     />
                 )
@@ -268,7 +268,7 @@ export default function Group() {
                         </Text>
                         <UnissonButton
                             label="À vous d'être à la hauteur d'un élu d'Unisson"
-                            colorText="#FFEE88"
+                            color="#F2C14E"
                             OnValidation={handleChoosenTheme}
                         />
                     </>
@@ -306,7 +306,7 @@ export default function Group() {
                     return (
                         <UnissonButton
                             label="Faire mon classement"
-                            colorText="#e76f51"
+                            color="#e76f51"
                             OnValidation={() => handleRank()}
                         />
                     )
@@ -314,7 +314,7 @@ export default function Group() {
                 return (
                     <UnissonButton
                         label="Qui connaît mieux mon moi-même ?"
-                        colorText="#e76f51"
+                        color="#e76f51"
                         OnValidation={() => handleQuiz()}
                     />
                 )

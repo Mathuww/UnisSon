@@ -83,7 +83,7 @@ export default function SubmitTracks() {
                 OnWrite={setYourSuggestion}/>
             <UnissonButton 
                 label="Confirmer votre propagande de la nouvelle ère" 
-                colorText="#e76f51"
+                color="#e76f51"
                 OnValidation={handleSuggestion}>
             </UnissonButton>
         </View>

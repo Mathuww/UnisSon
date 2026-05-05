@@ -3,10 +3,11 @@ import { Dimensions, Pressable, StyleSheet, Text } from "react-native";
 
 type Props = {
     label: string;
+    color:string;
     OnValidation: () => void;
 }
 
-export default function UnissonButton({ label, OnValidation }: Props) {
+export default function UnissonButton({ label, color, OnValidation }: Props) {
     const [loading, setLoading] = useState(false);
 
     const handleTouch = async () => {
@@ -17,7 +18,7 @@ export default function UnissonButton({ label, OnValidation }: Props) {
     };
 
     return (
-        <Pressable style={styles.button} onPress={handleTouch}>
+        <Pressable style={[styles.button, {backgroundColor: color}]} onPress={handleTouch}>
             <Text style={styles.label}>{label}</Text>
         </Pressable>
     );
@@ -26,7 +27,6 @@ export default function UnissonButton({ label, OnValidation }: Props) {
 const styles = StyleSheet.create({
 
     button: {
-        backgroundColor: '#E76F51',
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 14,

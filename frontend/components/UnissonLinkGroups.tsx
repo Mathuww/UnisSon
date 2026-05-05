@@ -13,7 +13,6 @@ type Props = {
     notifType?: NotifType;
     pochette?: PochetteType;
     style?: ViewStyle;
-    disabled?: boolean;
 };
 
 const width = Dimensions.get("window").width;
@@ -33,22 +32,19 @@ const srcBadge: Record<NonNullable<NotifType>, any> = {
     quizz: require("@/assets/images/quizBadge.png"),
 };
 
-export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = 'brown', style }: Props) {
-    //const loading = useRef(false);
+export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = "brown", style }: Props) {
     const router = useRouter();
     const anim = useRef(new Animated.Value(0)).current;
-    const {loading, setIsLoading} = useGroupStore();
+    const { loading, setIsLoading } = useGroupStore();
 
     useFocusEffect(useCallback(() => {
-        setIsLoading(false);
-        anim.setValue(-SLIDE_TO);
+        console.log("odid");
+        anim.setValue(0);
     }, [anim]));
 
     const handlePress = () => {
-        //if (loading.current || disabled) return;
-        //loading.current = true;
         setIsLoading(true);
-        Animated.timing(anim, { toValue: 0, duration: 700, useNativeDriver: true }).start();
+        Animated.timing(anim, { toValue: SLIDE_TO, duration: 700, useNativeDriver: true }).start();
         setTimeout(() => router.push({ pathname: `/(tabs)/tempindex/group/${id}` as any }), 1000);
     };
 
@@ -96,8 +92,8 @@ const styles = StyleSheet.create({
 
     disc: {
         position: "absolute",
-        width: "200%",
-        height: "200%",
+        width: width * 0.82,
+        height: width * 0.82,
     },
 
     activeArea: {
@@ -120,22 +116,22 @@ const styles = StyleSheet.create({
 
     title: {
         color: "#fff",
-        fontWeight: "bold",
         fontSize: width * 0.066,
-        
+        fontFamily: "AlfaSlabOne_400Regular",
     },
 
     subtitle: {
         color: "#fff",
         fontSize: width * 0.04,
+        fontFamily: "Quicksand_500Medium",
     },
 
     badge: {
         position: "absolute",
         top: "10%",
         right: "5%",
-        width: width*0.11,
-        height: width*0.11,
+        width: width * 0.11,
+        height: width * 0.11,
     },
 
 });

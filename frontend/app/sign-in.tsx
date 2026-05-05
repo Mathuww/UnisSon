@@ -50,14 +50,10 @@ export default function SignInScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Connectez-vous avec votre compte Google :</Text>
-            <TextInput
-                style={styles.textInput}
-                placeholder={"Enter Username"}
-                value={pseudo}
-                onChangeText={setPseudo}
-            />
-            <UnissonButton label={"Se Connecter"} colorText="#e76f51" OnValidation={handleSignIn}/>
+            <Text style={styles.text}>
+                Bienvenue dans Unisson !
+            </Text>
+            <UnissonButton label={"Se connecter avec Google"} color="#e76f51" OnValidation={handleSignIn}/>
         </View>
     );
 }
@@ -67,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#25292e",
     flex: 1,
     padding: 10,
-    paddingTop: 100,
+    justifyContent: "center",
 
     },
     text: {

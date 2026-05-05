@@ -97,7 +97,7 @@ export default function Ranking() {
                     label={
                         "Récompenser le peuple!"
                     }
-                    colorText="#e76f51"
+                    color="#e76f51"
                     OnValidation={handleRanking}
                 />
                 

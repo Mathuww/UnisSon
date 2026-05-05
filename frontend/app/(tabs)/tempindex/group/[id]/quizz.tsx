@@ -137,7 +137,7 @@ export default function Quiz() {
                     :
                         "Morceau suivant"
                 }
-                colorText="#e76f51"
+                color="#F2C14E"
                 OnValidation={handleNext}
             />
 

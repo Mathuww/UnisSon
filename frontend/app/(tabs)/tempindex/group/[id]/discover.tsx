@@ -92,7 +92,7 @@ export default function Discover() {
                     :
                         "Morceau suivant"
                 }
-                colorText="#e76f51"
+                color="#e76f51"
                 OnValidation={handleNext}
             />
 
