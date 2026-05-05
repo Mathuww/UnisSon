@@ -1,4 +1,3 @@
-import { useGroupStore } from "@/utils/groupStore";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useRef } from "react";
 import { Animated, Dimensions, Image, Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
@@ -18,6 +17,9 @@ type Props = {
 const width = Dimensions.get("window").width;
 const SLIDE_TO = width * 0.41;
 
+// Evite de déclencer 2 Pochettes en même temps
+let navigating = false;
+
 const srcPochette: Record<PochetteType, any> = {
     brown: require("@/assets/images/brownPochette.jpg"),
     purple: require("@/assets/images/purplePochette.jpg"),
@@ -35,14 +37,16 @@ const srcBadge: Record<NonNullable<NotifType>, any> = {
 export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = "brown", style }: Props) {
     const router = useRouter();
     const anim = useRef(new Animated.Value(0)).current;
-    const { loading } = useGroupStore();
 
     useFocusEffect(useCallback(() => {
-        console.log("odid");
+        navigating = false;
         anim.setValue(0);
-    }, [anim]));
+    }, []));
 
     const handlePress = () => {
+        if (navigating) return;
+        navigating = true;
+
         Animated.timing(anim, {
             toValue: SLIDE_TO,
             duration: 700,
@@ -63,7 +67,7 @@ export default function UnissonLinkGroups({ id, label, notifText, notifType = nu
                 resizeMode="contain"
             />
 
-            <Pressable style={styles.activeArea} onPress={handlePress} disabled={loading}>
+            <Pressable style={styles.activeArea} onPress={handlePress}>
 
                 <Image
                     source={srcPochette[pochette]}

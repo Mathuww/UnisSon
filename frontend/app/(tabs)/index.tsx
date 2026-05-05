@@ -1,8 +1,8 @@
-import UnissonLinkGroups, { NotifType, PochetteType } from "@/components/UnissonLinkGroups";
+import UnissonLinkGroup, { NotifType, PochetteType } from "@/components/UnissonLinkGroup";
 import UnissonIconAction from "@/components/UnissonIconAction";
 import UnissonButton from "@/components/UnissonButton";
 import { useContext, useCallback, useRef } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View} from "react-native";
 import { useAuthStore } from "@/utils/authStore";
 import { useGroupStore } from "@/utils/groupStore";
 import { useRouter, useFocusEffect } from "expo-router";
@@ -75,27 +75,35 @@ export default function Index() {
     const GroupsContainer = () => {
         if (groups.length === 0) {
             return (
-                <>
-                    <Text>
+                <View style={styles.container}>
+                    <Text style={styles.title}>
                         Bienvenue dans Unisson !
+                    </Text>
+                    <Text style={styles.subtitle}>
                         Vous n'avez pas encore de groupe. Vous pouvez demander à des amis de vous inviter, ou créer votre premier groupe.
                     </Text>
                     <UnissonButton label="Créer votre premier groupe" color="#E76F51" OnValidation={handleCreation} />
-                </>
+                </View>
             );
         } else {
             return groups.map((item, i) => {
                 const { text, type } = getNotif(item, userInfo?.id);
                 return (
-                    <UnissonLinkGroups
-                        key={item.id}
-                        id={item.id}
-                        label={item.name}
-                        notifText={text}
-                        notifType={type}
-                        pochette={getPochette(i)}
-                        style={[styles.linkGroup, { zIndex: i + 1 }]}
-                    />
+                    <>
+                        <UnissonIconAction
+                            source={require("@/assets/images/iconCreation.png")}
+                            OnValidation={handleCreation}
+                        />
+                        <UnissonLinkGroup
+                            key={item.id}
+                            id={item.id}
+                            label={item.name}
+                            notifText={text}
+                            notifType={type}
+                            pochette={getPochette(i)}
+                            style={[styles.linkGroup, { zIndex: i + 1 }]}
+                        />
+                    </>
                 );
             });
         }
@@ -112,18 +120,19 @@ export default function Index() {
             contentContainerStyle={[styles.content, !timeDebug && ({marginTop: 50})]}
             showsVerticalScrollIndicator={false}
         >
-            <UnissonIconAction
-                source={require("@/assets/images/iconCreation.png")}
-                OnValidation={handleCreation}
-            />
-
             <GroupsContainer />
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-
+    container: {
+        flex: 1,
+        padding: 10,
+        paddingHorizontal: 20,
+        marginTop: 20,
+        gap: 11,
+    },
     scroll: {
         flex: 1,
         backgroundColor: "#25292e",
@@ -143,6 +152,20 @@ const styles = StyleSheet.create({
         width: width * 0.82,
         height: width * 0.36,
         alignSelf: "center",
+    },
+    title: {
+        color: "#fff",
+        alignSelf: "center",
+        fontSize: 32,
+        fontWeight: "bold",
+    },
+    subtitle: {
+        padding: 5,
+        color: "#ffe",
+        fontSize: 16,
+        paddingBottom: 5,
+        alignItems: "center",
+        textAlign: "left"
     },
 
 });
