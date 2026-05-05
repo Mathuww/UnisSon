@@ -1,10 +1,8 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from "expo-router";
-import { View,StyleSheet} from 'react-native';
+import { View, StyleSheet, Image, Text, Dimensions } from 'react-native';
 import UnissonButton from "@/components/UnissonButton";
-import IconAction from '@/components/IconAction';
+import IconAction from '@/components/UnissonIconAction';
 import { useState, useEffect, createContext } from 'react';
-import { Text } from 'react-native';
 import { ApiCall } from '@/api/BackendApi';
 import { useGroupStore } from '@/utils/groupStore';
 import { useSettingsStore } from '@/utils/settingsStore';
@@ -23,10 +21,11 @@ export const TimeContext = createContext<string>("...");
  *
  * Gère le mode debug pour "avancer" dans le temps 
  */
+const { width, height } = Dimensions.get('window');
+
 export default function TabsLayout() {
     const [serverTime, setServerTime] = useState<string>("...");
-    const {fetchGroups} = useGroupStore();
-    const {timeDebug} = useSettingsStore();
+    const { timeDebug } = useSettingsStore();
 
     /**
      * Récupère l'heure actuelle du server depuis le backend et met à jour
@@ -40,7 +39,7 @@ export default function TabsLayout() {
             errorDialog("Erreur de récupération du temps serveur.");
             console.error(err);
         }
-    }
+    };
 
     useEffect(() => {
         (async () => await updateTime())();
@@ -61,68 +60,85 @@ export default function TabsLayout() {
             errorDialog("Impossible d'avancer le temps.");
             console.error(err);
         }
-    }
+    };
 
     return (
         <TimeContext.Provider value={serverTime}>
-            {(timeDebug &&
+            {timeDebug && (
                 <View style={styles.containerTest}>
                     <IconAction img="more-time" OnValidation={() => handleTimeForward()} />
                     <Text style={styles.textTimeTest}>{serverTime}</Text>
-            </View>
+                </View>
             )}
-            <Tabs screenOptions={tabOptions }>
+
+            <Tabs screenOptions={tabOptions}>
                 <Tabs.Screen
                     name="index"
                     options={{
-                        title: 'Accueil',
-                        tabBarIcon: ({color, focused}) => (
-                            <Ionicons name={focused ? "home-sharp" : "home-outline"} color={color} size={24} />
-                        )
+                        title: '',
+                        tabBarIcon: ({ focused }) => (
+                            <Image
+                                source={focused
+                                    ? require('@/assets/images/iconHome_Hovered.png')
+                                    : require('@/assets/images/iconHome.png')}
+                                style={styles.tabIcon}
+                                resizeMode="contain"
+                            />
+                        ),
                     }}
                 />
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        title: 'Profil',
-                        tabBarIcon: ({color, focused}) => (
-                            <Ionicons name={focused ? "information-circle": "information-circle-outline"} color={color} size={24} />
-                        )
+                        title: '',
+                        tabBarIcon: ({ focused }) => (
+                            <Image
+                                source={focused
+                                    ? require('@/assets/images/iconProfile_Hovered.png')
+                                    : require('@/assets/images/iconProfile.png')}
+                                style={styles.tabIcon}
+                                resizeMode="contain"
+                            />
+                        ),
                     }}
                 />
-                <Tabs.Screen 
+                <Tabs.Screen
                     name="tempindex"
-                    options={{ 
-                        href: null
-                    }} 
+                    options={{ href: null }}
                 />
-
             </Tabs>
         </TimeContext.Provider>
     );
 }
 
 const tabOptions = {
-    tabBarActiveTintColor: '#ffd33d',
-    headerStyle: {
-        backgroundColor: '#25292e'
-    },
     headerShown: false,
-    headerShadowVisible: false,
-    headerTintColor: '#fff',
+    tabBarShowLabel: false,
     tabBarStyle: {
-        backgroundColor: '#25292e'
-    }
+        backgroundColor: '#1C0B03',
+        height: height * 0.12,
+        paddingTop: height * 0.02,
+        paddingBottom: 0,
+        borderTopWidth: 0,
+        borderColor: 'transparent',
+        elevation: 0,
+        shadowOpacity: 0,
+    },
 };
-
+ 
 const styles = StyleSheet.create({
+    tabIcon: {
+        width: width * 0.133,
+        height: width * 0.133,
+    },
     containerTest: {
-        backgroundColor: "#25292e",
-        paddingTop:20,
-        paddingLeft: 11,
-        alignItems:"center",
-        flexDirection: "row",
-    }, textTimeTest: {
-        color: "#fff"
-    }
+        backgroundColor: '#25292e',
+        paddingTop: '2%',
+        paddingLeft: '3%',
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    textTimeTest: {
+        color: '#fff',
+    },
 });

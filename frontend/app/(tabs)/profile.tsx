@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import IconAction from "@/components/IconAction";
+import IconAction from "@/components/UnissonIconAction";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "@/utils/authStore";
 import { useSettingsStore } from "@/utils/settingsStore";

@@ -1,17 +1,23 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Link, Href } from "expo-router";
 
-import { Pressable, StyleSheet } from "react-native";
+import { Image, Pressable, StyleSheet } from "react-native";
 
 type Props = {
-  img: keyof typeof MaterialIcons.glyphMap;
+  img?: keyof typeof MaterialIcons.glyphMap;
+  source?:{uri : string};
   OnValidation: () => void;
 }
 
-export default function IconAction({ img, OnValidation }: Props) {
+export default function UnissonIconAction({ img, source, OnValidation }: Props) {
+  const isAsset = (source) ? true : false;
   return (
     <Pressable style={styles.iconButton} onPress={OnValidation}>
-      <MaterialIcons name={img} size={30} color="white" />
+      {(isAsset && (
+          <Image source={source}/>
+        )) || (
+          <MaterialIcons name={img} size={30} color="white" />
+      )}
     </Pressable>
   );
 }

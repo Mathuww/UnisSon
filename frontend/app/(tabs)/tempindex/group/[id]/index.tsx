@@ -3,7 +3,7 @@ import { useAuthStore } from "@/utils/authStore";
 import { ReactNode, useEffect, useState, useCallback, useContext } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import UnissonButton from "@/components/UnissonButton";
-import IconAction from "@/components/IconAction";
+import IconAction from "@/components/UnissonIconAction";
 import { GroupData, UserData } from "@/shared/types";
 import { useGroupStore } from "@/utils/groupStore";
 import { useFocusEffect } from "expo-router";

@@ -2,7 +2,7 @@ import { UserData } from "@/shared/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import CopiedInput from "@/components/CopiedInput";
-import IconAction from "@/components/IconAction";
+import IconAction from "@/components/UnissonIconAction";
 import {useEffect, useState} from "react";
 import {useGroupStore} from "@/utils/groupStore";
 
