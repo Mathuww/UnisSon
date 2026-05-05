@@ -62,9 +62,9 @@ export default function Creation() {
         <View style={styles.container}>
             <Text style={styles.title}>Heyy, à toi de créer ton propre univers avec tes musiciens, compositeurs, producteurs, podcasteurs :</Text>
             <Text style={styles.subtitle}>Mais avant tout, je te demandes quelques tatonnements :</Text>
-            <UnissonTextInput labelDefault="Nom du groupe" text={groupName} OnWrite={setGroupName}></UnissonTextInput>
-            <UnissonSlider numberDefault={4} min={3} max={11} numberActual={groupMaxUser} OnSlice={setGroupMaxUser}></NumberSlider>
-            <UnissonButton label="Explosion d'un nouveau univers" color="#e76f51" OnValidation={handleCreateGroup}></UnissonButton>
+            <UnissonTextInput labelDefault="Nom du groupe" text={groupName} OnWrite={setGroupName}/>
+            <UnissonSlider numberDefault={4} min={3} max={11} numberActual={groupMaxUser} OnSlice={setGroupMaxUser}/>
+            <UnissonButton label="Explosion d'un nouveau univers" color="#e76f51" OnValidation={handleCreateGroup}/>
         </View>
     );
 }
