@@ -86,26 +86,28 @@ export default function Index() {
                 </View>
             );
         } else {
-            return groups.map((item, i) => {
-                const { text, type } = getNotif(item, userInfo?.id);
-                return (
-                    <>
-                        <UnissonIconAction
-                            source={require("@/assets/images/iconCreation.png")}
-                            OnValidation={handleCreation}
-                        />
-                        <UnissonLinkGroup
-                            key={item.id}
-                            id={item.id}
-                            label={item.name}
-                            notifText={text}
-                            notifType={type}
-                            pochette={getPochette(i)}
-                            style={[styles.linkGroup, { zIndex: i + 1 }]}
-                        />
-                    </>
-                );
-            });
+            return (
+                <>
+                    <UnissonIconAction
+                        source={require("@/assets/images/iconCreation.png")}
+                        OnValidation={handleCreation}
+                    />
+                    {groups.map((item, i) => {
+                        const { text, type } = getNotif(item, userInfo?.id);
+                        return (
+                            <UnissonLinkGroup
+                                key={item.id}
+                                id={item.id}
+                                label={item.name}
+                                notifText={text}
+                                notifType={type}
+                                pochette={getPochette(i)}
+                                style={[styles.linkGroup, { zIndex: i + 1 }]}
+                            />
+                        );
+                    })}
+                </>
+            );
         }
     }
 
