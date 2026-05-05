@@ -11,6 +11,7 @@ import { TimeContext } from "@/app/(tabs)/_layout";
 import {useSocketStore} from "@/utils/socketStore";
 import {useGroupSocket} from "@/hooks/useGroupSocket";
 import { errorDialog } from "@/shared/errorDialog";
+import MembersScore from "@/components/MembersScore";
 
 /**
  * Page pour un groupe particulier
@@ -354,6 +355,7 @@ export default function Group() {
                         }
                     />
                 </View>
+                <MembersScore groupId={Number(id)} />
                 <View style={styles.container}>
                     <Text style={styles.text}>{
                         `Votre score de la semaine : ${groupData.weeklyScore ?? "ERREUR"}
