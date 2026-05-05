@@ -10,6 +10,8 @@ import {ActionResult, GroupData, TrackData, QuizTrackData, QuizUserAnswerData, U
 type GroupState = {
     groups: GroupData[];
     eventsGroupId: number | null;
+    loading: boolean;
+    setIsLoading: (loading: boolean) => void;
     setEventsGroupId: (id: number | null) => void;
     submitTrack: (groupId: number, track: TrackData) => Promise<void>;
     submitTheme: (groupId: number, theme: string) => Promise<void>;
@@ -40,6 +42,15 @@ export const useGroupStore = create(
         (set, get) => ({
             groups: [],
             eventsGroupId: null,
+            loading: false,
+
+            /**
+             * Permet d'empêcher d'effetuer certaines actions,
+             * le temps qu'un groupe charge.
+             */
+            setIsLoading: (loading: boolean) => {
+                set({loading});
+            },
 
             /**
              * Permet d'assigner l'ID du groupe que le socket store

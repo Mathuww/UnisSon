@@ -26,7 +26,7 @@ export default function Group() {
     const router = useRouter();
 
     const { appToken, userInfo } = useAuthStore();
-    const { fetchCurrentGroup, leaveGroup, groups } = useGroupStore();
+    const { fetchCurrentGroup, leaveGroup, groups, setIsLoading } = useGroupStore();
     let groupData: GroupData | null = null;         
     const found = groups.find(g => g.id === Number(id));
     if (found) groupData = found;
@@ -57,6 +57,7 @@ export default function Group() {
      */
     useFocusEffect(
         useCallback(() => {
+            setIsLoading(false);
             updateGroup();
         }, [updateGroup])
     );

@@ -1,3 +1,4 @@
+import { useGroupStore } from "@/utils/groupStore";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useRef } from 'react';
 import { Animated, Dimensions, Image, Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
@@ -12,6 +13,7 @@ type Props = {
     notifType?: NotifType;
     pochette?: PochetteType;
     style?: ViewStyle;
+    disabled?: boolean;
 };
 
 const width = Dimensions.get('window').width;
@@ -31,19 +33,21 @@ const srcBadge: Record<NonNullable<NotifType>, any> = {
     quizz: require('@/assets/images/quizBadge.png'),
 };
 
-export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = 'brown', style }: Props) {
-    const loading = useRef(false);
+export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = 'brown', style, disabled }: Props) {
+    //const loading = useRef(false);
     const router = useRouter();
     const anim = useRef(new Animated.Value(0)).current;
+    const {loading, setIsLoading} = useGroupStore();
 
     useFocusEffect(useCallback(() => {
-        loading.current = false;
+        setIsLoading(false);
         anim.setValue(-SLIDE_TO);
     }, [anim]));
 
     const handlePress = () => {
-        if (loading.current) return;
-        loading.current = true;
+        //if (loading.current || disabled) return;
+        //loading.current = true;
+        setIsLoading(true);
         Animated.timing(anim, { toValue: 0, duration: 700, useNativeDriver: true }).start();
         setTimeout(() => router.push({ pathname: `/(tabs)/tempindex/group/${id}` as any }), 1000);
     };
@@ -57,7 +61,7 @@ export default function UnissonLinkGroups({ id, label, notifText, notifType = nu
                 resizeMode="contain"
             />
 
-            <Pressable style={styles.activeArea} onPress={handlePress}>
+            <Pressable style={styles.activeArea} onPress={handlePress} disabled={loading}>
 
                 <Image
                     source={srcPochette[pochette]}
