@@ -19,7 +19,8 @@ Pour tester sur iOS, il vous faut installer Unisson depuis Altstore, ou alors in
 
 La partie backend du service étant constamment fonctionnelle sur notre VPS, vous pouvez tester l'application n'importe quand. Il faut simplement utiliser un compte Google que nous avons ajouté dans les test users d'Unisson sur la Cloud Console, puisque notre application n'est pas encore vérifiée par Google.
 
-## Self-hosting du backend
+
+## Self-hosting du backend
 Si vous souhaitez lancer le serveur backend sur votre machine et auto-héberger le service, clonez le repository Git, placez vous dans le dossier `backend/` et lancez (vous devez avoir Node.js installé) :
 
 ```bash 
@@ -56,8 +57,30 @@ $ npm run test
 ```
 Il faudra cependant modifier l'URL `BACKEND_URL` dans `frontend/api/BackendApi.ts` pour la rediriger vers votre service auto-hébergé, puis rebuild l'APK de l'application Android, comme indiqué ci-dessous.
 
-## Compilation Android
+## Compilation Android
 Avec votre téléphone connecté, le SDK Android installé avec ses variables d'environnement configurées et ADB lancé (votre téléphone doit apparaître dans `adb devices`) :
 ```bash
 $ cd ../frontend && npm install && npx expo prebuild && npx expo run:android 
 ```
+
+## Tester l'application de façon autonome
+UnisSon reste un réseau social qui s'étend sur chaque semaine, en groupe, sauf que le souci est que c'est difficile à tester.
+
+### Option debug de temps
+Pour cela, nous avons inclus un debug de temps qui permet d'avancer d'une journée par journée en haut de l'écran (p'tit icône d'ajout), et oui, on est déjà en 2027.
+
+Par ailleurs, si le débug de temps ne s'affiche pas en haut à gauche, veuillez activer l'option dans le bouton On/OFF en bas à gauche dans votre page Profil.
+P'tite astuce, profitez du design dans les meilleures conditions en désactivant cette option.
+
+
+### Aspect sociale
+L'autre difficulté est d'avoir un groupe avec lequel interagir dans les bonnes conditions. Pour cela, nous avons fourni 2 comptes de test Google en plus du vôtre. Cela vous permet de tester les activités du groupe dans les bonnes conditions.
+Ainsi, on a :
+- votre compte gmail,
+- testunisson@gmail.com [mot de passe : minutemaidp0mme],
+- testeurdeuxunisson@gmail.com [mot de passe : minutemaidp0mme]
+
+
+Malheuresement, la seule possibilité de switcher de compte est de vous déconnecter à la page Profil et de vous reconnecter dans le compte que vous désirez.
+
+Bon tests

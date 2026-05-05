@@ -9,8 +9,10 @@ CREATE TABLE IF NOT EXISTS Users (
     providerLoginID VARCHAR(256) NOT NULL,
     acessToken VARCHAR(1024) NOT NULL UNIQUE,
     refreshToken VARCHAR(1024) NOT NULL UNIQUE,
-    tokenExpireAt TIMESTAMP NOT NULL UNIQUE,
+    tokenExpireAt DATETIME NOT NULL UNIQUE,
     pushToken VARCHAR(4096) NOT NULL UNIQUE,
+    createdAt DATETIME DEFAULT NULL,
+    expireAt DATETIME DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
@@ -21,6 +23,11 @@ CREATE TABLE IF NOT EXISTS Groups (
     notifNB TINYINT UNSIGNED DEFAULT NULL,
     groupPicture MEDIUMBLOB DEFAULT NULL,
     choosenOneUserID INTEGER DEFAULT NULL,
+    status VARCHAR(32) DEFAULT NULL,
+    lastCycleChange DATETIME NOT NULL DEFAULT "SAT_WAITING_QUIZ",
+    theme DEFAULT NULL,
+    createdAt DATETIME DEFAULT NULL,
+    expireAt DATETIME DEFAULT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (choosenOneUserID) REFERENCES Users(id),
     CONSTRAINT nbUsers CHECK (maxUsers >= 2)
@@ -32,6 +39,9 @@ CREATE TABLE IF NOT EXISTS GroupsUsers (
     notifPending BOOLEAN DEFAULT NULL,
     weeklyScore INTEGER UNSIGNED DEFAULT 0,
     globalScore INTEGER UNSIGNED DEFAULT 0,
+    servicePlaylistID DEFAULT NULL,
+    quizDone DEFAULT NULL,
+    rankDone DEFAULT NULL,
     PRIMARY KEY (groupID, userID),
     FOREIGN KEY (groupID) REFERENCES Groups(id),
     FOREIGN KEY (userID) REFERENCES Users(id)
@@ -43,6 +53,8 @@ CREATE TABLE IF NOT EXISTS Tracks (
     artist VARCHAR(32) NOT NULL,
     ISRC VARCHAR(16) DEFAULT NULL,
     youtubeLink VARCHAR(128) DEFAULT NULL,
+    createdAt DATETIME DEFAULT NULL,
+    expireAt DATETIME DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
@@ -87,17 +99,29 @@ CREATE TABLE IF NOT EXISTS Invitations (
     groupID INTEGER NOT NULL,
     token VARCHAR(1024) NOT NULL UNIQUE,
     expiresAt TIMESTAMP NOT NULL,
+    createdAt DATETIME DEFAULT NULL,
+    expireAt DATETIME DEFAULT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (groupID) REFERENCES Groups(id),
     FOREIGN KEY (createdBy) REFERENCES Users(id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS UsersFavoriteTracks (
-    trackID INTEGER NOT NULL,
-    userID INTEGER NOT NULL,
-    comment VARCHAR(1024) DEFAULT NULL,
-    rank TINYINT UNSIGNED NOT NULL,
-    PRIMARY KEY (trackID, userID),
-    FOREIGN KEY (trackID) REFERENCES Tracks(id),
-    FOREIGN KEY (userID) REFERENCES Users(id)
+-- CREATE TABLE IF NOT EXISTS UsersFavoriteTracks (
+--     trackID INTEGER NOT NULL,
+--     userID INTEGER NOT NULL,
+--     comment VARCHAR(1024) DEFAULT NULL,
+--     rank TINYINT UNSIGNED NOT NULL,
+--     PRIMARY KEY (trackID, userID),
+--     FOREIGN KEY (trackID) REFERENCES Tracks(id),
+--     FOREIGN KEY (userID) REFERENCES Users(id)
+-- ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS GroupPeriod (
+    id INTEGER AUTO_INCREMENT NOT NULL,
+    groupID INTEGER NOT NULL,
+    periodType DATETIME DEFAULT NULL,
+    periodType VARCHAR(32),
+    processedAt DATETIME DEFAULT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (groupID) REFERENCES Groups(id),
 ) ENGINE=InnoDB;
