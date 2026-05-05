@@ -346,25 +346,15 @@ export default function Group() {
     return (
         <>
             <View style={styles.container}>
-                <Text style={styles.title}>
-                    {groupData.name}
-                </Text>
-                <View style={styles.container}>
-                    <FlatList
-                        data={groupData.users}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) =>
-                            <Text style={styles.text}>{item.nickname}</Text>
-                        }
-                    />
+                <View style={styles.containerTop}>
+                    <Text style={styles.title}>
+                        {groupData.name}
+                    </Text>
+                    <View style={styles.score}>
+                        <MembersScore groupId={Number(id)} />
+                    </View>
                 </View>
-                <MembersScore groupId={Number(id)} />
-                <View style={styles.container}>
-                    <Text style={styles.text}>{
-                        `Votre score de la semaine : ${groupData.weeklyScore ?? "ERREUR"}
-                        Votre score total : ${groupData.globalScore ?? "ERREUR"}`
-                    }</Text>
-                </View>
+            
                 <View style={styles.containerButton}>
                     <View style={styles.containerText}>
                         {isChosen ? renderUIForChosen() : renderUIForOthers()}
@@ -392,11 +382,18 @@ const styles = StyleSheet.create({
         backgroundColor: "#25292e",
         flex: 1,
         padding: 10,
-        paddingTop: 100,
+        paddingHorizontal: 20
+    },
+    containerTop: {
+        flex: 1,
     },
     containerButton: {
         paddingBottom: 30,
         gap: 30,
+        bottom: 0
+    },
+    score: {
+        paddingTop: 120
     },
     containerText: {
         gap: 11,
@@ -412,12 +409,15 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         fontSize: 32,
         fontWeight: "bold",
+        top: 40
     },
     subtitle: {
         padding: 5,
         color: "#ffe",
-        fontSize: 12,
+        fontSize: 16,
         paddingBottom: 5,
+        alignItems: "center",
+        textAlign: "left"
     },
     text: {
         color: "#fff"

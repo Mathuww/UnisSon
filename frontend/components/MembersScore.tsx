@@ -1,7 +1,7 @@
 import { GroupData } from "@/shared/types.js";
 import {useGroupStore} from "@/utils/groupStore";
 import { useState } from "react";
-import {View, Text} from "react-native";
+import {View, Text, FlatList} from "react-native";
 import { StyleSheet } from "react-native";
 
 type Props = {
@@ -31,7 +31,7 @@ export default function MembersScore({groupId}: Props) {
                 <View style={styles.barBackground}>
                     <View
                         style={[
-                            styles.barFill,
+                            rank <= 1 ? styles.winnerBarFill : styles.barFill,
                             { width: `${prop * 100}%` }
                         ]}
                     />
@@ -57,17 +57,23 @@ export default function MembersScore({groupId}: Props) {
         else
             scores = [...users].sort((a, b) => (b.weeklyScore ?? 0) - (a.weeklyScore ?? 0));
 
-        return scores.map((user, index) => {
-            return (
-                <ScoreRow 
-                    rank={index + 1} name={user.nickname} 
-                    score={(global ? user.globalScore : user.weeklyScore) ?? 0} 
-                    maxScore={(global ? users[0]!.globalScore : users[0]!.weeklyScore) ?? 1} 
-                />
-            );
-        });
+        return (
+            <FlatList
+                data={scores}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item, index }) => (
+                    <ScoreRow
+                        rank={index + 1}
+                        name={item.nickname}
+                        score={(globalTab ? item.globalScore : item.weeklyScore) ?? 0}
+                        maxScore={(global ? users[0]!.globalScore : users[0]!.weeklyScore) ?? 1} 
+                    />
+                )}
+                showsVerticalScrollIndicator={true}
+                stickyHeaderIndices={[0]}
+            />
+        );
     }
-
     return (
         <View>
             <View style={styles.tabs}>
@@ -75,14 +81,14 @@ export default function MembersScore({groupId}: Props) {
                     style={[styles.tab, !globalTab && styles.activeTab]}
                     onPress={() => setGlobalTab(false)}
                 >
-                    Weekly
+                    Cette semaine
                 </Text>
 
                 <Text
                     style={[styles.tab, globalTab && styles.activeTab]}
                     onPress={() => setGlobalTab(true)}
                 >
-                    Global
+                    Total
                 </Text>
             </View>
             <ScoreTab global={globalTab} />
@@ -106,7 +112,12 @@ const styles = StyleSheet.create({
 
     barFill: {
         height: "100%",
-        backgroundColor: "#4da6ff",
+        backgroundColor: "#56606b",
+    },
+
+    winnerBarFill: {
+        height: "100%",
+        backgroundColor: "#d1970f",
     },
 
     content: {
@@ -138,7 +149,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginBottom: 10,
-        gap: 20,
+        gap: 50,
     },
 
     tab: {
@@ -149,8 +160,7 @@ const styles = StyleSheet.create({
 
     activeTab: {
         color: '#fff',
-        fontWeight: 'bold',
         borderBottomWidth: 2,
-        borderBottomColor: '#4da6ff',
+        borderBottomColor: '#e76f51',
     },
 });

@@ -3,12 +3,13 @@ import {QuizUserAnswerData, TrackData} from "@/shared/types";
 
 export const BACKEND_API_URL = "https://unisson.qbert.fr";
 
-let authToken: string | null = null;
-
 export const api = axios.create({
     baseURL: BACKEND_API_URL,
     timeout: 10000
 });
+
+let authTokenReady = false;
+export const getApiReady = () => authTokenReady;
 
 axios.interceptors.response.use(
     response => response,
@@ -25,6 +26,7 @@ axios.interceptors.response.use(
 export const setAuthToken = (token: string | null) => {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     console.log("Token set to : " + token);
+    authTokenReady = true;
 };
 
 export const ApiCall = {
