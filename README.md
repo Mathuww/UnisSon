@@ -17,9 +17,10 @@ Pour tester sur Android, il vous suffit d'installer le fichier `.apk` présent d
 ### Sur iOS
 Pour tester sur iOS, il vous faut installer Unisson depuis Altstore, ou alors installer le fichier `.ipa` du dossier `build`.
 
+La partie backend du service étant constamment fonctionnelle sur notre VPS, vous pouvez tester l'application n'importe quand. Il faut simplement utiliser un compte Google que nous avons ajouté dans les test users d'Unisson sur la Cloud Console, puisque notre application n'est pas encore vérifiée par Google.
 
 ## Self-hosting du backend
-Pour lancer le serveur backend sur votre machine et auto-héberger le service, clonez le repository Git, placez vous dans le dossier `backend/` et lancez (vous devez avoir Node.js installé) :
+Si vous souhaitez lancer le serveur backend sur votre machine et auto-héberger le service, clonez le repository Git, placez vous dans le dossier `backend/` et lancez (vous devez avoir Node.js installé) :
 
 ```bash 
 $ npm install
@@ -49,7 +50,14 @@ Vous pouvez ensuite lancer le service avec :
 $ npm run dev
 ```
 
-Quand le service est arrếté, vous pouvez aussi lancer les 20 tests unitaires, qui nécessitent d'avoir une DB `asyna_test` avec les permissions accordées à `DB_USER` (renseigné dans `.env) avec :
+Quand le service est arrếté, vous pouvez aussi lancer les 20 tests unitaires, qui nécessitent d'avoir une DB `asyna_test` avec les permissions accordées à `DB_USER` (renseigné dans `.env`) avec :
 ```bash
 $ npm run test
+```
+Il faudra cependant modifier l'URL `BACKEND_URL` dans `frontend/api/BackendApi.ts` pour la rediriger vers votre service auto-hébergé, puis rebuild l'APK de l'application Android, comme indiqué ci-dessous.
+
+## Compilation Android
+Avec votre téléphone connecté, le SDK Android installé avec ses variables d'environnement configurées et ADB lancé (votre téléphone doit apparaître dans `adb devices`) :
+```bash
+$ cd ../frontend && npm install && npx expo prebuild && npx expo run:android 
 ```
