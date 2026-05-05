@@ -33,7 +33,7 @@ const srcBadge: Record<NonNullable<NotifType>, any> = {
     quizz: require('@/assets/images/quizBadge.png'),
 };
 
-export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = 'brown', style, disabled }: Props) {
+export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = 'brown', style }: Props) {
     //const loading = useRef(false);
     const router = useRouter();
     const anim = useRef(new Animated.Value(0)).current;
