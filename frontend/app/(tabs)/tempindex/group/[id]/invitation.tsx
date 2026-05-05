@@ -32,7 +32,7 @@ export default function Invitation() {
     })
 
   /**
-   *    
+   * Créer le lien d'invitation  
    */ 
   useEffect(() => {
     (async () => {

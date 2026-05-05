@@ -142,6 +142,7 @@ export default function Group() {
      * UI pour les non élus. 
      * On utilise un switch case en fonction de l'état actuel du groupe et de données spécifique à l'utilisateur pour décider quoi afficher
      * États possibles du groupe :
+     * - JUST_CREATED : il n'y a encore jamais eu de cycle, le groupe vient d'être créé
      * - SUN_WAITING_THEME : l’élu doit choisir un thème
      * - SUN_DONE_THEME : thème choisi
      * - WK_WAITING_SUB : les membres proposent une musique
@@ -153,6 +154,20 @@ export default function Group() {
         if (!groupData)
             return;
         switch (groupData.status) {
+            case "JUST_CREATED":
+                let text;
+                if (groupData.users?.length === 1)
+                    text = "Pour l'instant, vous êtes encore seul.e dans ce groupe. Ajoutez vos amis ou votre famille pour commencer à profiter de Unisson !";
+                else if (groupData.users?.length === 2)
+                    text = "Pour l'instant, vous n'êtes encore que deux dans ce groupe. Vous pourrez vous suggérer des morceaux, mais ce sera plus fun à trois !";
+                else
+                    text = "Dès le prochain dimanche, l'aventure Unisson commencera.";
+                return (
+                    <Text style={styles.subtitle}>
+                        {text}
+                    </Text>
+                )
+
             case "SUN_WAITING_THEME":
                 return (
                     <Text style={styles.subtitle}>

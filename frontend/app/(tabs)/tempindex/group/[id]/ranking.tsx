@@ -9,7 +9,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import UnissonButton from "@/components/UnissonButton";
 import { useAuthStore } from "@/utils/authStore";
 
-
+/**
+ * Page de ranking pour tout les utilisateurs 
+ * 
+ * L'élu fait son ranking et les non élus prédisent les préférences de l'élu 
+ */
 export default function Ranking() {
     const { id } = useLocalSearchParams();
     const { userInfo } = useAuthStore();
@@ -20,6 +24,9 @@ export default function Ranking() {
     const found = groups.find(g => g.id === Number(id));
     if (found) groupData = found;
 
+    /**
+     * Détermine si l'utilisateur est l’élu du groupe
+     */
     let isChosen = false;
     if (userInfo && groupData) {
         isChosen = groupData.chosenOne?.id === Number(userInfo.id);
@@ -27,6 +34,9 @@ export default function Ranking() {
 
     const router = useRouter();
 
+    /**
+     * Load des données des tracks a classer 
+     */
     useFocusEffect(
         useCallback(() => {
             let active = true;
@@ -44,6 +54,9 @@ export default function Ranking() {
         }, [id])
     );
 
+    /**
+     * Rendu d'un item draggable représentant un morceau 
+     */
     const renderItem = ({ item, drag, isActive }: RenderItemParams<QuizTrackData>) => (
         <ScaleDecorator>
             <UnissonCompetitionDragnDrop
@@ -55,6 +68,9 @@ export default function Ranking() {
         </ScaleDecorator>
     );
 
+    /** 
+     * Soumission du ranking final et redirection 
+     */
     const handleRanking = async () => {
         const ranking = tracks.map(d => ({trackId: d.track.id!, userId: d.addedBy.id}));
         if (isChosen)

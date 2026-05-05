@@ -9,7 +9,11 @@ import { UserData, QuizTrackData, QuizUserAnswerData } from "@/shared/types";
 import { useAuthStore } from "@/utils/authStore";
 import { errorDialog } from "@/shared/errorDialog";
 
-
+/**
+ * Page de quizz pour l'elu (et de découverte des musique)
+ * 
+ * Il doit chercher à deviner qui à proposé chaque track 
+ */
 export default function Quiz() {
     const [touchID, setTouchID] = useState(-1);
     const [playing, setPlaying] = useState(false);
@@ -22,6 +26,9 @@ export default function Quiz() {
     const [tracks, setTracks] = useState<QuizTrackData[]>([]);
     const [userAnswers, setUserAnswers] = useState<QuizUserAnswerData>({});
 
+    /**
+     * Chargement des données à chaque focus écran
+     */
     useFocusEffect(
         useCallback(() => {
             let active = true;
@@ -50,7 +57,11 @@ export default function Quiz() {
     const currentTrack = tracks[trackIndex];
     const IDQuizzMemberGoodAnswer = currentTrack?.addedBy?.id;
 
-    
+    /**
+     * Gestion du clic sur une réponse 
+     * 
+     * @param userId : id du user 
+     */
     const handleOneAnswerTouch = (userId: number) => {
         if (touchID < 0) {
             setTouchID(userId);
@@ -62,6 +73,10 @@ export default function Quiz() {
         }
     }  
                 
+    /**
+     * Gestion du passage à la prochaine musique. 
+     * Transmission des réponses et redirection vers ranking si fin du quizz
+     */
     const handleNext = async () => {
         try {
             if (!tracks || tracks.length === 0) return;

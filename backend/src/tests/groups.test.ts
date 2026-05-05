@@ -124,7 +124,29 @@ describe('Group routes', () => {
     });
 
     describe('POST /api/groups/:id/songs', () => {
-        it('returns 201 if not chosen one, in the right period and track not already existing', async () => {
+        it('returns 201 if user can add song to group, is valid on youtube and track did not exist yet', async () => {
+            const { user, token } = await createUser('user1', 'u1@test.com');
+            const { user: chosenUser } = await createUser('notchosen', 'notchosen@test.com');
+            const group = await createGroup(user, GroupStatus.WK_WAITING_SUB);
+            await group.addUser(chosenUser.id, { through: { weeklyScore: 0, globalScore: 0 } });
+            await group.update({ chosenOneUserID: chosenUser.id });
+
+            await GroupPeriod.create({
+                groupID: group.id,
+                periodType: PeriodType.WK_PERIOD,
+                periodStart: TimeManager.now()
+            });
+
+            const res = await request(app)
+                .post(`/api/groups/${group.id}/songs`)
+                .set('Authorization', `Bearer ${token}`)
+                .send({youtubeLink: "nGar30Yfv24"});
+
+            expect(res.status).toBe(201);
+            expect(res.body.data.youtubeLink).toBe("nGar30Yfv24");
+        });
+
+        it('returns 404 if user can add song to group, but track is invalid on youtube', async () => {
             const { user, token } = await createUser('user1', 'u1@test.com');
             const { user: chosenUser } = await createUser('notchosen', 'notchosen@test.com');
             const group = await createGroup(user, GroupStatus.WK_WAITING_SUB);
@@ -142,8 +164,7 @@ describe('Group routes', () => {
                 .set('Authorization', `Bearer ${token}`)
                 .send({youtubeLink: "azgfgfgd"});
 
-            expect(res.status).toBe(201);
-            expect(res.body.data.youtubeLink).toBe("azgfgfgd");
+            expect(res.status).toBe(404);
         });
         
         it('returns 400 if youtubeLink is missing', async () => {

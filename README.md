@@ -1,93 +1,55 @@
 # UnisSon
+Application mobile de réseau social entre groupes restreints, encourageant le partage de morceaux de façon hebdomabadaire et thématique
+
+## Principe de l'application
+En groupes de 3 ou plus (il est possible de tester à deux mais la mécanique de classement n'a plus de sens), réunissez-vous entre amis ou en famille pour vous suggérer de la musique entre vous et participer au quiz. Le principe général est le suivant :
+- Chaque dimanche, un membre du groupe est choisi et devient l'élu.e de la semaine. L'élu.e choisit un thème.
+- Du lundi au vendredi, les autres membres du groupe vont recevoir deux notifications dans la semaine leur proposant de suggérer un morceau à l'élu.e, dans le respect du thème choisi.
+- Le samedi, la partie est divisée en deux :
+    - L'élu.e doit deviner qui a qui suggéré chaque morceau, ce qui lui rapportera des points en cas de bonnes réponses. Il doit également classer les morceaux par ordre de préférence, ce qui rapportera des points aux autres membres en fonction de leur position.
+    - Chaque non élu.e découvre les morceaux ajoutés par les autres non élu.e.s, et doit ensuite prédire quelles seront les préférences de l'élu.e. Chacun gagnera des points en fonction de l'accord de sa prédiction avec les préférences réelles de l'élu.e.
+- Le dimanche qui suit, chacun voit son score mis à jour et le cycle recommence avec un.e nouvel.le élu.e.
+
+## Lancement de l'application
+### Sur Android
+Pour tester sur Android, il vous suffit d'installer le fichier `.apk` présent dans le dossier `build`.
+
+### Sur iOS
+Pour tester sur iOS, il vous faut installer Unisson depuis Altstore, ou alors installer le fichier `.ipa` du dossier `build`.
 
 
+## Self-hosting du backend
+Pour lancer le serveur backend sur votre machine et auto-héberger le service, clonez le repository Git, placez vous dans le dossier `backend/` et lancez (vous devez avoir Node.js installé) :
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+```bash 
+$ npm install
 ```
-cd existing_repo
-git remote add origin https://gitlab.sjeannin.com/2026/08/unisson.git
-git branch -M main
-git push -uf origin main
+
+Vous devez également avoir un serveur MariaDB, y créer une base de données et un utilisateur, puis créer une app et des client ID sur la Google Cloud Console (remplir le client ID web suffit pour se connecter depuis Android, mais il faut un client ID iOS pour se connecter depuis iOS).
+
+Vous devez ensuite générer un JWT secret, qui est simplement une chaîne aléatoire de 64 caractères.
+
+Remplissez ensuite un fichier `.env` dans le dossier `backend` selon ce modèle :
+
+```bash
+DB_HOST=...
+DB_DBNAME=...
+DB_USER=...
+DB_PORT=...
+DB_PASSWD=...
+JWT_SECRET=..
+
+GOOGLE_WEB_CLIENT_ID=...
+GOOGLE_WEB_CLIENT_SECRET=...
+GOOGLE_IOS_CLIENT_ID=...
 ```
 
-## Integrate with your tools
+Vous pouvez ensuite lancer le service avec :
+```bash
+$ npm run dev
+```
 
-- [ ] [Set up project integrations](https://gitlab.sjeannin.com/2026/08/unisson/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Quand le service est arrếté, vous pouvez aussi lancer les 20 tests unitaires, qui nécessitent d'avoir une DB `asyna_test` avec les permissions accordées à `DB_USER` (renseigné dans `.env) avec :
+```bash
+$ npm run test
+```

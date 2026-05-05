@@ -3,7 +3,7 @@ import { asyncHandler } from "../../middleware/error.js";
 import { logger, loggerMiddleware } from "../../middleware/logger.js";
 import Group from "../../models/elem/Group.model.js";
 import Track from "../../models/elem/Track.model.js";
-import { getNextGroupStatus, GroupStatus } from "../../shared/GroupStatus.js";
+import { GroupStatus } from "../../shared/GroupStatus.js";
 import User from "../../models/elem/User.model.js";
 import GroupUser from "../../models/link/GroupUser.model.js";
 import GroupPeriod from "../../models/logic/GroupPeriod.model.js";
@@ -35,7 +35,7 @@ export const GroupController = {
         const group = await Group.create({
             name,
             maxUsers,
-            status: GroupStatus.SAT_DONE_QUIZ
+            status: GroupStatus.JUST_CREATED
         });
 
         // Prochain dimanche, on lance le cycle

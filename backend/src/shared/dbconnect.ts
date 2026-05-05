@@ -9,6 +9,8 @@ export const dbConnect = async () => {
 
         // Remplacer par la ligne avec alter: true pour MAJ la DB
         //await db.sync({alter: true});
+        // Pour recréer carrément la DB
+        //await db.sync({force: true});
         await db.sync();
         logger.info("DB synced!");
     } catch (err) {

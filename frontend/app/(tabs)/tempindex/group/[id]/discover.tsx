@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import { useGroupStore } from "@/utils/groupStore";
 import { QuizTrackData } from "@/shared/types";
 import { errorDialog } from "@/shared/errorDialog";
+import { useAuthStore } from "@/utils/authStore";
 
 /**
  * Page de découverte des musiques pour les non élus
@@ -14,6 +15,7 @@ export default function Discover() {
     const [playing, setPlaying] = useState(false);
 
     const { id } = useLocalSearchParams();
+    const {userInfo} = useAuthStore();
     const { getGroup, getQuizzData } = useGroupStore();
     const [trackIndex, setTrackIndex] = useState<number>(0);
     const [tracks, setTracks] = useState<QuizTrackData[]>([]);
@@ -33,7 +35,7 @@ export default function Discover() {
                 } 
                 const result = await getQuizzData(Number(id));
                 if (result.success && result.data) {
-                    setTracks(result.data);
+                    setTracks(result.data.filter(t => !userInfo || (t.addedBy.id != userInfo!.id)));
                 }
             };
             if (active) {

@@ -10,7 +10,7 @@ export function initSocket(server: http.Server) {
     return io;
 }
 
-export function getIO(): Server {
+export function getIO(): Server | null {
     if (!io) return null;
     return io;
 }
