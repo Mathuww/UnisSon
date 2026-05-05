@@ -51,7 +51,7 @@ const getNotif = (group: GroupData, userId?: number): { text: string; type: Noti
 export default function Index() {
     const router = useRouter();
     const { userInfo } = useAuthStore();
-    const { groups, fetchGroups } = useGroupStore();
+    const { groups, fetchGroups, setIsLoading } = useGroupStore();
     const serverTime = useContext(TimeContext);
     const scrollRef = useRef<ScrollView>(null);
     const { timeDebug } = useSettingsStore();
@@ -69,6 +69,8 @@ export default function Index() {
         (async () => { if (active) await fetchGroups(); })();
         return () => { active = false; };
     }, [serverTime]));
+
+    useFocusEffect(useCallback(() => setIsLoading(false), []));
 
     const GroupsContainer = () => {
         if (groups.length === 0) {
