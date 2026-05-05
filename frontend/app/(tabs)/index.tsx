@@ -9,11 +9,11 @@ import { TimeContext } from "./_layout";
 import { GroupData } from "@/shared/types";
 import { useSettingsStore } from "@/utils/settingsStore";
 
-const width = Dimensions.get('window').width;
+const width = Dimensions.get("window").width;
 
-const POCHETTE_CYCLE: PochetteType[] = ['brown', 'purple', 'pink', 'orange'];
+const pochettePossibility: PochetteType[] = ["brown", "purple", "pink", "orange"];
 
-const getPochette = (i: number): PochetteType => POCHETTE_CYCLE[i % POCHETTE_CYCLE.length];
+const getPochette = (i: number): PochetteType => pochettePossibility[i % pochettePossibility.length];
 
 /**
    * Determine quelle notif afficher si il le faut et la renvoie
@@ -22,22 +22,22 @@ const getPochette = (i: number): PochetteType => POCHETTE_CYCLE[i % POCHETTE_CYC
    * @returns {notifText : string}
    */
 const getNotif = (group: GroupData, userId?: number): { text: string; type: NotifType } => {
-    if (!group || !userId) return { text: '', type: null };
+    if (!group || !userId) return { text: "", type: null };
     const { status, chosenOne, canUserAdd, canUserAnswerQuizz } = group as any;
 
-    if (status === 'SUN_WAITING_THEME' && chosenOne?.id === userId) {
-        return { text: 'Choix du thème', type: 'theme' };
+    if (status === "SUN_WAITING_THEME" && chosenOne?.id === userId) {
+        return { text: "Choix du thème", type: "theme" };
     }
 
-    if (status === 'SAT_WAITING_QUIZ' && canUserAnswerQuizz && chosenOne?.id === userId) {
-        return { text: 'Fait le quizz', type: 'quizz' };
+    if (status === "SAT_WAITING_QUIZ" && canUserAnswerQuizz && chosenOne?.id === userId) {
+        return { text: "Fait le quiz", type: "quizz" };
     }
 
-    if (status === 'WK_WAITING_SUB' && chosenOne?.id !== userId && canUserAdd) {
-        return { text: 'Ajoute ta musique', type: 'track' };
+    if (status === "WK_WAITING_SUB" && chosenOne?.id !== userId && canUserAdd) {
+        return { text: "Ajoute ta musique", type: "track" };
     }
 
-    return { text: '', type: null };
+    return { text: "", type: null };
 };
 
 /**
@@ -107,23 +107,23 @@ const styles = StyleSheet.create({
 
     scroll: {
         flex: 1,
-        backgroundColor: '#25292e',
+        backgroundColor: "#25292e",
     },
 
     content: {
         flexGrow: 1,
-        justifyContent: 'flex-end',
+        justifyContent: "flex-end",
     },
 
     iconImg: {
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
     },
 
     linkGroup: {
         width: width * 0.82,
         height: width * 0.36,
-        alignSelf: 'center',
+        alignSelf: "center",
     },
 
 });

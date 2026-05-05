@@ -1,10 +1,10 @@
 import { useGroupStore } from "@/utils/groupStore";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from "react";
 import { Animated, Dimensions, Image, Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 
-export type NotifType = 'track' | 'theme' | 'ranking' | 'quizz' | null;
-export type PochetteType = 'brown' | 'purple' | 'pink' | 'orange';
+export type NotifType = "track" | "theme" | "ranking" | "quizz" | null;
+export type PochetteType = "brown" | "purple" | "pink" | "orange";
 
 type Props = {
     id: number;
@@ -16,21 +16,21 @@ type Props = {
     disabled?: boolean;
 };
 
-const width = Dimensions.get('window').width;
+const width = Dimensions.get("window").width;
 const SLIDE_TO = width * 0.41;
 
 const srcPochette: Record<PochetteType, any> = {
-    brown: require('@/assets/images/brownPochette.jpg'),
-    purple: require('@/assets/images/purplePochette.jpg'),
-    pink: require('@/assets/images/pinkPochette.jpg'),
-    orange: require('@/assets/images/orangePochette.jpg'),
+    brown: require("@/assets/images/brownPochette.jpg"),
+    purple: require("@/assets/images/purplePochette.jpg"),
+    pink: require("@/assets/images/pinkPochette.jpg"),
+    orange: require("@/assets/images/orangePochette.jpg"),
 };
 
 const srcBadge: Record<NonNullable<NotifType>, any> = {
-    track: require('@/assets/images/trackBadge.png'),
-    theme: require('@/assets/images/themeBadge.png'),
-    ranking: require('@/assets/images/rankingBadge.png'),
-    quizz: require('@/assets/images/quizBadge.png'),
+    track: require("@/assets/images/trackBadge.png"),
+    theme: require("@/assets/images/themeBadge.png"),
+    ranking: require("@/assets/images/rankingBadge.png"),
+    quizz: require("@/assets/images/quizBadge.png"),
 };
 
 export default function UnissonLinkGroups({ id, label, notifText, notifType = null, pochette = 'brown', style }: Props) {
@@ -56,7 +56,7 @@ export default function UnissonLinkGroups({ id, label, notifText, notifType = nu
         <View style={[styles.card, style]}>
 
             <Animated.Image
-                source={require('@/assets/images/disc.png')}
+                source={require("@/assets/images/disc.png")}
                 style={[styles.disc, { transform: [{ translateX: anim }] }]}
                 resizeMode="contain"
             />
@@ -91,18 +91,18 @@ export default function UnissonLinkGroups({ id, label, notifText, notifType = nu
 const styles = StyleSheet.create({
 
     card: {
-        overflow: 'visible',
+        overflow: "visible",
     },
 
     disc: {
-        position: 'absolute',
-        width: '200%',
-        height: '200%',
+        position: "absolute",
+        width: "200%",
+        height: "200%",
     },
 
     activeArea: {
-        width: '100%',
-        height: '45%',
+        width: "100%",
+        height: "45%",
     },
 
     pochette: {
@@ -111,30 +111,31 @@ const styles = StyleSheet.create({
     },
 
     textBlock: {
-        position: 'absolute',
-        top: '12%',
-        left: '6%',
-        width: '60%',
+        position: "absolute",
+        top: "12%",
+        left: "6%",
+        width: "60%",
         gap: 6,
     },
 
     title: {
-        color: '#fff',
-        fontWeight: 'bold',
+        color: "#fff",
+        fontWeight: "bold",
         fontSize: width * 0.066,
+        
     },
 
     subtitle: {
-        color: '#fff',
+        color: "#fff",
         fontSize: width * 0.04,
     },
 
     badge: {
-        position: 'absolute',
-        top: '10%',
-        right: '5%',
-        width: '14%',
-        height: '30%',
+        position: "absolute",
+        top: "10%",
+        right: "5%",
+        width: width*0.11,
+        height: width*0.11,
     },
 
 });
