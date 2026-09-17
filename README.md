@@ -1,27 +1,40 @@
 # UnisSon
-Application mobile de réseau social entre groupes restreints, encourageant le partage de morceaux de façon hebdomabadaire et thématique
+Application mobile de réseau social entre groupes restreints, encourageant le partage de morceaux de façon hebdomadaire et thématique
 
 ## Principe de l'application
 En groupes de 3 ou plus (il est possible de tester à deux mais la mécanique de classement n'a plus de sens), réunissez-vous entre amis ou en famille pour vous suggérer de la musique entre vous et participer au quiz. Le principe général est le suivant :
 - Chaque dimanche, un membre du groupe est choisi et devient l'élu.e de la semaine. L'élu.e choisit un thème.
 - Du lundi au vendredi, les autres membres du groupe vont recevoir deux notifications dans la semaine leur proposant de suggérer un morceau à l'élu.e, dans le respect du thème choisi.
 - Le samedi, la partie est divisée en deux :
-    - L'élu.e doit deviner qui a qui suggéré chaque morceau, ce qui lui rapportera des points en cas de bonnes réponses. Il doit également classer les morceaux par ordre de préférence, ce qui rapportera des points aux autres membres en fonction de leur position.
+    - L'élu.e doit deviner qui a suggéré chaque morceau, ce qui lui rapportera des points en cas de bonnes réponses. Iel doit également classer les morceaux par ordre de préférence, ce qui rapportera des points aux autres membres en fonction de leur position.
     - Chaque non élu.e découvre les morceaux ajoutés par les autres non élu.e.s, et doit ensuite prédire quelles seront les préférences de l'élu.e. Chacun gagnera des points en fonction de l'accord de sa prédiction avec les préférences réelles de l'élu.e.
 - Le dimanche qui suit, chacun voit son score mis à jour et le cycle recommence avec un.e nouvel.le élu.e.
 
-## Lancement de l'application
-### Sur Android
-Pour tester sur Android, il vous suffit d'installer le fichier `.apk` présent dans le dossier `build`.
+Chaque utilisateur peut inviter d'autres personnes dans son groupe facilement à l'aide de liens d'invitation à travers un service auto-hébergé écrit par nos soins.
 
-### Sur iOS
-Pour tester sur iOS, il vous faut installer Unisson depuis Altstore, ou alors installer le fichier `.ipa` du dossier `build`.
+## Architecture de l'application
 
-La partie backend du service étant constamment fonctionnelle sur notre VPS, vous pouvez tester l'application n'importe quand. Il faut simplement utiliser un compte Google que nous avons ajouté dans les test users d'Unisson sur la Cloud Console, puisque notre application n'est pas encore vérifiée par Google.
+<img width="960" height="540" alt="archi_globale2" src="https://github.com/user-attachments/assets/b6b8695c-eb5f-4cf7-85bb-2b14f9f37c2b" />
 
+### Architecture du frontend
+
+- Nous utilisons React Native avec Expo pour la partie client. Expo simplifie beaucoup la conception, la compilation et le debug par rapport au React Native pur.
+- On sépare clairement la vue (pages) et la logique (stores, interactions API, sockets) pour faciliter l'introduction de fonctionnalités futures (push notifications, etc.).
+- On utilise des vues sécurisées (pour protéger les pages de groupes, profil, etc. accessibles uniquement après login) et modulaires (une même vue Expo s'adapte au groupe sélectionné et à l'état actuel du groupe soit le jour de la semaine).
+
+### Architecture du backend
+
+- On utilise Node.js/Express avec une architecture routes/contrôleurs/services pour délimiter clairement chaque tâche (+ MariaDB pour la DB).
+- La logique de jeu est gérée par une State Machine dont les transitions d'états sont effectuées le moment venu par un système de polling Cron divisé en sous-tâches.
+- On utilise un temps injecté pour faciliter le debug (possibilité de faire avancer fictivement le temps serveur).
+
+## Répartition des tâches
+- M. Darnaudguilhem : logique et vue (Expo Router) côté front-end, interface/expérience utilisateur, conception et gestion de la base de données, gestion des builds Android & iOS
+- P. Bernard : logique côté front-end (réception des events websockets, gestion du login Google, stockage et hydratation pour les stores Zustand, etc.)
+- A. Durand : logique côté back-end (écriture de l'API REST, State Machine, interactions DB avec Sequelize, gestion du temps injecté, etc.)
 
 ## Self-hosting du backend
-Si vous souhaitez lancer le serveur backend sur votre machine et auto-héberger le service, clonez le repository Git, placez vous dans le dossier `backend/` et lancez (vous devez avoir Node.js installé) :
+Si vous souhaitez lancer le serveur backend sur votre machine et auto-héberger le service, clonez le repository Git, placez-vous dans le dossier `backend/` et lancez (vous devez avoir Node.js installé) :
 
 ```bash 
 $ npm install
@@ -51,7 +64,7 @@ Vous pouvez ensuite lancer le service avec :
 $ npm run dev
 ```
 
-Quand le service est arrếté, vous pouvez aussi lancer les 20 tests unitaires, qui nécessitent d'avoir une DB `asyna_test` avec les permissions accordées à `DB_USER` (renseigné dans `.env`) avec :
+Quand le service est arrêté, vous pouvez aussi lancer les 20 tests unitaires, qui nécessitent d'avoir une DB `asyna_test` avec les permissions accordées à `DB_USER` (renseigné dans `.env`) avec :
 ```bash
 $ npm run test
 ```
@@ -63,24 +76,8 @@ Avec votre téléphone connecté, le SDK Android installé avec ses variables d'
 $ cd ../frontend && npm install && npx expo prebuild && npx expo run:android 
 ```
 
-## Tester l'application de façon autonome
-UnisSon reste un réseau social qui s'étend sur chaque semaine, en groupe, sauf que le souci est que c'est difficile à tester.
-
-### Option debug de temps
-Pour cela, nous avons inclus un debug de temps qui permet d'avancer d'une journée par journée en haut de l'écran (p'tit icône d'ajout), et oui, on est déjà en 2027.
-
-Par ailleurs, si le débug de temps ne s'affiche pas en haut à gauche, veuillez activer l'option dans le bouton On/OFF en bas à gauche dans votre page Profil.
-P'tite astuce, profitez du design dans les meilleures conditions en désactivant cette option.
-
-
-### Aspect sociale
-L'autre difficulté est d'avoir un groupe avec lequel interagir dans les bonnes conditions. Pour cela, nous avons fourni 2 comptes de test Google en plus du vôtre. Cela vous permet de tester les activités du groupe dans les bonnes conditions.
-Ainsi, on a :
-- votre compte gmail,
-- testunisson@gmail.com [mot de passe : minutemaidp0mme],
-- testeurdeuxunisson@gmail.com [mot de passe : minutemaidp0mme]
-
-
-Malheuresement, la seule possibilité de switcher de compte est de vous déconnecter à la page Profil et de vous reconnecter dans le compte que vous désirez.
-
-Bon tests
+## Temps fictif et debug
+Par ailleurs, si vous êtes impatient, nous avons inclus un système de debug basé sur un temps fictif côté serveur.
+Vous pouvez avancer journée par journée à l'aide d'un bouton situé en haut de l'écran : et oui, si on en abuse, on est déjà en 2027 dans l'application.
+Si l'icône ne s'affiche pas en haut à gauche, vous pouvez activer l'option avec le switch situé en bas à gauche dans votre page Profil.
+*Petite astuce* : vous profiterez plus du design de l'application en désactivant cette option.
