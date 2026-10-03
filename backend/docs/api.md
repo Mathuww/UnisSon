@@ -1,5 +1,5 @@
 # Documentation de l'API backend d'UnisSon
-Gaïa D.
+Alice D.
 
 # Types de retour
 Selon le cas :
